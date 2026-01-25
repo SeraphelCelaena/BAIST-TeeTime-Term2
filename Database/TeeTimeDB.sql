@@ -60,3 +60,32 @@ values
 	('silver@baist.com', 'SilverPass123', 'Silver', 'Member', '4567890123', '123 Silver St.', 'SilverCity', 'SilverProvince', 'D4D4D4', 4),
 	('bronze@baist.com', 'BronzePass123', 'Bronze', 'Member', '5678901234', '123 Bronze St.', 'BronzeCity', 'BronzeProvince', 'E5E5E5', 5)
 GO
+
+-- Stored Procedures
+Create Procedure LoginUser(
+	@Email VarChar(100),
+	@Password VarChar(50)
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @Email Is Null Or @Password Is Null
+		Raiserror('LoginUser - Email and Password must be provided.', 16, 1)
+	Else
+		Begin
+			-- Get Basic user information
+			Select
+			Email, FirstName, LastName, PhoneNumber, Roles.RoleName
+			From TeeTimeUser
+			Inner Join Roles on TeeTimeUser.RoleID = Roles.RoleID
+			Where Email = @Email And Password = @Password
+
+			If @@Error = 0
+				Set @TeeTimeReturnCode = 0 -- Success
+			Else
+				Raiserror('LoginUser - Invalid Email or Password.', 16, 1)
+		End
+
+	Return @TeeTimeReturnCode
+GO

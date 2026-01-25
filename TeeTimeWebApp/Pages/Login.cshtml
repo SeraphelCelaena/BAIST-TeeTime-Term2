@@ -4,7 +4,24 @@
     ViewData["Title"] = "Login";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<form id="LoginForm" method="post">
+	<table>
+		<tr>
+			<td>Username: </td>
+			<td>
+				<input type="text" asp-for="@Model.Username" />
+			</td>
+		</tr>
+		<tr>
+			<td>Password: </td>
+			<td>
+				<input type="password" asp-for="@Model.Password" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<input type="submit" value="Login" />
+			</td>
+		</tr>
+	</table>
+</form>

@@ -1,5 +1,27 @@
 -- Use Database
-use TeeTimeDB;
+use TeeTimeDB
+GO
+
+-- Drop Tables if they exist
+If Exists (Select Name From sys.tables Where Name = 'TeeTimeUser')
+	Drop Table TeeTimeUser
+GO
+
+If Exists (Select Name From sys.tables Where Name = 'Roles')
+	Drop Table Roles
+GO
+
+If Exists (Select Name From sys.tables Where Name = 'TeeTimeStart')
+	Drop Table TeeTimeStart
+GO
+
+-- Drop Stored Procedures if they exist
+If Exists (Select Name From sys.procedures Where Name = 'RegisterUser')
+	Drop Procedure RegisterUser
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'LoginUser')
+	Drop Procedure LoginUser
 GO
 
 -- Create
@@ -52,16 +74,56 @@ values
 	('Copper')
 GO
 
-Insert into TeeTimeUser (Email, Password, FirstName, LastName, PhoneNumber, Address, City, Province, PostalCode, RoleID)
-values
-	('admin@baist.com', 'AdminPass123', 'Admin', 'User', '1234567890', '123 Admin St.', 'AdminCity', 'AdminProvince', 'A1A1A1', 1),
-	('stakeholder@baist.com', 'StakeholderPass123', 'Stake', 'Holder', '2345678901', '123 Stakeholder St.', 'StakeholderCity', 'StakeholderProvince', 'B2B2B2', 2),
-	('gold@baist.com', 'GoldPass123', 'Gold', 'Member', '3456789012', '123 Gold St.', 'GoldCity', 'GoldProvince', 'C3C3C3', 3),
-	('silver@baist.com', 'SilverPass123', 'Silver', 'Member', '4567890123', '123 Silver St.', 'SilverCity', 'SilverProvince', 'D4D4D4', 4),
-	('bronze@baist.com', 'BronzePass123', 'Bronze', 'Member', '5678901234', '123 Bronze St.', 'BronzeCity', 'BronzeProvince', 'E5E5E5', 5)
+-- Stored Procedures
+Create Procedure RegisterUser(
+	@Email VarChar(100),
+	@Password VarChar(50),
+	@FirstName VarChar(50),
+	@LastName VarChar(50),
+	@PhoneNumber VarChar(10),
+	@Address VarChar(100),
+	@City VarChar(50),
+	@Province VarChar(50),
+	@PostalCode VarChar(6),
+	@RoleID Int
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @Email Is Null Or @Password Is Null Or @FirstName Is Null Or @LastName Is Null Or
+		@PhoneNumber Is Null Or @Address Is Null Or @City Is Null Or @Province Is Null Or
+		@PostalCode Is Null Or @RoleID Is Null
+		Raiserror('RegisterUser - All fields must be provided.', 16, 1)
+	Else
+		If Exists (Select 1 From TeeTimeUser Where Email = @Email)
+			Raiserror('RegisterUser - Email already exists.', 16, 1)
+		Else
+			If Not Exists (Select 1 From Roles Where RoleID = @RoleID)
+				Raiserror('RegisterUser - Invalid RoleID.', 16, 1)
+			Else
+				If Len(@PhoneNumber) <> 10 Or @PhoneNumber Not Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'
+					Raiserror('RegisterUser - Invalid PhoneNumber format.', 16, 1)
+				Else
+					If Len(@PostalCode) <> 6 Or @PostalCode Not Like '[A-Z][0-9][A-Z][0-9][A-Z][0-9]'
+						Raiserror('RegisterUser - Invalid PostalCode format.', 16, 1)
+					Else
+						If @Email Not Like '%_@__%.__%'
+							Raiserror('RegisterUser - Invalid Email format.', 16, 1)
+						Else
+							Begin
+								Insert into TeeTimeUser (Email, Password, FirstName, LastName, PhoneNumber, Address, City, Province, PostalCode, RoleID)
+								Values (@Email, @Password, @FirstName, @LastName, @PhoneNumber, @Address, @City, @Province, @PostalCode, @RoleID)
+
+								If @@Error = 0
+									Set @TeeTimeReturnCode = 0 -- Success
+								Else
+									Raiserror('RegisterUser - Error inserting user.', 16, 1)
+							End
+
+	Return @TeeTimeReturnCode
 GO
 
--- Stored Procedures
 Create Procedure LoginUser(
 	@Email VarChar(100),
 	@Password VarChar(50)
@@ -88,4 +150,70 @@ AS
 		End
 
 	Return @TeeTimeReturnCode
+GO
+
+-- Insert Data using stored procedures
+Exec RegisterUser
+	@Email = 'admin@baist.com',
+	@Password = 'AdminPass123',
+	@FirstName = 'Admin',
+	@LastName = 'User',
+	@PhoneNumber = '1234567890',
+	@Address = '123 Admin St.',
+	@City = 'AdminCity',
+	@Province = 'AdminProvince',
+	@PostalCode = 'A1A1A1',
+	@RoleID = 1
+GO
+
+Exec RegisterUser
+	@Email = 'stakeholder@baist.com',
+	@Password = 'StakeholderPass123',
+	@FirstName = 'Stake',
+	@LastName = 'Holder',
+	@PhoneNumber = '2345678901',
+	@Address = '123 Stakeholder St.',
+	@City = 'StakeholderCity',
+	@Province = 'StakeholderProvince',
+	@PostalCode = 'B2B2B2',
+	@RoleID = 2
+GO
+
+Exec RegisterUser
+	@Email = 'gold@baist.com',
+	@Password = 'GoldPass123',
+	@FirstName = 'Gold',
+	@LastName = 'Member',
+	@PhoneNumber = '3456789012',
+	@Address = '123 Gold St.',
+	@City = 'GoldCity',
+	@Province = 'GoldProvince',
+	@PostalCode = 'C3C3C3',
+	@RoleID = 3
+GO
+
+Exec RegisterUser
+	@Email = 'silver@baist.com',
+	@Password = 'SilverPass123',
+	@FirstName = 'Silver',
+	@LastName = 'Member',
+	@PhoneNumber = '4567890123',
+	@Address = '123 Silver St.',
+	@City = 'SilverCity',
+	@Province = 'SilverProvince',
+	@PostalCode = 'D4D4D4',
+	@RoleID = 4
+GO
+
+Exec RegisterUser
+	@Email = 'bronze@baist.ca',
+	@Password = 'BronzePass123',
+	@FirstName = 'Bronze',
+	@LastName = 'Member',
+	@PhoneNumber = '5678901234',
+	@Address = '123 Bronze St.',
+	@City = 'BronzeCity',
+	@Province = 'BronzeProvince',
+	@PostalCode = 'E5E5E5',
+	@RoleID = 5
 GO

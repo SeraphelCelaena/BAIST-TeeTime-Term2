@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace TeeTimeWebApp.Pages;
 
@@ -19,12 +20,34 @@ public class LoginModel : PageModel
 	{
 		SqlConnection SqlConnection = new()
 		{
-			ConnectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;Initial Catalog=TeeTimeDB;Integrated Security=True"
+			ConnectionString = @"Data Source=localhost;Initial Catalog=TeeTimeDB;Integrated Security=True"
+		};
+
+		SqlCommand AttemptLoginCommand = new()
+		{
+			Connection = SqlConnection,
+			CommandType = CommandType.StoredProcedure,
+			CommandText = "LoginUser",
+			Parameters =
+			{
+				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = Username },
+				new SqlParameter("@Password", SqlDbType.VarChar, 100) { Value = Password}
+			}
 		};
 
 		using (SqlConnection)
 		{
 			SqlConnection.Open();
+
+			using (AttemptLoginCommand)
+			{
+				SqlDataReader LoginDataReader = AttemptLoginCommand.ExecuteReader();
+
+				if (LoginDataReader.HasRows)
+				{
+					
+				}
+			}
 		}
 	}
 }

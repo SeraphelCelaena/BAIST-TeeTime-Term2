@@ -4,18 +4,20 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>@ViewData["Title"] - TeeTimeWebApp</title>
+	<link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-	<header>
-		<h1><a href="/Index">TeeTimeWebApp</a></h1>
-	</header>
+
 	<nav>
+		<header>
+			<h1><a href="/Index">TeeTimeWebApp</a></h1>
+		</header>
 		<ul>
 			<li><a href="/Login">Login</a></li>
 		</ul>
 	</nav>
 
-	<main role="main">
+	<main>
 		@RenderBody()
 	</main>
 

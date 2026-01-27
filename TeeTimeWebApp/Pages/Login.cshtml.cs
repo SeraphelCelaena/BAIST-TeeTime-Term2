@@ -11,16 +11,20 @@ public class LoginModel : PageModel
 	[BindProperty]
 	public string Password { get; set; } = string.Empty;
 
-    public void OnGet()
-    {
-    }
+	public void OnGet()
+	{
+	}
 
 	public void OnPost()
 	{
 		SqlConnection SqlConnection = new()
 		{
-			ConnectionString = @"server=localhost;database=TeeTimeDB;"
+			ConnectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;Initial Catalog=TeeTimeDB;Integrated Security=True"
 		};
-		SqlConnection.Open();
+
+		using (SqlConnection)
+		{
+			SqlConnection.Open();
+		}
 	}
 }

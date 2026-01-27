@@ -93,25 +93,25 @@ AS
 
 	If @Email Is Null Or @Password Is Null Or @FirstName Is Null Or @LastName Is Null Or
 		@PhoneNumber Is Null Or @Address Is Null Or @City Is Null Or @Province Is Null Or
-		@PostalCode Is Null Or @RoleID Is Null
+		@PostalCode Is Null Or @RoleID Is Null -- Checks if all fields are provided
 		Raiserror('RegisterUser - All fields must be provided.', 16, 1)
 	Else
-		If Exists (Select 1 From TeeTimeUser Where Email = @Email)
+		If Exists (Select 1 From TeeTimeUser Where Email = @Email) -- Check for existing email
 			Raiserror('RegisterUser - Email already exists.', 16, 1)
 		Else
-			If Not Exists (Select 1 From Roles Where RoleID = @RoleID)
+			If Not Exists (Select 1 From Roles Where RoleID = @RoleID) -- Check for valid RoleID
 				Raiserror('RegisterUser - Invalid RoleID.', 16, 1)
 			Else
-				If Len(@PhoneNumber) <> 10 Or @PhoneNumber Not Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'
+				If Len(@PhoneNumber) <> 10 Or @PhoneNumber Not Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' -- Check PhoneNumber format
 					Raiserror('RegisterUser - Invalid PhoneNumber format.', 16, 1)
 				Else
-					If Len(@PostalCode) <> 6 Or @PostalCode Not Like '[A-Z][0-9][A-Z][0-9][A-Z][0-9]'
+					If Len(@PostalCode) <> 6 Or @PostalCode Not Like '[A-Z][0-9][A-Z][0-9][A-Z][0-9]' -- Check PostalCode format
 						Raiserror('RegisterUser - Invalid PostalCode format.', 16, 1)
 					Else
-						If @Email Not Like '%_@__%.__%'
+						If @Email Not Like '%_@__%.__%' -- Check Email format
 							Raiserror('RegisterUser - Invalid Email format.', 16, 1)
 						Else
-							Begin
+							Begin -- Insert the new user
 								Insert into TeeTimeUser (Email, Password, FirstName, LastName, PhoneNumber, Address, City, Province, PostalCode, RoleID)
 								Values (@Email, @Password, @FirstName, @LastName, @PhoneNumber, @Address, @City, @Province, @PostalCode, @RoleID)
 
@@ -132,22 +132,27 @@ AS
 	Declare @TeeTimeReturnCode Int
 	Set @TeeTimeReturnCode = 1 -- Default to failure
 
-	If @Email Is Null Or @Password Is Null
+	If @Email Is Null Or @Password Is Null -- Checks if Email and Password are provided
 		Raiserror('LoginUser - Email and Password must be provided.', 16, 1)
 	Else
-		Begin
-			-- Get Basic user information
-			Select
-			Email, FirstName, LastName, PhoneNumber, Roles.RoleName
-			From TeeTimeUser
-			Inner Join Roles on TeeTimeUser.RoleID = Roles.RoleID
-			Where Email = @Email And Password = @Password
-
-			If @@Error = 0
-				Set @TeeTimeReturnCode = 0 -- Success
-			Else
+		If @Email Not Like '%_@__%.__%' -- Check Email format
+			Raiserror('LoginUser - Invalid Email format.', 16, 1)
+		Else
+			If Not Exists (Select 1 From TeeTimeUser Where Email = @Email And Password = @Password) -- Check for valid credentials
 				Raiserror('LoginUser - Invalid Email or Password.', 16, 1)
-		End
+			Else
+				Begin -- Get Basic user information
+					Select
+					Email, FirstName, LastName, PhoneNumber, Roles.RoleName
+					From TeeTimeUser
+					Inner Join Roles on TeeTimeUser.RoleID = Roles.RoleID
+					Where Email = @Email And Password = @Password
+
+					If @@Error = 0
+						Set @TeeTimeReturnCode = 0 -- Success
+					Else
+						Raiserror('LoginUser - Invalid Email or Password.', 16, 1)
+				End
 
 	Return @TeeTimeReturnCode
 GO

@@ -20,7 +20,7 @@ public class LoginModel : PageModel
 	{
 		SqlConnection SqlConnection = new()
 		{
-			ConnectionString = @"Data Source=localhost;Initial Catalog=TeeTimeDB;Integrated Security=True"
+			ConnectionString = @"Data Source=localhost;Initial Catalog=TeeTimeDB;Integrated Security=True;Trust Server Certificate=True"
 		};
 
 		SqlCommand AttemptLoginCommand = new()
@@ -45,7 +45,7 @@ public class LoginModel : PageModel
 
 				if (LoginDataReader.HasRows)
 				{
-					
+
 				}
 			}
 		}

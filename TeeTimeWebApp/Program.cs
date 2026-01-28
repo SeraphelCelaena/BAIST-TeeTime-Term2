@@ -9,6 +9,19 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 	options.MinimumSameSitePolicy = SameSiteMode.None;
 	options.Secure = CookieSecurePolicy.Always;
 });
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
+	cookieOptions =>
+	{
+		cookieOptions.LoginPath = "/Login";
+		cookieOptions.LogoutPath = "/Logout";
+		cookieOptions.SlidingExpiration = true;
+		cookieOptions.Cookie.Name = "TeeTimeWebAppAuthCookie";
+		cookieOptions.ExpireTimeSpan = TimeSpan.FromDays(7);
+		cookieOptions.Cookie.HttpOnly = true;
+	}
+);
+
 builder.Services.AddRazorPages();
 
 var app = builder.Build();

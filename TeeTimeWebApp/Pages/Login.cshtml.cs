@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
+using System.Security.Claims;
 using System.Data;
 
 namespace TeeTimeWebApp.Pages;
@@ -8,7 +9,7 @@ namespace TeeTimeWebApp.Pages;
 public class LoginModel : PageModel
 {
 	[BindProperty]
-	public string Username { get; set; } = string.Empty;
+	public string Email { get; set; } = string.Empty;
 	[BindProperty]
 	public string Password { get; set; } = string.Empty;
 
@@ -30,7 +31,7 @@ public class LoginModel : PageModel
 			CommandText = "LoginUser",
 			Parameters =
 			{
-				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = Username },
+				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = Email },
 				new SqlParameter("@Password", SqlDbType.VarChar, 100) { Value = Password}
 			}
 		};
@@ -45,7 +46,13 @@ public class LoginModel : PageModel
 
 				if (LoginDataReader.HasRows)
 				{
-
+					while (LoginDataReader.Read())
+					{
+						var claims = new List<Claim>
+						{
+							new Claim(ClaimTypes.Email, Email)
+						};
+					}
 				}
 			}
 		}

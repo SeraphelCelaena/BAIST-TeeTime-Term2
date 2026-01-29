@@ -10,6 +10,13 @@ namespace TeeTimeWebApp.Pages;
 
 public class LoginModel : PageModel
 {
+	private readonly IConfiguration _configuration;
+
+	public LoginModel(IConfiguration configuration)
+	{
+		_configuration = configuration;
+	}
+
 	public string Message { get; set; } = string.Empty;
 	[BindProperty]
 	public string Email { get; set; } = string.Empty;
@@ -30,7 +37,7 @@ public class LoginModel : PageModel
 
 		SqlConnection SqlConnection = new()
 		{
-			ConnectionString = @"Data Source=localhost;Initial Catalog=TeeTimeDB;Integrated Security=True;Trust Server Certificate=True"
+			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
 		};
 
 		SqlCommand AttemptLoginCommand = new()

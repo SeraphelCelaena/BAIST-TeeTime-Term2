@@ -13,14 +13,17 @@
 			<h1><a href="/Index">TeeTimeWebApp</a></h1>
 		</header>
 		<ul>
+			<li><a href="/TeeTime/Book">Tee Time</a></li>
+			<li>
 			@if (User.Identity != null && User.Identity.IsAuthenticated)
 			{
-				<li><a href="/Logout">Logout</a></li>
+				<a href="/Logout">Logout</a>
 			}
 			else
 			{
-				<li><a href="/Login">Login</a></li>
+				<a href="/Login">Login</a>
 			}
+			</li>
 		</ul>
 	</nav>
 

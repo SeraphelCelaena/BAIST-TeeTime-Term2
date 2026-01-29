@@ -23,10 +23,6 @@ public class LoginModel : PageModel
 	[BindProperty]
 	public string Password { get; set; } = string.Empty;
 
-	public void OnGet()
-	{
-	}
-
 	public async Task<IActionResult> OnPostAsync()
 	{
 		if (string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(Password))

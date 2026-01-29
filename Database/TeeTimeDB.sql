@@ -159,7 +159,7 @@ GO
 
 -- Insert Data using stored procedures
 Exec RegisterUser
-	@Email = 'admin@baist.com',
+	@Email = 'admin@baist.ca',
 	@Password = 'AdminPass123',
 	@FirstName = 'Admin',
 	@LastName = 'User',
@@ -172,7 +172,7 @@ Exec RegisterUser
 GO
 
 Exec RegisterUser
-	@Email = 'stakeholder@baist.com',
+	@Email = 'stakeholder@baist.ca',
 	@Password = 'StakeholderPass123',
 	@FirstName = 'Stake',
 	@LastName = 'Holder',
@@ -185,7 +185,7 @@ Exec RegisterUser
 GO
 
 Exec RegisterUser
-	@Email = 'gold@baist.com',
+	@Email = 'gold@baist.ca',
 	@Password = 'GoldPass123',
 	@FirstName = 'Gold',
 	@LastName = 'Member',
@@ -198,7 +198,7 @@ Exec RegisterUser
 GO
 
 Exec RegisterUser
-	@Email = 'silver@baist.com',
+	@Email = 'silver@baist.ca',
 	@Password = 'SilverPass123',
 	@FirstName = 'Silver',
 	@LastName = 'Member',

@@ -54,12 +54,35 @@ Create Table TeeTimeUser
 )
 GO
 
+Create Table UserWarnings
+(
+	WarningID Int Identity(1, 1),
+	Email VarChar(100) Not Null,
+	WarningMessage VarChar(255) Not Null,
+	WarningStartDate Date Not Null,
+	WarningEndDate Date Not Null,
+	Constraint PK_UserWarnings Primary Key (WarningID),
+	Constraint FK_UserWarnings_TeeTimeUser Foreign Key (Email) References TeeTimeUser(Email)
+)
+GO
+
 Create Table TeeTimeStart
 (
 	TeeTimeID Int Identity(1000000, 1),
 	Date Date Not Null,
 	StartTime Time Not Null,
 	Constraint PK_TeeTimeStart Primary Key (TeeTimeID)
+)
+GO
+
+Create Table TeeTimeConfirmation
+(
+	TeeTimeID Int Not Null,
+	Email VarChar(100) Not Null,
+	Confirmed Bit Not Null,
+	Constraint PK_TeeTimeConfirmation Primary Key (TeeTimeID, Email),
+	Constraint FK_TeeTimeConfirmation_TeeTimeUser Foreign Key (Email) References TeeTimeUser(Email),
+	Constraint FK_TeeTimeConfirmation_TeeTimeStart Foreign Key (TeeTimeID) References TeeTimeStart(TeeTimeID)
 )
 GO
 
@@ -155,6 +178,19 @@ AS
 				End
 
 	Return @TeeTimeReturnCode
+GO
+
+Create Procedure BookTeeTime(
+	@Date Date,
+	@StartTime Time
+)
+GO
+
+Create Procedure AddConfirmTeeTime(
+	@TeeTimeID Int,
+	@Email VarChar(100),
+	@Confirmed Bit
+)
 GO
 
 -- Insert Data using stored procedures

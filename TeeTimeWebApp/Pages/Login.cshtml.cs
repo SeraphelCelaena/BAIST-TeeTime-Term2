@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using System.Security.Claims;
 using System.Data;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace TeeTimeWebApp.Pages;
 
 public class LoginModel : PageModel
 {
+	public string Message { get; set; } = string.Empty;
 	[BindProperty]
 	public string Email { get; set; } = string.Empty;
 	[BindProperty]
@@ -17,8 +20,14 @@ public class LoginModel : PageModel
 	{
 	}
 
-	public void OnPost()
+	public async Task<IActionResult> OnPostAsync()
 	{
+		if (string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(Password))
+		{
+			Message = "Please enter both email and password.";
+			return Page();
+		}
+
 		SqlConnection SqlConnection = new()
 		{
 			ConnectionString = @"Data Source=localhost;Initial Catalog=TeeTimeDB;Integrated Security=True;Trust Server Certificate=True"
@@ -42,19 +51,41 @@ public class LoginModel : PageModel
 
 			using (AttemptLoginCommand)
 			{
-				SqlDataReader LoginDataReader = AttemptLoginCommand.ExecuteReader();
-
-				if (LoginDataReader.HasRows)
+				using (SqlDataReader LoginDataReader = AttemptLoginCommand.ExecuteReader())
 				{
-					while (LoginDataReader.Read())
+
+					if (LoginDataReader.HasRows)
 					{
-						var claims = new List<Claim>
+						while (LoginDataReader.Read())
 						{
-							new Claim(ClaimTypes.Email, Email)
-						};
+							var claimsList = new List<Claim>
+							{
+								new Claim(ClaimTypes.Email, Email),
+								new Claim(ClaimTypes.GivenName, LoginDataReader["FirstName"].ToString()!),
+								new Claim(ClaimTypes.Surname, LoginDataReader["LastName"].ToString()!),
+								new Claim(ClaimTypes.MobilePhone, LoginDataReader["PhoneNumber"].ToString()!),
+								new Claim(ClaimTypes.Role, LoginDataReader["RoleName"].ToString()!)
+							};
+
+							var authProperties = new AuthenticationProperties
+							{
+								IsPersistent = true,
+								ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
+							};
+
+							var userIdentity = new ClaimsIdentity(claimsList, CookieAuthenticationDefaults.AuthenticationScheme);
+							var userPrincipal = new ClaimsPrincipal(userIdentity);
+
+							await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal, authProperties);
+
+							return RedirectToPage("/Index");
+						}
 					}
+
 				}
 			}
 		}
+
+		return Page();
 	}
 }

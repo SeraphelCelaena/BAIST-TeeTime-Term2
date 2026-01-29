@@ -7,9 +7,9 @@
 <form id="LoginForm" method="post">
 	<table>
 		<tr>
-			<td>Username: </td>
+			<td>Email: </td>
 			<td>
-				<input type="text" asp-for="@Model.Username" />
+				<input type="text" asp-for="@Model.Email" />
 			</td>
 		</tr>
 		<tr>
@@ -25,3 +25,4 @@
 		</tr>
 	</table>
 </form>
+@Model.Message

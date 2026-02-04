@@ -14,4 +14,9 @@ public class BookModel : PageModel
 
 	[BindProperty]
 	public DateOnly SelectedDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+
+	public async Task<IActionResult> OnPost()
+	{
+		return Page();
+	}
 }

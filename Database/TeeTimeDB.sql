@@ -3,6 +3,14 @@ use TeeTimeDB
 GO
 
 -- Drop Tables if they exist
+If Exists (Select Name From sys.tables Where Name = 'TeeTimeConfirmation')
+	Drop Table TeeTimeConfirmation
+GO
+
+If Exists (Select Name From sys.tables Where Name = 'UserWarnings')
+	Drop Table UserWarnings
+GO
+
 If Exists (Select Name From sys.tables Where Name = 'TeeTimeUser')
 	Drop Table TeeTimeUser
 GO
@@ -22,6 +30,18 @@ GO
 
 If Exists (Select Name From sys.procedures Where Name = 'LoginUser')
 	Drop Procedure LoginUser
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'CheckTeeTimeOnDate')
+	Drop Procedure CheckTeeTimeOnDate
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'BookTeeTime')
+	Drop Procedure BookTeeTime
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'AddConfirmTeeTime')
+	Drop Procedure AddConfirmTeeTime
 GO
 
 -- Create
@@ -180,10 +200,63 @@ AS
 	Return @TeeTimeReturnCode
 GO
 
+Create Procedure CheckTeeTimeOnDate(
+	@Date Date
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @Date Is Null -- Checks if Date is provided
+		Raiserror('CheckTeeTimeOnDate - Date must be provided.', 16, 1)
+	Else
+		If @Date < Cast(GetDate() As Date) -- Check if date is in the past
+			Raiserror('CheckTeeTimeOnDate - Date cannot be in the past.', 16, 1)
+		Else
+			Begin -- Get Tee Times for the specified date
+				Select
+				TeeTimeID, StartTime
+				From TeeTimeStart
+				Where Date = @Date
+
+				If @@Error = 0
+					Set @TeeTimeReturnCode = 0 -- Success
+				Else
+					Raiserror('CheckTeeTimeOnDate - Error retrieving tee times.', 16, 1)
+			End
+
+	Return @TeeTimeReturnCode
+GO
+
 Create Procedure BookTeeTime(
 	@Date Date,
-	@StartTime Time
+	@StartTime Time,
+	@TeeTimeIDReturn Int Output
 )
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @Date Is Null Or @StartTime Is Null -- Checks if Date and StartTime are provided
+		Raiserror('BookTeeTime - Date and StartTime must be provided.', 16, 1)
+	Else
+		If @Date < Cast(GetDate() As Date) -- Check if date is in the past
+			Raiserror('BookTeeTime - Date cannot be in the past.', 16, 1)
+		Else
+			Begin -- Insert the new Tee Time
+				Insert into TeeTimeStart (Date, StartTime)
+				Values (@Date, @StartTime)
+
+				If @@Error = 0
+					Begin
+						Set @TeeTimeIDReturn = SCOPE_IDENTITY() -- Get the newly created TeeTimeID
+						Set @TeeTimeReturnCode = 0 -- Success
+					End
+				Else
+					Raiserror('BookTeeTime - Error booking tee time.', 16, 1)
+			End
+
+	Return @TeeTimeReturnCode
 GO
 
 Create Procedure AddConfirmTeeTime(
@@ -191,6 +264,30 @@ Create Procedure AddConfirmTeeTime(
 	@Email VarChar(100),
 	@Confirmed Bit
 )
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @TeeTimeID Is Null Or @Email Is Null Or @Confirmed Is Null -- Checks if all fields are provided
+		Raiserror('AddConfirmTeeTime - All fields must be provided.', 16, 1)
+	Else
+		If Not Exists (Select 1 From TeeTimeStart Where TeeTimeID = @TeeTimeID) -- Check for valid TeeTimeID
+			Raiserror('AddConfirmTeeTime - Invalid TeeTimeID.', 16, 1)
+		Else
+			If Not Exists (Select 1 From TeeTimeUser Where Email = @Email) -- Check for valid Email
+				Raiserror('AddConfirmTeeTime - Invalid Email.', 16, 1)
+			Else
+				Begin -- Insert the confirmation
+					Insert into TeeTimeConfirmation (TeeTimeID, Email, Confirmed)
+					Values (@TeeTimeID, @Email, @Confirmed)
+
+					If @@Error = 0
+						Set @TeeTimeReturnCode = 0 -- Success
+					Else
+						Raiserror('AddConfirmTeeTime - Error adding confirmation.', 16, 1)
+				End
+
+	Return @TeeTimeReturnCode
 GO
 
 -- Insert Data using stored procedures

@@ -14,6 +14,13 @@
 		@if (Model.ValidDate)
 		{
 			<tr>
+				<td>
+					<select>
+						<option value="Default">Select A Timeslot</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
 				<td><input type="submit" value="Cancel" asp-page-handler="Cancel" /></td>
 			</tr>
 		}

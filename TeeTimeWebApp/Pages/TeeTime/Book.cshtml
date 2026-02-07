@@ -9,7 +9,7 @@
 	<table>
 		<tr>
 			<td>Select a Date: </td>
-			<td><input type="date" asp-for="SelectedDate" /></td>
+			<td><input type="date" asp-for="SelectedDate" disabled=@Model.ValidDate /></td>
 		</tr>
 		@if (Model.ValidDate)
 		{

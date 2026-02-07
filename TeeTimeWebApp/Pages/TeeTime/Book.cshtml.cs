@@ -79,4 +79,13 @@ public class BookModel : PageModel
 		ValidDate = true;
 		return Page();
 	}
+
+	public async Task<IActionResult> OnPostCancel()
+	{
+		ValidDate = false;
+		Message = "OnCancel";
+		UsedTeeTimes = new List<UsedTeeTime>();
+
+		return Page();
+	}
 }

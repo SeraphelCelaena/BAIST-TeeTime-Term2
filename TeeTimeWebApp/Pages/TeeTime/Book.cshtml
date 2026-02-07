@@ -9,10 +9,26 @@
 	<table>
 		<tr>
 			<td>Select a Date: </td>
-			<td><input type="date" name="SelectedDate" /></td>
+			<td><input type="date" asp-for="SelectedDate" /></td>
 		</tr>
-		<tr>
-			<td><input type="submit" value="VerifyDate" /></td>
-		</tr>
+		@if (Model.ValidDate)
+		{
+			<tr>
+				<td><input type="submit" value="Cancel" asp-page-handler="Cancel" /></td>
+			</tr>
+		}
+		else
+		{
+			<tr>
+				<td><input type="submit" value="VerifyDate" asp-page-handler="VerifyDate" /></td>
+			</tr>
+		}
 	</table>
 </form>
+@Model.SelectedDate
+@Model.ValidDate
+
+@foreach (var teeTime in Model.UsedTeeTimes)
+{
+	<p>@teeTime.TeeTime: @teeTime.Count/4</p>
+}

@@ -215,7 +215,7 @@ AS
 		Else
 			Begin -- Get Tee Times for the specified date
 				Select
-				TeeTimeID, StartTime
+				TeeTimeID, StartTime, (Select Count (*) From TeeTimeConfirmation Where TeeTimeConfirmation.TeeTimeID = TeeTimeStart.TeeTimeID And Confirmed = 1) As ConfirmedCount
 				From TeeTimeStart
 				Where Date = @Date
 

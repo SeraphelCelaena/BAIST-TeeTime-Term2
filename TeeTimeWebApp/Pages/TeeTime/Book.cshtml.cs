@@ -88,4 +88,9 @@ public class BookModel : PageModel
 
 		return Page();
 	}
+
+	public async Task<IActionResult> OnPostBook()
+	{
+		return Page();
+	}
 }

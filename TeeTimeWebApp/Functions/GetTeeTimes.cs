@@ -1,11 +1,12 @@
 using TeeTimeWebApp.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
+// Stole the functionality from my previous term's project
 namespace TeeTimeWebApp.Functions
 {
 	public class GetTeeTimes
 	{
-		public List<SelectListItem> GetAvailableTeeTimes(DateOnly date, string Role)
+		public static List<SelectListItem> GetAvailableTeeTimes(DateOnly date, string Role)
 		{
 			List<SelectListItem> availableTeeTimes = new List<SelectListItem>();
 			TimeOnly startTime = new TimeOnly(7, 0);
@@ -15,8 +16,17 @@ namespace TeeTimeWebApp.Functions
 			for (int i = 0; i < 12 * 60;)
 			{
 				TimeOnly time = startTime.AddMinutes(i);
-				if (Role == "Gold" || Role == "Shareholder" || Role == "Admin" || (Role == "Silver" && (!isWeekend && (time < new TimeOnly(15, 0) ||time > new TimeOnly(17, 30)) || (isWeekend && time > new TimeOnly(11, 0)))) ||
-				(Role == "Bronze" && (!isWeekend && (time < new TimeOnly(15, 0) || time > new TimeOnly(18, 0)) || (isWeekend && time > new TimeOnly(13, 0)))))
+				if (Role == "Gold" ||
+				Role == "Shareholder" ||
+				Role == "Admin" ||
+
+				(Role == "Silver" && (!isWeekend &&
+				(time < new TimeOnly(15, 0) || time > new TimeOnly(17, 30)) ||
+				(isWeekend && time > new TimeOnly(11, 0)))) ||
+
+				(Role == "Bronze" && (!isWeekend &&
+				(time < new TimeOnly(15, 0) || time > new TimeOnly(18, 0)) ||
+				(isWeekend && time > new TimeOnly(13, 0)))))
 				{
 					availableTeeTimes.Add(new SelectListItem
 					{

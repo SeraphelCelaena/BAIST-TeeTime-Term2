@@ -4,6 +4,8 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using TeeTimeWebApp.Models;
 using TeeTimeWebApp.Functions;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 public class BookModel : PageModel
 {
@@ -15,7 +17,8 @@ public class BookModel : PageModel
 	}
 
 	public string Message { get; set; } = string.Empty;
-	public User UserInfo { get; set; } = new User();
+	public string Role { get; set; } = string.Empty;
+
 	[BindProperty]
 	public DateOnly SelectedDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 	[BindProperty]
@@ -23,9 +26,20 @@ public class BookModel : PageModel
 	public List<UsedTeeTime> UsedTeeTimes { get; set; } = new List<UsedTeeTime>();
 	public bool ValidDate { get; set; } = false;
 
+	public List<SelectListItem> AvailableTeeTimes { get; set; } = new List<SelectListItem>();
+
 	public async Task<IActionResult> OnGet()
 	{
-		return Page();
+		var RoleClaim = User.FindFirstValue(ClaimTypes.Role);
+		if (RoleClaim == null)
+		{
+			return RedirectToPage("/Login");
+		}
+		else
+		{
+			Role = RoleClaim;
+			return Page();
+		}
 	}
 
 	public async Task<IActionResult> OnPostVerifyDate()
@@ -42,6 +56,16 @@ public class BookModel : PageModel
 			ValidDate = false;
 			Message = "Please select a date within the next 2 weeks.";
 			return Page();
+		}
+
+		var RoleClaim = User.FindFirstValue(ClaimTypes.Role);
+		if (RoleClaim == null)
+		{
+			return RedirectToPage("/Login");
+		}
+		else
+		{
+			Role = RoleClaim;
 		}
 
 		SqlConnection SqlConnection = new()
@@ -83,6 +107,8 @@ public class BookModel : PageModel
 			}
 		}
 
+		AvailableTeeTimes = GetTeeTimes.GetAvailableTeeTimes(SelectedDate, Role);
+
 		ValidDate = true;
 		return Page();
 	}
@@ -92,6 +118,7 @@ public class BookModel : PageModel
 		ValidDate = false;
 		Message = "OnCancel";
 		UsedTeeTimes = new List<UsedTeeTime>();
+		AvailableTeeTimes = new List<SelectListItem>();
 
 		return Page();
 	}

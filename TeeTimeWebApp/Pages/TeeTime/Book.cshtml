@@ -17,6 +17,10 @@
 				<td>
 					<select asp-for="SelectedTime">
 						<option value="">Select a Time</option>
+						@foreach (SelectListItem teeTime in Model.AvailableTeeTimes)
+						{
+							<option value="@teeTime.Value">@teeTime.Text</option>
+						}
 					</select>
 				</td>
 			</tr>
@@ -34,6 +38,8 @@
 </form>
 @Model.SelectedDate
 @Model.ValidDate
+@Model.Role
+@Model.AvailableTeeTimes.Count
 
 @foreach (var teeTime in Model.UsedTeeTimes)
 {

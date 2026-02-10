@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 namespace TeeTimeWebApp.Models
 {
 	public class User

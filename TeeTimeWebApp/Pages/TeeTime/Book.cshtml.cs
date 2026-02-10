@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using TeeTimeWebApp.Models;
+using TeeTimeWebApp.Functions;
 
 public class BookModel : PageModel
 {
@@ -14,12 +15,18 @@ public class BookModel : PageModel
 	}
 
 	public string Message { get; set; } = string.Empty;
+	public User UserInfo { get; set; } = new User();
 	[BindProperty]
 	public DateOnly SelectedDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 	[BindProperty]
 	public TimeOnly SelectedTime { get; set; } = TimeOnly.MinValue;
 	public List<UsedTeeTime> UsedTeeTimes { get; set; } = new List<UsedTeeTime>();
 	public bool ValidDate { get; set; } = false;
+
+	public async Task<IActionResult> OnGet()
+	{
+		return Page();
+	}
 
 	public async Task<IActionResult> OnPostVerifyDate()
 	{

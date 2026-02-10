@@ -1,0 +1,49 @@
+@page
+@model NewUserModel
+@{
+	ViewData["Title"] = "Create New User";
+}
+
+<h2>Create New User</h2>
+<form id="newUserForm" method="post">
+	<table>
+		<tr>
+			<td>Email: </td>
+			<td><input type="text" asp-for="Email" /></td>
+		</tr>
+		<tr>
+			<td>Password: </td>
+			<td><input type="password" asp-for="Password" /></td>
+		</tr>
+		<tr>
+			<td>First Name: </td>
+			<td><input type="text" asp-for="FirstName" /></td>
+			<td>Last Name: </td>
+			<td><input type="text" asp-for="LastName" /></td>
+		</tr>
+		<tr>
+			<td>Phone Number: </td>
+			<td><input type="number" asp-for="PhoneNumber" /></td>
+		</tr>
+		<tr>
+			<td>Address: </td>
+			<td><input type="text" asp-for="Address" /></td>
+			<td>City: </td>
+			<td><input type="text" asp-for="City" /></td>
+		</tr>
+		<tr>
+			<td>Province: </td>
+			<td><input type="text" asp-for="Province" /></td>
+			<td>Postal Code: </td>
+			<td><input type="text" asp-for="PostalCode" /></td>
+		</tr>
+		<tr>
+			<td>Role: </td>
+			<td>
+				<select asp-for="Role">
+					<option value="">Select a Role</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</form>

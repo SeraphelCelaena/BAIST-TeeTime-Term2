@@ -44,6 +44,10 @@ If Exists (Select Name From sys.procedures Where Name = 'AddConfirmTeeTime')
 	Drop Procedure AddConfirmTeeTime
 GO
 
+If Exists (Select Name From sys.procedures Where Name = 'GetAllRoles')
+	Drop Procedure GetAllRoles
+GO
+
 -- Create
 Create Table Roles
 (
@@ -288,6 +292,22 @@ AS
 				End
 
 	Return @TeeTimeReturnCode
+GO
+
+Create Procedure GetAllRoles
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	Begin
+		Select RoleID, RoleName
+		From Roles
+
+		If @@Error = 0
+			Set @TeeTimeReturnCode = 0 -- Success
+		Else
+			Raiserror('GetAllRoles - Error retrieving roles.', 16, 1)
+	End
 GO
 
 -- Insert Data using stored procedures

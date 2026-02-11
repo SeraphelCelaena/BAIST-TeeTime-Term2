@@ -42,8 +42,16 @@
 			<td>
 				<select asp-for="Role">
 					<option value="">Select a Role</option>
+					@foreach (SelectListItem role in Model.RolesList)
+					{
+						<option value="@role.Value">@role.Text</option>
+					}
 				</select>
 			</td>
 		</tr>
+		<tr>
+			<td><input type="submit" value="Submit" asp-page-handler="Submit" /></td>
+		</tr>
 	</table>
 </form>
+@ViewData[index: "Error"]

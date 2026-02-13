@@ -56,6 +56,18 @@ If Exists (Select Name From sys.procedures Where Name = 'GetAllRoles')
 	Drop Procedure GetAllRoles
 GO
 
+If Exists (Select Name From sys.procedures Where Name = 'GetAllTeeTimes')
+	Drop Procedure GetAllTeeTimes
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'AddStandingTeeTime')
+	Drop Procedure AddStandingTeeTime
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'AddStandingTeeTimeConfirmation')
+	Drop Procedure AddStandingTeeTimeConfirmation
+GO
+
 -- Create
 Create Table Roles
 (

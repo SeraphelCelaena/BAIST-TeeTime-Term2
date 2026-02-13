@@ -3,6 +3,14 @@ use TeeTimeDB
 GO
 
 -- Drop Tables if they exist
+If Exists (Select Name From sys.tables Where Name = 'StandingTeeTimeConfirmation')
+	Drop Table StandingTeeTimeConfirmation
+GO
+
+If Exists (Select Name From sys.tables Where Name = 'StandingTeeTime')
+	Drop Table StandingTeeTime
+GO
+
 If Exists (Select Name From sys.tables Where Name = 'TeeTimeConfirmation')
 	Drop Table TeeTimeConfirmation
 GO
@@ -107,6 +115,31 @@ Create Table TeeTimeConfirmation
 	Constraint PK_TeeTimeConfirmation Primary Key (TeeTimeID, Email),
 	Constraint FK_TeeTimeConfirmation_TeeTimeUser Foreign Key (Email) References TeeTimeUser(Email),
 	Constraint FK_TeeTimeConfirmation_TeeTimeStart Foreign Key (TeeTimeID) References TeeTimeStart(TeeTimeID)
+)
+GO
+
+Create Table StandingTeeTime
+(
+	StandingTeeTimeID Int Identity(100000, 1),
+	StakeholderEmail VarChar(100) Not Null,
+	DayOfWeek Int Not Null,
+	StartDate Date Not Null,
+	EndDate Date Not Null,
+	RequestedTime Time Not Null,
+	Constraint PK_StandingTeeTime Primary Key (StandingTeeTimeID),
+	Constraint FK_StandingTeeTime_TeeTimeUser Foreign Key (StakeholderEmail) References TeeTimeUser(Email)
+)
+GO
+
+Create Table StandingTeeTimeConfirmation
+(
+	StandingTeeTimeConfirmationID Int Identity(10000000, 1),
+	StandingTeeTimeID Int Not Null,
+	Email VarChar(100) Not Null,
+	Confirmed Bit Not Null,
+	Constraint PK_StandingTeeTimeConfirmation Primary Key (StandingTeeTimeConfirmationID),
+	Constraint FK_StandingTeeTimeConfirmation_TeeTimeUser Foreign Key (Email) References TeeTimeUser(Email),
+	Constraint FK_StandingTeeTimeConfirmation_StandingTeeTime Foreign Key (StandingTeeTimeID) References StandingTeeTime(StandingTeeTimeID)
 )
 GO
 
@@ -309,6 +342,76 @@ AS
 			Raiserror('GetAllRoles - Error retrieving roles.', 16, 1)
 	End
 GO
+
+Create Procedure GetAllTeeTimes
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	Begin
+		Select
+		TeeTimeID, Date, StartTime, (Select Count (*) From TeeTimeConfirmation Where TeeTimeConfirmation.TeeTimeID = TeeTimeStart.TeeTimeID And Confirmed = 1) As ConfirmedCount
+		From TeeTimeStart
+
+		If @@Error = 0
+			Set @TeeTimeReturnCode = 0 -- Success
+		Else
+			Raiserror('GetAllTeeTimes - Error retrieving tee times.', 16, 1)
+	End
+GO
+
+Create Procedure AddStandingTeeTime(
+	@StakeholderEmail VarChar(100),
+	@Role Int,
+	@DayOfWeek Int,
+	@StartDate Date,
+	@EndDate Date,
+	@RequestedTime Time,
+	@TeeTimeIDReturn Int Output
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @StakeholderEmail Is Null Or @DayOfWeek Is Null Or @StartDate Is Null Or @EndDate Is Null Or @RequestedTime Is Null -- Checks if all fields are provided
+		Raiserror('AddStandingTeeTime - All fields must be provided.', 16, 1)
+	Else
+		If (@StakeholderEmail Not In (Select Email From TeeTimeUser Where RoleID = (Select RoleID From Roles Where RoleName = 'Stakeholder')) ) -- Check if user is a Stakeholder
+			Raiserror('AddStandingTeeTime - User is not a Stakeholder.', 16, 1)
+		Else
+			If @StartDate < Cast(GetDate() As Date) -- Check if StartDate is in the past
+				Raiserror('AddStandingTeeTime - StartDate cannot be in the past.', 16, 1)
+			Else
+				If @EndDate < @StartDate -- Check if EndDate is before StartDate
+					Raiserror('AddStandingTeeTime - EndDate cannot be before StartDate.', 16, 1)
+				Else
+					If @DayOfWeek < 1 Or @DayOfWeek > 7 -- Check if DayOfWeek is valid
+						Raiserror('AddStandingTeeTime - DayOfWeek must be between 1 and 7.', 16, 1)
+					Else
+						Begin -- Insert the new Standing Tee Time
+							Insert into StandingTeeTime (StakeholderEmail, DayOfWeek, StartDate, EndDate, RequestedTime)
+							Values (@StakeholderEmail, @DayOfWeek, @StartDate, @EndDate, @RequestedTime)
+
+							If @@Error = 0
+								Begin
+									Set @TeeTimeIDReturn = SCOPE_IDENTITY() -- Get the newly created StandingTeeTimeID
+									Set @TeeTimeReturnCode = 0 -- Success
+								End
+							Else
+								Raiserror('AddStandingTeeTime - Error adding standing tee time.', 16, 1)
+						End
+
+	Return @TeeTimeReturnCode
+GO
+
+Create Procedure AddStandingTeeTimeConfirmation(
+	@StandingTeeTimeID Int,
+	@Email VarChar(100),
+	@Date Date,
+	@Confirmed Bit
+)
+AS
+	Declare @TeeTimeReturnCode Int
 
 -- Insert Data using stored procedures
 Exec RegisterUser

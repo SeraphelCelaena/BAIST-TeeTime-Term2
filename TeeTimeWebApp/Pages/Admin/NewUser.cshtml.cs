@@ -19,6 +19,8 @@ public class NewUserModel : PageModel
 	[BindProperty]
 	public string Password { get; set;} = string.Empty;
 	[BindProperty]
+	public string ConfirmPassword { get; set;} = string.Empty;
+	[BindProperty]
 	public string FirstName { get; set;} = string.Empty;
 	[BindProperty]
 	public string LastName { get; set;} = string.Empty;
@@ -72,6 +74,12 @@ public class NewUserModel : PageModel
 		if (!Regex.IsMatch(PostalCode, RegexPostalCode))
 		{
 			ViewData["Error"] = "Please enter a valid postal code.";
+			return Page();
+		}
+
+		if (Password != ConfirmPassword)
+		{
+			ViewData["Error"] = "Passwords do not match.";
 			return Page();
 		}
 

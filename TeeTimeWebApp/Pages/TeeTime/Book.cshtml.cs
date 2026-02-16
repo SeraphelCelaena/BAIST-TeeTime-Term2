@@ -125,6 +125,56 @@ public class BookModel : PageModel
 
 	public async Task<IActionResult> OnPostBook()
 	{
+		SqlConnection BookConnection = new()
+		{
+			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
+		};
+
+		SqlCommand BookCommand = new()
+		{
+			Connection = BookConnection,
+			CommandType = CommandType.StoredProcedure,
+			CommandText = "BookTeeTime",
+			Parameters =
+			{
+				new SqlParameter("@Date", SqlDbType.Date) { Value = SelectedDate.ToDateTime(TimeOnly.MinValue) },
+				new SqlParameter("@Time", SqlDbType.Time) { Value = SelectedTime.ToTimeSpan() },
+				new SqlParameter("@TeeTimeIDReturn", SqlDbType.Int) { Direction = ParameterDirection.Output }
+			}
+		};
+
+		using (BookConnection)
+		{
+			BookConnection.Open();
+
+			using (BookCommand)
+			{
+				BookCommand.ExecuteNonQuery();
+				int TeeTimeID = (int)BookCommand.Parameters["@TeeTimeIDReturn"].Value;
+
+				if (TeeTimeID > 0)
+				{
+					SqlCommand AddBookConfirm = new()
+					{
+						Connection = BookConnection,
+						CommandType = CommandType.StoredProcedure,
+						CommandText = "AddConfirmTeeTime",
+						Parameters =
+						{
+							new SqlParameter("@TeeTimeID", SqlDbType.Int) { Value = TeeTimeID },
+							new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = User.FindFirstValue(ClaimTypes.Email) },
+							new SqlParameter("@Confirmed", SqlDbType.Bit) { Value = false }
+						}
+					};
+
+					using (AddBookConfirm)
+					{
+						AddBookConfirm.ExecuteNonQuery();
+					}
+				}
+			}
+		}
+
 		return Page();
 	}
 }

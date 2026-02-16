@@ -1,0 +1,83 @@
+@page
+@model RequestStandingTeeTimeModel
+@{
+	ViewData["Title"] = "Request Standing Tee Time";
+}
+
+<form name="RequestStandingTeeTimeForm" method="post">
+	<table>
+		<tr>
+			<td>Members:</td>
+		</tr>
+		<tr>
+			<td>Member 1: </td>
+			<td>
+				<input type="text" asp-for="@Model.Email" disabled />
+			</td>
+		</tr>
+		<tr>
+			<td>Member 2: </td>
+			<td>
+				<input type="text" asp-for="@Model.Member2" />
+			</td>
+		</tr>
+		<tr>
+			<td>Member 3: </td>
+			<td>
+				<input type="text" asp-for="@Model.Member3" />
+			</td>
+		</tr>
+		<tr>
+			<td>Member 4: </td>
+			<td>
+				<input type="text" asp-for="@Model.Member4" />
+			</td>
+		</tr>
+
+		<tr></tr>
+
+		<tr>
+			<td>Day Information: </td>
+		</tr>
+		<tr>
+			<td>Day of Week: </td>
+			<td>
+				<select asp-for="@Model.DayOfWeek">
+					<option value="">Select Day of Week</option>
+					<option value="1">Sunday</option>
+					<option value="2">Monday</option>
+					<option value="3">Tuesday</option>
+					<option value="4">Wednesday</option>
+					<option value="5">Thursday</option>
+					<option value="6">Friday</option>
+					<option value="7">Saturday</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>Start Date: </td>
+			<td>
+				<input type="date" asp-for="@Model.StartDate" />
+			</td>
+		</tr>
+		<tr>
+			<td>End Date: </td>
+			<td>
+				<input type="date" asp-for="@Model.EndDate" />
+			</td>
+		</tr>
+
+		<tr>
+			<td>Preferred Time: </td>
+			<td>
+				<input type="time" asp-for="@Model.PreferredTime" />
+			</td>
+		</tr>
+
+		<tr>
+			<td>
+				<input type="submit" value="Submit" asp-page-handler="Submit" />
+			</td>
+		</tr>
+	</table>
+</form>

@@ -138,6 +138,7 @@ Create Table StandingTeeTime
 	StartDate Date Not Null,
 	EndDate Date Not Null,
 	RequestedTime Time Not Null,
+	NumberOfCarts Int Not Null,
 	Constraint PK_StandingTeeTime Primary Key (StandingTeeTimeID),
 	Constraint FK_StandingTeeTime_TeeTimeUser Foreign Key (StakeholderEmail) References TeeTimeUser(Email)
 )
@@ -374,11 +375,11 @@ GO
 
 Create Procedure AddStandingTeeTime(
 	@StakeholderEmail VarChar(100),
-	@Role Int,
 	@DayOfWeek Int,
 	@StartDate Date,
 	@EndDate Date,
 	@RequestedTime Time,
+	@NumberOfCarts Int,
 	@TeeTimeIDReturn Int Output
 )
 AS
@@ -400,9 +401,12 @@ AS
 					If @DayOfWeek < 1 Or @DayOfWeek > 7 -- Check if DayOfWeek is valid
 						Raiserror('AddStandingTeeTime - DayOfWeek must be between 1 and 7.', 16, 1)
 					Else
+						If @NumberOfCarts < 1 -- Check if NumberOfCarts is valid
+							Raiserror('AddStandingTeeTime - NumberOfCarts must be at least 1.', 16, 1)
+						Else
 						Begin -- Insert the new Standing Tee Time
-							Insert into StandingTeeTime (StakeholderEmail, DayOfWeek, StartDate, EndDate, RequestedTime)
-							Values (@StakeholderEmail, @DayOfWeek, @StartDate, @EndDate, @RequestedTime)
+							Insert into StandingTeeTime (StakeholderEmail, DayOfWeek, StartDate, EndDate, RequestedTime, NumberOfCarts)
+							Values (@StakeholderEmail, @DayOfWeek, @StartDate, @EndDate, @RequestedTime, @NumberOfCarts)
 
 							If @@Error = 0
 								Begin
@@ -424,6 +428,29 @@ Create Procedure AddStandingTeeTimeConfirmation(
 )
 AS
 	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @StandingTeeTimeID Is Null Or @Email Is Null Or @Date Is Null Or @Confirmed Is Null -- Checks if all fields are provided
+		Raiserror('AddStandingTeeTimeConfirmation - All fields must be provided.', 16, 1)
+	Else
+		If Not Exists (Select 1 From StandingTeeTime Where StandingTeeTimeID = @StandingTeeTimeID) -- Check for valid StandingTeeTimeID
+			Raiserror('AddStandingTeeTimeConfirmation - Invalid StandingTeeTimeID.', 16, 1)
+		Else
+			If Not Exists (Select 1 From TeeTimeUser Where Email = @Email) -- Check for valid Email
+				Raiserror('AddStandingTeeTimeConfirmation - Invalid Email.', 16, 1)
+			Else
+				Begin -- Insert the confirmation
+					Insert into StandingTeeTimeConfirmation (StandingTeeTimeID, Email, Confirmed)
+					Values (@StandingTeeTimeID, @Email, @Confirmed)
+
+					If @@Error = 0
+						Set @TeeTimeReturnCode = 0 -- Success
+					Else
+						Raiserror('AddStandingTeeTimeConfirmation - Error adding confirmation.', 16, 1)
+				End
+
+	Return @TeeTimeReturnCode
+GO
 
 -- Insert Data using stored procedures
 Exec RegisterUser

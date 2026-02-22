@@ -48,45 +48,52 @@ public class LoginModel : PageModel
 			}
 		};
 
-		using (SqlConnection)
+		try
 		{
-			SqlConnection.Open();
-
-			using (AttemptLoginCommand)
+			using (SqlConnection)
 			{
-				using (SqlDataReader LoginDataReader = AttemptLoginCommand.ExecuteReader())
+				SqlConnection.Open();
+
+				using (AttemptLoginCommand)
 				{
-
-					if (LoginDataReader.HasRows)
+					using (SqlDataReader LoginDataReader = AttemptLoginCommand.ExecuteReader())
 					{
-						while (LoginDataReader.Read())
+
+						if (LoginDataReader.HasRows)
 						{
-							var claimsList = new List<Claim>
+							while (LoginDataReader.Read())
 							{
-								new Claim(ClaimTypes.Email, Email),
-								new Claim(ClaimTypes.GivenName, LoginDataReader["FirstName"].ToString()!),
-								new Claim(ClaimTypes.Surname, LoginDataReader["LastName"].ToString()!),
-								new Claim(ClaimTypes.MobilePhone, LoginDataReader["PhoneNumber"].ToString()!),
-								new Claim(ClaimTypes.Role, LoginDataReader["RoleName"].ToString()!)
-							};
+								var claimsList = new List<Claim>
+								{
+									new Claim(ClaimTypes.Email, Email),
+									new Claim(ClaimTypes.GivenName, LoginDataReader["FirstName"].ToString()!),
+									new Claim(ClaimTypes.Surname, LoginDataReader["LastName"].ToString()!),
+									new Claim(ClaimTypes.MobilePhone, LoginDataReader["PhoneNumber"].ToString()!),
+									new Claim(ClaimTypes.Role, LoginDataReader["RoleName"].ToString()!)
+								};
 
-							var authProperties = new AuthenticationProperties
-							{
-								IsPersistent = true,
-								ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
-							};
+								var authProperties = new AuthenticationProperties
+								{
+									IsPersistent = true,
+									ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
+								};
 
-							var userIdentity = new ClaimsIdentity(claimsList, CookieAuthenticationDefaults.AuthenticationScheme);
-							var userPrincipal = new ClaimsPrincipal(userIdentity);
+								var userIdentity = new ClaimsIdentity(claimsList, CookieAuthenticationDefaults.AuthenticationScheme);
+								var userPrincipal = new ClaimsPrincipal(userIdentity);
 
-							await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal, authProperties);
+								await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal, authProperties);
 
-							return RedirectToPage("/Index");
+								return RedirectToPage("/Index");
+							}
 						}
-					}
 
+					}
 				}
 			}
+		}
+		catch (Exception ex)
+		{
+			Message = $"An error occurred during login: {ex.Message}";
 		}
 
 		return Page();

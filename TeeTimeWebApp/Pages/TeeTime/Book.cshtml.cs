@@ -84,32 +84,40 @@ public class BookModel : PageModel
 			}
 		};
 
-		using (SqlConnection)
+		try
 		{
-			SqlConnection.Open();
-
-			using (VerifyDateCommand)
+			using (SqlConnection)
 			{
-				using (SqlDataReader VerifyDateDataReader = VerifyDateCommand.ExecuteReader())
+				SqlConnection.Open();
+
+				using (VerifyDateCommand)
 				{
-					if (VerifyDateDataReader.HasRows)
+					using (SqlDataReader VerifyDateDataReader = VerifyDateCommand.ExecuteReader())
 					{
-						while (VerifyDateDataReader.Read())
+						if (VerifyDateDataReader.HasRows)
 						{
-							UsedTeeTimes.Add(new UsedTeeTime
+							while (VerifyDateDataReader.Read())
 							{
-								TeeTime = TimeOnly.FromTimeSpan(VerifyDateDataReader.GetTimeSpan(1)),
-								Count = VerifyDateDataReader.GetInt32(2)
-							});
+								UsedTeeTimes.Add(new UsedTeeTime
+								{
+									TeeTime = TimeOnly.FromTimeSpan(VerifyDateDataReader.GetTimeSpan(1)),
+									Count = VerifyDateDataReader.GetInt32(2)
+								});
+							}
 						}
 					}
 				}
 			}
+
+			AvailableTeeTimes = GetTeeTimes.GetAvailableTeeTimes(SelectedDate, Role);
+
+			ValidDate = true;
+		}
+		catch (Exception ex)
+		{
+			Message = $"An error occurred while checking tee times: {ex.Message}";
 		}
 
-		AvailableTeeTimes = GetTeeTimes.GetAvailableTeeTimes(SelectedDate, Role);
-
-		ValidDate = true;
 		return Page();
 	}
 
@@ -143,36 +151,43 @@ public class BookModel : PageModel
 			}
 		};
 
-		using (BookConnection)
+		try
 		{
-			BookConnection.Open();
-
-			using (BookCommand)
+			using (BookConnection)
 			{
-				BookCommand.ExecuteNonQuery();
-				int TeeTimeID = (int)BookCommand.Parameters["@TeeTimeIDReturn"].Value;
+				BookConnection.Open();
 
-				if (TeeTimeID > 0)
+				using (BookCommand)
 				{
-					SqlCommand AddBookConfirm = new()
-					{
-						Connection = BookConnection,
-						CommandType = CommandType.StoredProcedure,
-						CommandText = "AddConfirmTeeTime",
-						Parameters =
-						{
-							new SqlParameter("@TeeTimeID", SqlDbType.Int) { Value = TeeTimeID },
-							new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = User.FindFirstValue(ClaimTypes.Email) },
-							new SqlParameter("@Confirmed", SqlDbType.Bit) { Value = false }
-						}
-					};
+					BookCommand.ExecuteNonQuery();
+					int TeeTimeID = (int)BookCommand.Parameters["@TeeTimeIDReturn"].Value;
 
-					using (AddBookConfirm)
+					if (TeeTimeID > 0)
 					{
-						AddBookConfirm.ExecuteNonQuery();
+						SqlCommand AddBookConfirm = new()
+						{
+							Connection = BookConnection,
+							CommandType = CommandType.StoredProcedure,
+							CommandText = "AddConfirmTeeTime",
+							Parameters =
+							{
+								new SqlParameter("@TeeTimeID", SqlDbType.Int) { Value = TeeTimeID },
+								new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = User.FindFirstValue(ClaimTypes.Email) },
+								new SqlParameter("@Confirmed", SqlDbType.Bit) { Value = false }
+							}
+						};
+
+						using (AddBookConfirm)
+						{
+							AddBookConfirm.ExecuteNonQuery();
+						}
 					}
 				}
 			}
+		}
+		catch (Exception ex)
+		{
+			Message = $"An error occurred while booking the tee time: {ex.Message}";
 		}
 
 		return Page();

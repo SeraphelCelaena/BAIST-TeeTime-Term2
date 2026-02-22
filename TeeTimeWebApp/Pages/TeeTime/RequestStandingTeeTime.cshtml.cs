@@ -80,38 +80,45 @@ public class RequestStandingTeeTimeModel : PageModel
 			}
 		};
 
-		using (AddStandingTeeTimeConnection)
+		try
 		{
-			AddStandingTeeTimeConnection.Open();
-
-			using (AddStandingTeeTimeCommand)
+			using (AddStandingTeeTimeConnection)
 			{
-				AddStandingTeeTimeCommand.ExecuteNonQuery();
-				int StandingTeeTimeID = (int)AddStandingTeeTimeCommand.Parameters["@TeeTimeIDReturn"].Value;
+				AddStandingTeeTimeConnection.Open();
 
-				if (StandingTeeTimeID > 0)
+				using (AddStandingTeeTimeCommand)
 				{
-					SqlCommand AddStandingTeeTimeMembersCommand = new()
-					{
-						Connection = AddStandingTeeTimeConnection,
-						CommandType = CommandType.StoredProcedure,
-						CommandText = "AddStandingTeeTimeConfirmation",
-						Parameters =
-						{
-							new SqlParameter("@StandingTeeTimeID", SqlDbType.Int) { Value = StandingTeeTimeID },
-							new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = Email },
-							new SqlParameter("@Date", SqlDbType.Date) { Value = StartDate.ToDateTime(TimeOnly.MinValue) },
-							new SqlParameter("@Confirmed", SqlDbType.Bit) { Value = false }
-						}
-					};
-					AddStandingTeeTimeMembersCommand.Parameters.Add(new SqlParameter("@StandingTeeTimeID", SqlDbType.Int) { Value = StandingTeeTimeID });
+					AddStandingTeeTimeCommand.ExecuteNonQuery();
+					int StandingTeeTimeID = (int)AddStandingTeeTimeCommand.Parameters["@TeeTimeIDReturn"].Value;
 
-					using (AddStandingTeeTimeMembersCommand)
+					if (StandingTeeTimeID > 0)
 					{
-						AddStandingTeeTimeMembersCommand.ExecuteNonQuery();
+						SqlCommand AddStandingTeeTimeMembersCommand = new()
+						{
+							Connection = AddStandingTeeTimeConnection,
+							CommandType = CommandType.StoredProcedure,
+							CommandText = "AddStandingTeeTimeConfirmation",
+							Parameters =
+							{
+								new SqlParameter("@StandingTeeTimeID", SqlDbType.Int) { Value = StandingTeeTimeID },
+								new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = Email },
+								new SqlParameter("@Date", SqlDbType.Date) { Value = StartDate.ToDateTime(TimeOnly.MinValue) },
+								new SqlParameter("@Confirmed", SqlDbType.Bit) { Value = false }
+							}
+						};
+						AddStandingTeeTimeMembersCommand.Parameters.Add(new SqlParameter("@StandingTeeTimeID", SqlDbType.Int) { Value = StandingTeeTimeID });
+
+						using (AddStandingTeeTimeMembersCommand)
+						{
+							AddStandingTeeTimeMembersCommand.ExecuteNonQuery();
+						}
 					}
 				}
 			}
+		}
+		catch (Exception ex)
+		{
+			ViewData["Error"] = $"An error occurred while submitting the request: {ex.Message}";
 		}
 
 		return Page();

@@ -14,12 +14,19 @@
 		</header>
 		<ul>
 			<li><a href="/TeeTime/Book">Book Tee Time</a></li>
+			<li><a href="/TeeTime/View">View Tee Times</a></li>
+			<li><a href="/TeeTime/Manage">Manage Tee Times</a></li>
+			@if (User.IsInRole(role: "Admin") || User.IsInRole(role: "Stakeholder"))
+			{
+				<li><a href="/TeeTime/RequestStandingTeeTime">Request Standing TeeTime</a></li>
+			}
 			@if (User.IsInRole(role: "Admin"))
 			{
 				<li>
 					Admin Navigation
 					<ul>
 						<li><a href="/Admin/NewUser">Create New User</a></li>
+						<li><a href="/Admin/ManageUsers">Manage Users</a></li>
 					</ul>
 				</li>
 			}

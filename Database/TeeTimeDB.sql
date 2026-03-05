@@ -68,6 +68,10 @@ If Exists (Select Name From sys.procedures Where Name = 'AddStandingTeeTimeConfi
 	Drop Procedure AddStandingTeeTimeConfirmation
 GO
 
+If Exists (Select Name From sys.procedures Where Name = 'GetTeeTimesForUser')
+	Drop Procedure GetTeeTimesForUser
+GO
+
 -- Create
 Create Table Roles
 (
@@ -448,6 +452,35 @@ AS
 					Else
 						Raiserror('AddStandingTeeTimeConfirmation - Error adding confirmation.', 16, 1)
 				End
+
+	Return @TeeTimeReturnCode
+GO
+
+Create Procedure GetTeeTimesForUser(
+	@Email VarChar(100)
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @Email Is Null -- Checks if Email is provided
+		Raiserror('GetTeeTimesForUser - Email must be provided.', 16, 1)
+	Else
+		If Not Exists (Select 1 From TeeTimeUser Where Email = @Email) -- Check for valid Email
+			Raiserror('GetTeeTimesForUser - Invalid Email.', 16, 1)
+		Else
+			Begin -- Get all tee times the user is confirmed for
+				Select
+				TeeTimeStart.TeeTimeID, Date, StartTime, TeeTimeConfirmation.Confirmed
+				From TeeTimeStart
+				Inner Join TeeTimeConfirmation on TeeTimeStart.TeeTimeID = TeeTimeConfirmation.TeeTimeID
+				Where TeeTimeConfirmation.Email = @Email
+
+				If @@Error = 0
+					Set @TeeTimeReturnCode = 0 -- Success
+				Else
+					Raiserror('GetTeeTimesForUser - Error retrieving tee times for user.', 16, 1)
+			End
 
 	Return @TeeTimeReturnCode
 GO

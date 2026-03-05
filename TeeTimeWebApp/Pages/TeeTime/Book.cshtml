@@ -25,6 +25,13 @@
 				</td>
 			</tr>
 			<tr>
+				<td>Players (Max 4): </td>
+				<td>
+					<input type="number" asp-for="SelectedCount" min="1" max="4" />
+				</td>
+			</tr>
+			<tr>
+				<td><input type="submit" value="Book" asp-page-handler="Book" /></td>
 				<td><input type="submit" value="Cancel" asp-page-handler="Cancel" /></td>
 			</tr>
 		}
@@ -36,10 +43,8 @@
 		}
 	</table>
 </form>
+@Model.Message
 @Model.SelectedDate
-@Model.ValidDate
-@Model.Role
-@Model.AvailableTeeTimes.Count
 
 @foreach (var teeTime in Model.UsedTeeTimes)
 {

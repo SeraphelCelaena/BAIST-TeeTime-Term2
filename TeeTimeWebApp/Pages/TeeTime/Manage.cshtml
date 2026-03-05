@@ -4,3 +4,28 @@
 	ViewData["Title"] = "Manage Tee Times";
 }
 
+<h2>Manage Tee Times</h2>
+@if (Model.TeeTimesList.Count == 0)
+{
+	<p>No tee times found.</p>
+}
+else
+{
+	foreach (var teeTime in Model.TeeTimesList)
+	{
+		<div>
+			<table>
+				<tr>
+					<td>Date: </td>
+					<td col-span="3">@teeTime.Date</td>
+				</tr>
+				<tr>
+					<td>Start Time: </td>
+					<td>@teeTime.StartTime</td>
+					<td>Confirmed: </td>
+					<td>@teeTime.Confirmed</td>
+				</tr>
+			</table>
+		</div>
+	}
+}

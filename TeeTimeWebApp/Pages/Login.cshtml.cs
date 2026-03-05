@@ -43,7 +43,7 @@ public class LoginModel : PageModel
 			CommandText = "LoginUser",
 			Parameters =
 			{
-				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = Email },
+				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = Email.ToLower() },
 				new SqlParameter("@Password", SqlDbType.VarChar, 100) { Value = Password}
 			}
 		};
@@ -65,7 +65,7 @@ public class LoginModel : PageModel
 							{
 								var claimsList = new List<Claim>
 								{
-									new Claim(ClaimTypes.Email, Email),
+									new Claim(ClaimTypes.Email, Email.ToLower()),
 									new Claim(ClaimTypes.GivenName, LoginDataReader["FirstName"].ToString()!),
 									new Claim(ClaimTypes.Surname, LoginDataReader["LastName"].ToString()!),
 									new Claim(ClaimTypes.MobilePhone, LoginDataReader["PhoneNumber"].ToString()!),

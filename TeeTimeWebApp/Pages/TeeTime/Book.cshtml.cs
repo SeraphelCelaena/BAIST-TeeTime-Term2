@@ -23,6 +23,8 @@ public class BookModel : PageModel
 	public DateOnly SelectedDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 	[BindProperty]
 	public TimeOnly SelectedTime { get; set; } = TimeOnly.MinValue;
+	[BindProperty]
+	public int SelectedCount { get; set; } = 1;
 	public List<UsedTeeTime> UsedTeeTimes { get; set; } = new List<UsedTeeTime>();
 	public bool ValidDate { get; set; } = false;
 
@@ -44,29 +46,7 @@ public class BookModel : PageModel
 
 	public async Task<IActionResult> OnPostVerifyDate()
 	{
-		if (SelectedDate == default || SelectedDate < DateOnly.FromDateTime(DateTime.Now))
-		{
-			ValidDate = false;
-			Message = "Please select a valid date.";
-			return Page();
-		}
-
-		if (SelectedDate > DateOnly.FromDateTime(DateTime.Now.AddDays(14)))
-		{
-			ValidDate = false;
-			Message = "Please select a date within the next 2 weeks.";
-			return Page();
-		}
-
-		var RoleClaim = User.FindFirstValue(ClaimTypes.Role);
-		if (RoleClaim == null)
-		{
-			return RedirectToPage("/Login");
-		}
-		else
-		{
-			Role = RoleClaim;
-		}
+		VerifyDate();
 
 		SqlConnection SqlConnection = new()
 		{
@@ -133,6 +113,8 @@ public class BookModel : PageModel
 
 	public async Task<IActionResult> OnPostBook()
 	{
+		VerifyDate();
+
 		SqlConnection BookConnection = new()
 		{
 			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
@@ -146,7 +128,8 @@ public class BookModel : PageModel
 			Parameters =
 			{
 				new SqlParameter("@Date", SqlDbType.Date) { Value = SelectedDate.ToDateTime(TimeOnly.MinValue) },
-				new SqlParameter("@Time", SqlDbType.Time) { Value = SelectedTime.ToTimeSpan() },
+				new SqlParameter("@StartTime", SqlDbType.Time) { Value = SelectedTime.ToTimeSpan() },
+				new SqlParameter("@Count", SqlDbType.Int) { Value = SelectedCount },
 				new SqlParameter("@TeeTimeIDReturn", SqlDbType.Int) { Direction = ParameterDirection.Output }
 			}
 		};
@@ -180,6 +163,7 @@ public class BookModel : PageModel
 						using (AddBookConfirm)
 						{
 							AddBookConfirm.ExecuteNonQuery();
+							Message = "TeeTime Booked Successfully";
 						}
 					}
 				}
@@ -191,5 +175,30 @@ public class BookModel : PageModel
 		}
 
 		return Page();
+	}
+
+	public void VerifyDate()
+	{
+		if (SelectedDate == default || SelectedDate < DateOnly.FromDateTime(DateTime.Now))
+		{
+			ValidDate = false;
+			Message = "Please select a valid date.";
+		}
+
+		if (SelectedDate > DateOnly.FromDateTime(DateTime.Now.AddDays(14)))
+		{
+			ValidDate = false;
+			Message = "Please select a date within the next 2 weeks.";
+		}
+
+		var RoleClaim = User.FindFirstValue(ClaimTypes.Role);
+		if (RoleClaim == null)
+		{
+			RedirectToPage("/Login");
+		}
+		else
+		{
+			Role = RoleClaim;
+		}
 	}
 }

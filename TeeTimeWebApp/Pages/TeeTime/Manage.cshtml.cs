@@ -58,7 +58,8 @@ public class ManageModel : PageModel
 									TeeTimeID = GetTeeTimesReader.GetInt32(0),
 									Date = DateOnly.FromDateTime(GetTeeTimesReader.GetDateTime(1)),
 									StartTime = TimeOnly.FromTimeSpan(GetTeeTimesReader.GetTimeSpan(2)),
-									Confirmed = GetTeeTimesReader.GetBoolean(3)
+									Count = GetTeeTimesReader.GetInt32(3),
+									Confirmed = GetTeeTimesReader.GetBoolean(4)
 								});
 							}
 						}

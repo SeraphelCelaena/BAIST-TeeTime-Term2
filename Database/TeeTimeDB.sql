@@ -119,6 +119,7 @@ Create Table TeeTimeStart
 	TeeTimeID Int Identity(1000000, 1),
 	Date Date Not Null,
 	StartTime Time Not Null,
+	Count Int Not Null,
 	Constraint PK_TeeTimeStart Primary Key (TeeTimeID)
 )
 GO
@@ -285,6 +286,7 @@ GO
 Create Procedure BookTeeTime(
 	@Date Date,
 	@StartTime Time,
+	@Count Int,
 	@TeeTimeIDReturn Int Output
 )
 AS
@@ -297,18 +299,25 @@ AS
 		If @Date < Cast(GetDate() As Date) -- Check if date is in the past
 			Raiserror('BookTeeTime - Date cannot be in the past.', 16, 1)
 		Else
-			Begin -- Insert the new Tee Time
-				Insert into TeeTimeStart (Date, StartTime)
-				Values (@Date, @StartTime)
+			If (
+				Select Sum(Count)
+				From TeeTimeStart
+				Where Date = @Date And StartTime = @StartTime
+				) + @Count > 4 -- Check if the tee time is already overbooked
+				Raiserror('BookTeeTime - Tee time already booked for this date and time.', 16, 1)
+			Else
+				Begin -- Insert the new Tee Time
+					Insert into TeeTimeStart (Date, StartTime, Count)
+					Values (@Date, @StartTime, @Count)
 
-				If @@Error = 0
-					Begin
-						Set @TeeTimeIDReturn = SCOPE_IDENTITY() -- Get the newly created TeeTimeID
-						Set @TeeTimeReturnCode = 0 -- Success
-					End
-				Else
-					Raiserror('BookTeeTime - Error booking tee time.', 16, 1)
-			End
+					If @@Error = 0
+						Begin
+							Set @TeeTimeIDReturn = SCOPE_IDENTITY() -- Get the newly created TeeTimeID
+							Set @TeeTimeReturnCode = 0 -- Success
+						End
+					Else
+						Raiserror('BookTeeTime - Error booking tee time.', 16, 1)
+				End
 
 	Return @TeeTimeReturnCode
 GO

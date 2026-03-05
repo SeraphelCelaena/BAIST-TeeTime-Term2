@@ -95,7 +95,7 @@ public class NewUserModel : PageModel
 			CommandText = "RegisterUser",
 			Parameters =
 			{
-				new SqlParameter("@Email", SqlDbType.VarChar) { Value = Email },
+				new SqlParameter("@Email", SqlDbType.VarChar) { Value = Email.ToLower() },
 				new SqlParameter("@Password", SqlDbType.VarChar) { Value = Password },
 				new SqlParameter("@FirstName", SqlDbType.VarChar) { Value = FirstName },
 				new SqlParameter("@LastName", SqlDbType.VarChar) { Value = LastName },

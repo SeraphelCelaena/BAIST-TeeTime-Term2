@@ -1,0 +1,28 @@
+@page
+@model ViewModel
+@{
+	ViewData["Title"] = "View Tee Time";
+}
+
+<h2>View Tee Times</h2>
+@if (Model.TeeTimesList.Count == 0)
+{
+	<p>No tee times found.</p>
+}
+else
+{
+	foreach (var teeTime in Model.TeeTimesList)
+	{
+		<div>
+			<table>
+				<tr>
+					<td>@teeTime.Date</td>
+				</tr>
+				<tr>
+					<td>@teeTime.StartTime</td>
+					<td>@teeTime.Confirmed</td>
+				</tr>
+			</table>
+		</div>
+	}
+}

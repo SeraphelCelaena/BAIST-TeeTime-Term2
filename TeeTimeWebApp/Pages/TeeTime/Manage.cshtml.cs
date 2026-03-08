@@ -56,10 +56,11 @@ public class ManageModel : PageModel
 								TeeTimesList.Add(new TeeTime
 								{
 									TeeTimeID = GetTeeTimesReader.GetInt32(0),
-									Date = DateOnly.FromDateTime(GetTeeTimesReader.GetDateTime(1)),
-									StartTime = TimeOnly.FromTimeSpan(GetTeeTimesReader.GetTimeSpan(2)),
-									Count = GetTeeTimesReader.GetInt32(3),
-									Confirmed = GetTeeTimesReader.GetBoolean(4)
+									Email = GetTeeTimesReader.GetString(1),
+									Date = DateOnly.FromDateTime(GetTeeTimesReader.GetDateTime(2)),
+									StartTime = TimeOnly.FromTimeSpan(GetTeeTimesReader.GetTimeSpan(3)),
+									Count = GetTeeTimesReader.GetInt32(4),
+									Confirmed = GetTeeTimesReader.GetBoolean(5)
 								});
 							}
 						}

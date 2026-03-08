@@ -480,7 +480,7 @@ AS
 		Else
 			Begin -- Get all tee times the user is confirmed for
 				Select
-				TeeTimeStart.TeeTimeID, Date, StartTime, TeeTimeConfirmation.Confirmed
+				TeeTimeStart.TeeTimeID, TeeTimeConfirmation.Email, Date, StartTime, Count, TeeTimeConfirmation.Confirmed
 				From TeeTimeStart
 				Inner Join TeeTimeConfirmation on TeeTimeStart.TeeTimeID = TeeTimeConfirmation.TeeTimeID
 				Where TeeTimeConfirmation.Email = @Email

@@ -5,6 +5,7 @@ using System.Data;
 using TeeTimeWebApp.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Globalization;
 
 public class ViewModel : PageModel
 {
@@ -55,9 +56,11 @@ public class ViewModel : PageModel
 								TeeTimesList.Add(new TeeTime
 								{
 									TeeTimeID = GetTeeTimesReader.GetInt32(0),
-									Date = DateOnly.FromDateTime(GetTeeTimesReader.GetDateTime(1)),
-									StartTime = TimeOnly.FromTimeSpan(GetTeeTimesReader.GetTimeSpan(2)),
-									Confirmed = GetTeeTimesReader.GetBoolean(3)
+									Email = GetTeeTimesReader.GetString(1),
+									Date = DateOnly.FromDateTime(GetTeeTimesReader.GetDateTime(2)),
+									StartTime = TimeOnly.FromTimeSpan(GetTeeTimesReader.GetTimeSpan(3)),
+									Count = GetTeeTimesReader.GetInt32(4),
+									Confirmed = GetTeeTimesReader.GetBoolean(5)
 								});
 							}
 						}

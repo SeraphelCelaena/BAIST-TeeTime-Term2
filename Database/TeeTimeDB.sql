@@ -169,7 +169,8 @@ values
 	('Gold'),
 	('Silver'),
 	('Bronze'),
-	('Copper')
+	('Copper'),
+	('User')
 GO
 
 -- Stored Procedures
@@ -483,7 +484,7 @@ AS
 				TeeTimeStart.TeeTimeID, TeeTimeConfirmation.Email, Date, StartTime, Count, TeeTimeConfirmation.Confirmed
 				From TeeTimeStart
 				Inner Join TeeTimeConfirmation on TeeTimeStart.TeeTimeID = TeeTimeConfirmation.TeeTimeID
-				Where TeeTimeConfirmation.Email = @Email
+				Where TeeTimeConfirmation.Email = @Email and Date >= Cast(GetDate() As Date)
 
 				If @@Error = 0
 					Set @TeeTimeReturnCode = 0 -- Success

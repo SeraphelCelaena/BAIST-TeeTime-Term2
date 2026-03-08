@@ -13,6 +13,7 @@
 		</tr>
 		@if (Model.ValidDate)
 		{
+			<input type="hidden" asp-for="SelectedDate" />
 			<tr>
 				<td>
 					<select asp-for="SelectedTime">

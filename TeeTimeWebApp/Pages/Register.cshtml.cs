@@ -5,11 +5,11 @@ using System.Text.RegularExpressions;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
-public class NewUserModel : PageModel
+public class RegisterModel : PageModel
 {
 	private readonly IConfiguration _configuration;
 
-	public NewUserModel(IConfiguration configuration)
+	public RegisterModel(IConfiguration configuration)
 	{
 		_configuration = configuration;
 	}
@@ -104,7 +104,7 @@ public class NewUserModel : PageModel
 				new SqlParameter("@City", SqlDbType.VarChar) { Value = City },
 				new SqlParameter("@Province", SqlDbType.VarChar) { Value = Province },
 				new SqlParameter("@PostalCode", SqlDbType.VarChar) { Value = PostalCode },
-				new SqlParameter("@RoleID", SqlDbType.Int) { Value = int.Parse(Role) }
+				new SqlParameter("@RoleID", SqlDbType.Int) { Value = 7 }
 			}
 		};
 

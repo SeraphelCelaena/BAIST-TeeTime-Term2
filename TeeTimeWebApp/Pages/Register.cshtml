@@ -1,11 +1,11 @@
 @page
-@model NewUserModel
+@model RegisterModel
 @{
 	ViewData["Title"] = "Create New User";
 }
 
 <h2>Create New User</h2>
-<form id="newUserForm" method="post">
+<form id="RegisterForm" method="post">
 	<table>
 		<tr>
 			<td>Email: </td>
@@ -39,7 +39,7 @@
 			<td>Postal Code: </td>
 			<td><input type="text" asp-for="PostalCode" /></td>
 		</tr>
-		<tr>
+		@* <tr>
 			<td>Role: </td>
 			<td>
 				<select asp-for="Role">
@@ -50,7 +50,7 @@
 					}
 				</select>
 			</td>
-		</tr>
+		</tr> *@
 		<tr>
 			<td><input type="submit" value="Submit" asp-page-handler="Submit" /></td>
 		</tr>

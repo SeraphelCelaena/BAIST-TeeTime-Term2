@@ -294,7 +294,7 @@ AS
 	Declare @TeeTimeReturnCode Int
 	Set @TeeTimeReturnCode = 1 -- Default to failure
 
-	If @Date Is Null Or @StartTime Is Null -- Checks if Date and StartTime are provided
+	If @Date Is Null Or @StartTime Is Null Or @Count Is Null -- Checks if Date and StartTime are provided
 		Raiserror('BookTeeTime - Date and StartTime must be provided.', 16, 1)
 	Else
 		If @Date < Cast(GetDate() As Date) -- Check if date is in the past
@@ -495,6 +495,57 @@ AS
 	Return @TeeTimeReturnCode
 GO
 
+Create Procedure UpdateTeeTimeForUser(
+	@TeeTimeID Int,
+	@Date Date,
+	@StartTime Time,
+	@Count Int,
+	@Confirmed Bit
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @TeeTimeID Is Null Or @Date Is Null Or @StartTime Is Null Or @Count Is Null Or @Confirmed Is Null -- Checks if all fields are provided
+		Raiserror('UpdateTeeTimeForUser - All fields must be provided.', 16, 1)
+	Else
+		If Not Exists (Select 1 From TeeTimeStart Where TeeTimeID = @TeeTimeID) -- Check for valid TeeTimeID
+			Raiserror('UpdateTeeTimeForUser - Invalid TeeTimeID.', 16, 1)
+		Else
+			If Not Exists (Select 1 From TeeTimeConfirmation Where TeeTimeID = @TeeTimeID) -- Check if the tee time is already booked
+				Raiserror('UpdateTeeTimeForUser - Tee time not found.', 16, 1)
+			Else
+				If @Date < Cast(GetDate() As Date) -- Check if date is in the past
+					Raiserror('UpdateTeeTimeForUser - Date cannot be in the past.', 16, 1)
+				Else
+					If (
+						Select Sum(Count)
+						From TeeTimeStart
+						Where Date = @Date And StartTime = @StartTime
+						) + @Count > 4 -- Check if the tee time is already overbooked
+						Raiserror('UpdateTeeTimeForUser - Tee time already booked for this date and time.', 16, 1)
+					Else
+						Begin
+							Update TeeTimeStart
+							Set Date = @Date, StartTime = @StartTime, Count = @Count
+							Where TeeTimeID = @TeeTimeID
+
+							If @@Error = 0
+								Begin
+									Update TeeTimeConfirmation
+									Set Confirmed = @Confirmed
+									Where TeeTimeID = @TeeTimeID
+
+									If @@Error = 0
+										Set @TeeTimeReturnCode = 0 -- Success
+									Else
+										Raiserror('UpdateTeeTimeForUser - Error updating tee time confirmation.', 16, 1)
+								End
+							Else
+								Raiserror('UpdateTeeTimeForUser - Error updating tee time.', 16, 1)
+						End
+
+GO
 -- Insert Data using stored procedures
 Exec RegisterUser
 	@Email = 'admin@baist.ca',

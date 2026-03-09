@@ -5,27 +5,71 @@
 }
 
 <h2>Manage Tee Times</h2>
-@if (Model.TeeTimesList.Count == 0)
-{
-	<p>No tee times found.</p>
-}
-else
-{
-	foreach (var teeTime in Model.TeeTimesList)
+<div>
+	@if (Model.TeeTimesList.Count == 0)
 	{
-		<div>
-			<table>
-				<tr>
-					<td>Date: </td>
-					<td col-span="3">@teeTime.Date</td>
-				</tr>
-				<tr>
-					<td>Start Time: </td>
-					<td>@teeTime.StartTime</td>
-					<td>Confirmed: </td>
-					<td>@teeTime.Confirmed</td>
-				</tr>
-			</table>
-		</div>
+		<p>No tee times found.</p>
 	}
-}
+	else
+	{
+		<table>
+			<th>
+				<td>Date</td>
+				<td>Start Time</td>
+				<td>Players Booked</td>
+				<td>Confirmed</td>
+				<td>Actions</td>
+			</th>
+			@foreach (Models.TeeTime teeTime in Model.TeeTimesList)
+			{
+				<tr>
+					<td>@teeTime.Date</td>
+					<td>@teeTime.StartTime</td>
+					<td>@teeTime.Count</td>
+					<td>@teeTime.Confirmed</td>
+					<td>
+						<a href="/TeeTime/Edit/@teeTime.TeeTimeID" onclick="populateEditForm(@teeTime.TeeTimeID, @teeTime.Date, @teeTime.StartTime, @teeTime.Count, @teeTime.Confirmed)">Edit</a> |
+						<a href="/TeeTime/Delete/@teeTime.TeeTimeID">Delete</a>
+					</td>
+				</tr>
+			}
+		</table>
+	}
+</div>
+<div>
+	<form id="EditTeeTimeForm" method="post">
+		<input type="hidden" id="EditTeeTimeID" asp-for="EditTeeTime.TeeTimeID" />
+		<table>
+			<tr>
+				<td>Date: </td>
+				<td><input type="date" id="EditTeeTimeDate" asp-for="EditTeeTime.Date" /></td>
+			</tr>
+			<tr>
+				<td>Start Time: </td>
+				<td><input type="time" id="EditTeeTimeStartTime" asp-for="EditTeeTime.StartTime" /></td>
+			</tr>
+			<tr>
+				<td>Players Booked: </td>
+				<td><input type="number" id="EditTeeTimeCount" asp-for="EditTeeTime.Count" min="0" max="4" /></td>
+			</tr>
+			<tr>
+				<td>Confirmed: </td>
+				<td><input type="checkbox" id="EditTeeTimeConfirmed" asp-for="EditTeeTime.Confirmed" /></td>
+			</tr>
+			<tr>
+				<td><input type="submit" value="Update" asp-page-handler="Update" /></td>
+				<td><input type="submit" value="Cancel" asp-page-handler="Cancel" /></td>
+			</tr>
+		</table>
+	</form>
+</div>
+
+<script>
+	function populateEditForm(teeTimeID, date, startTime, count, confirmed) {
+		document.getElementById('EditTeeTimeID').value = teeTimeID;
+		document.getElementById('EditTeeTimeDate').value = date;
+		document.getElementById('EditTeeTimeStartTime').value = startTime;
+		document.getElementById('EditTeeTimeCount').value = count;
+		document.getElementById('EditTeeTimeConfirmed').checked = confirmed;
+	}
+</script>

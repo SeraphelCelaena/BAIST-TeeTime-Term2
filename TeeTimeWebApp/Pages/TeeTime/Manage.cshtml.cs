@@ -18,6 +18,7 @@ public class ManageModel : PageModel
 	public string Role { get; set; } = string.Empty;
 	public string Email { get; set; } = string.Empty;
 	public List<TeeTime> TeeTimesList { get; set; } = new List<TeeTime>();
+	public TeeTime EditTeeTime { get; set; } = new TeeTime();
 
 	public async Task<IActionResult> OnGet()
 	{

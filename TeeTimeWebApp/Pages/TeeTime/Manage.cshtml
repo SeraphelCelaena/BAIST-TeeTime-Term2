@@ -28,8 +28,11 @@
 					<td>@teeTime.Count</td>
 					<td>@teeTime.Confirmed</td>
 					<td>
-						<a href="/TeeTime/Edit/@teeTime.TeeTimeID" onclick="populateEditForm(@teeTime.TeeTimeID, @teeTime.Date, @teeTime.StartTime, @teeTime.Count, @teeTime.Confirmed)">Edit</a> |
-						<a href="/TeeTime/Delete/@teeTime.TeeTimeID">Delete</a>
+						<input type="button" value="Edit" onclick="populateEditForm(@teeTime.TeeTimeID, @teeTime.Date, @teeTime.StartTime, @teeTime.Count, @teeTime.Confirmed)" />
+						<form method="post" id="DeleteTeeTimeForm">
+							<input type="hidden" name="TeeTimeID" asp-for="TeeTimeIDDelete" value="@teeTime.TeeTimeID" />
+							<input type="button" value="Delete" onclick="return confirm('Are you sure you want to delete this tee time?');" asp-page-handler="Delete" />
+						</form>
 					</td>
 				</tr>
 			}
@@ -38,23 +41,23 @@
 </div>
 <div>
 	<form id="EditTeeTimeForm" method="post">
-		<input type="hidden" id="EditTeeTimeID" asp-for="EditTeeTime.TeeTimeID" />
+		<input type="hidden" id="EditTeeTimeID" asp-for="TeeTimeIDEdit" />
 		<table>
 			<tr>
 				<td>Date: </td>
-				<td><input type="date" id="EditTeeTimeDate" asp-for="EditTeeTime.Date" /></td>
+				<td><input type="date" id="EditTeeTimeDate" asp-for="DateEdit" /></td>
 			</tr>
 			<tr>
 				<td>Start Time: </td>
-				<td><input type="time" id="EditTeeTimeStartTime" asp-for="EditTeeTime.StartTime" /></td>
+				<td><input type="time" id="EditTeeTimeStartTime" asp-for="StartTimeEdit" /></td>
 			</tr>
 			<tr>
 				<td>Players Booked: </td>
-				<td><input type="number" id="EditTeeTimeCount" asp-for="EditTeeTime.Count" min="0" max="4" /></td>
+				<td><input type="number" id="EditTeeTimeCount" asp-for="CountEdit" min="0" max="4" /></td>
 			</tr>
 			<tr>
 				<td>Confirmed: </td>
-				<td><input type="checkbox" id="EditTeeTimeConfirmed" asp-for="EditTeeTime.Confirmed" /></td>
+				<td><input type="checkbox" id="EditTeeTimeConfirmed" asp-for="ConfirmedEdit" /></td>
 			</tr>
 			<tr>
 				<td><input type="submit" value="Update" asp-page-handler="Update" /></td>

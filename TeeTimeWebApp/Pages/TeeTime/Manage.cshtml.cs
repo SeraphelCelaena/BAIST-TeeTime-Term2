@@ -18,7 +18,18 @@ public class ManageModel : PageModel
 	public string Role { get; set; } = string.Empty;
 	public string Email { get; set; } = string.Empty;
 	public List<TeeTime> TeeTimesList { get; set; } = new List<TeeTime>();
-	public TeeTime EditTeeTime { get; set; } = new TeeTime();
+	[BindProperty]
+	public int TeeTimeIDEdit { get; set; }
+	[BindProperty]
+	public DateOnly DateEdit { get; set; }
+	[BindProperty]
+	public TimeOnly StartTimeEdit { get; set; }
+	[BindProperty]
+	public int CountEdit { get; set; }
+	[BindProperty]
+	public bool ConfirmedEdit { get; set; }
+	[BindProperty]
+	public int TeeTimeIDDelete { get; set; }
 
 	public async Task<IActionResult> OnGet()
 	{
@@ -78,6 +89,14 @@ public class ManageModel : PageModel
 		return Page();
 	}
 
+	public async Task<IActionResult> OnPostDelete()
+	{
+		await GetEmail();
+
+		
+
+		return Page();
+	}
 	public async Task<IActionResult> GetEmail()
 	{
 		var RoleClaim = User.FindFirstValue(ClaimTypes.Role);

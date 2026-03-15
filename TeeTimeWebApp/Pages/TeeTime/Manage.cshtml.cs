@@ -93,10 +93,89 @@ public class ManageModel : PageModel
 	{
 		await GetEmail();
 
-		
+		SqlConnection DeleteTeeTimeConnection = new()
+		{
+			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
+		};
+
+		SqlCommand DeleteTeeTimeCommand = new()
+		{
+			Connection = DeleteTeeTimeConnection,
+			CommandType = CommandType.StoredProcedure,
+			CommandText = "DeleteTeeTime",
+			Parameters =
+			{
+				new SqlParameter("@TeeTimeID", SqlDbType.Int) { Value = TeeTimeIDDelete }
+			}
+		};
+
+		try
+		{
+			using (DeleteTeeTimeConnection)
+			{
+				DeleteTeeTimeConnection.Open();
+
+				using (DeleteTeeTimeCommand)
+				{
+					DeleteTeeTimeCommand.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			ViewData["Error"] = $"An error occurred while deleting the tee time: {ex.Message}";
+			return Page();
+		}
 
 		return Page();
 	}
+
+	public async Task<IActionResult> OnPostEdit()
+	{
+		await GetEmail();
+
+		SqlConnection EditTeeTimeConnection = new()
+		{
+			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
+		};
+
+		SqlCommand EditTeeTimeCommand = new()
+		{
+			Connection = EditTeeTimeConnection,
+			CommandType = CommandType.StoredProcedure,
+			CommandText = "UpdateTeeTimeForUser",
+			Parameters =
+			{
+				new SqlParameter("@TeeTimeID", SqlDbType.Int) { Value = TeeTimeIDEdit },
+				new SqlParameter("@Email", SqlDbType.VarChar) { Value = Email },
+				new SqlParameter("@Date", SqlDbType.Date) { Value = DateEdit },
+				new SqlParameter("@StartTime", SqlDbType.Time) { Value = StartTimeEdit },
+				new SqlParameter("@Count", SqlDbType.Int) { Value = CountEdit },
+				new SqlParameter("@Confirmed", SqlDbType.Bit) { Value = ConfirmedEdit }
+			}
+		};
+
+		try
+		{
+			using (EditTeeTimeConnection)
+			{
+				EditTeeTimeConnection.Open();
+
+				using (EditTeeTimeCommand)
+				{
+					EditTeeTimeCommand.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			ViewData["Error"] = $"An error occurred while updating the tee time: {ex.Message}";
+			return Page();
+		}
+
+		return Page();
+	}
+
 	public async Task<IActionResult> GetEmail()
 	{
 		var RoleClaim = User.FindFirstValue(ClaimTypes.Role);

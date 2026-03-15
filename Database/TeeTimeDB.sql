@@ -72,6 +72,14 @@ If Exists (Select Name From sys.procedures Where Name = 'GetTeeTimesForUser')
 	Drop Procedure GetTeeTimesForUser
 GO
 
+If Exists (Select Name From sys.procedures Where Name = 'UpdateTeeTimeForUser')
+	Drop Procedure UpdateTeeTimeForUser
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'DeleteTeeTime')
+	Drop Procedure DeleteTeeTime
+GO
+
 -- Create
 Create Table Roles
 (
@@ -160,6 +168,17 @@ Create Table StandingTeeTimeConfirmation
 	Constraint FK_StandingTeeTimeConfirmation_StandingTeeTime Foreign Key (StandingTeeTimeID) References StandingTeeTime(StandingTeeTimeID)
 )
 GO
+
+Create Table UserWarnings
+(
+	WarningID Int Identity(1, 1),
+	Email VarChar(100) Not Null,
+	WarningMessage VarChar(255) Not Null,
+	WarningStartDate Date Not Null,
+	WarningEndDate Date Not Null,
+	Constraint PK_UserWarnings Primary Key (WarningID),
+	Constraint FK_UserWarnings_TeeTimeUser Foreign Key (Email) References TeeTimeUser(Email)
+)
 
 -- Insert Data
 Insert into Roles (RoleName)
@@ -497,6 +516,7 @@ GO
 
 Create Procedure UpdateTeeTimeForUser(
 	@TeeTimeID Int,
+	@Email VarChar(100),
 	@Date Date,
 	@StartTime Time,
 	@Count Int,
@@ -534,7 +554,7 @@ AS
 								Begin
 									Update TeeTimeConfirmation
 									Set Confirmed = @Confirmed
-									Where TeeTimeID = @TeeTimeID
+									Where TeeTimeID = @TeeTimeID and Email = @Email
 
 									If @@Error = 0
 										Set @TeeTimeReturnCode = 0 -- Success
@@ -545,7 +565,94 @@ AS
 								Raiserror('UpdateTeeTimeForUser - Error updating tee time.', 16, 1)
 						End
 
+	Return @TeeTimeReturnCode
 GO
+
+Create Procedure DeleteTeeTime(
+	@TeeTimeID Int
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @TeeTimeID Is Null -- Checks if TeeTimeID is provided
+		Raiserror('DeleteTeeTime - TeeTimeID must be provided.', 16, 1)
+	Else
+		If Not Exists (Select 1 From TeeTimeStart Where TeeTimeID = @TeeTimeID) -- Check for valid TeeTimeID
+			Raiserror('DeleteTeeTime - Invalid TeeTimeID.', 16, 1)
+		Else
+			Begin
+				Delete From TeeTimeConfirmation Where TeeTimeID = @TeeTimeID -- Delete confirmations first due to foreign key constraint
+				Delete From TeeTimeStart Where TeeTimeID = @TeeTimeID
+
+				If @@Error = 0
+					Set @TeeTimeReturnCode = 0 -- Success
+				Else
+					Raiserror('DeleteTeeTime - Error deleting tee time.', 16, 1)
+			End
+
+	Return @TeeTimeReturnCode
+GO
+
+Create Procedure AddWarningToUser(
+	@Email VarChar(100),
+	@WarningMessage VarChar(255),
+	@WarningStartDate Date,
+	@WarningEndDate Date
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @Email Is Null Or @WarningMessage Is Null Or @WarningStartDate Is Null Or @WarningEndDate Is Null -- Checks if all fields are provided
+		Raiserror('AddWarningToUser - All fields must be provided.', 16, 1)
+	Else
+		If Not Exists (Select 1 From TeeTimeUser Where Email = @Email) -- Check for valid Email
+			Raiserror('AddWarningToUser - Invalid Email.', 16, 1)
+		Else
+			If @WarningEndDate < @WarningStartDate -- Check if EndDate is before StartDate
+				Raiserror('AddWarningToUser - WarningEndDate cannot be before WarningStartDate.', 16, 1)
+			Else
+				Begin -- Insert the warning
+					Insert into UserWarnings (Email, WarningMessage, WarningStartDate, WarningEndDate)
+					Values (@Email, @WarningMessage, @WarningStartDate, @WarningEndDate)
+
+					If @@Error = 0
+						Set @TeeTimeReturnCode = 0 -- Success
+					Else
+						Raiserror('AddWarningToUser - Error adding warning to user.', 16, 1)
+				End
+
+	Return @TeeTimeReturnCode
+GO
+
+Create Procedure GetWarningsForUser(
+	@Email VarChar(100)
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @Email Is Null -- Checks if Email is provided
+		Raiserror('GetWarningsForUser - Email must be provided.', 16, 1)
+	Else
+		If Not Exists (Select 1 From TeeTimeUser Where Email = @Email) -- Check for valid Email
+			Raiserror('GetWarningsForUser - Invalid Email.', 16, 1)
+		Else
+			Begin -- Get all warnings for the user
+				Select WarningID, WarningMessage, WarningStartDate, WarningEndDate
+				From UserWarnings
+				Where Email = @Email and WarningEndDate >= Cast(GetDate() As Date)
+
+				If @@Error = 0
+					Set @TeeTimeReturnCode = 0 -- Success
+				Else
+					Raiserror('GetWarningsForUser - Error retrieving warnings for user.', 16, 1)
+			End
+
+	Return @TeeTimeReturnCode
+GO
+
 -- Insert Data using stored procedures
 Exec RegisterUser
 	@Email = 'admin@baist.ca',

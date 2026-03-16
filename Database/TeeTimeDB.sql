@@ -653,6 +653,47 @@ AS
 	Return @TeeTimeReturnCode
 GO
 
+Create Procedure DeleteWarning(
+	@WarningID Int
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @WarningID Is Null -- Checks if WarningID is provided
+		Raiserror('DeleteWarning - WarningID must be provided.', 16, 1)
+	Else
+		If Not Exists (Select 1 From UserWarnings Where WarningID = @WarningID) -- Check for valid WarningID
+			Raiserror('DeleteWarning - Invalid WarningID.', 16, 1)
+		Else
+			Begin
+				Delete From UserWarnings Where WarningID = @WarningID
+
+				If @@Error = 0
+					Set @TeeTimeReturnCode = 0 -- Success
+				Else
+					Raiserror('DeleteWarning - Error deleting warning.', 16, 1)
+			End
+
+	Return @TeeTimeReturnCode
+GO
+
+Create Procedure GetAllUsers
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	Begin
+		Select Email, FirstName, LastName, PhoneNumber, Address, City, Province, PostalCode, RoleID
+		From TeeTimeUser
+
+		If @@Error = 0
+			Set @TeeTimeReturnCode = 0 -- Success
+		Else
+			Raiserror('GetAllUsers - Error retrieving users.', 16, 1)
+	End
+GO
+
 -- Insert Data using stored procedures
 Exec RegisterUser
 	@Email = 'admin@baist.ca',

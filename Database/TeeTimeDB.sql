@@ -31,6 +31,10 @@ If Exists (Select Name From sys.tables Where Name = 'TeeTimeStart')
 	Drop Table TeeTimeStart
 GO
 
+If Exists (Select Name From sys.tables Where Name = 'UserWarnings')
+	Drop Table UserWarnings
+GO
+
 -- Drop Stored Procedures if they exist
 If Exists (Select Name From sys.procedures Where Name = 'RegisterUser')
 	Drop Procedure RegisterUser
@@ -78,6 +82,22 @@ GO
 
 If Exists (Select Name From sys.procedures Where Name = 'DeleteTeeTime')
 	Drop Procedure DeleteTeeTime
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'AddWarningToUser')
+	Drop Procedure AddWarningToUser
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'GetWarningsForUser')
+	Drop Procedure GetWarningsForUser
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'DeleteWarning')
+	Drop Procedure DeleteWarning
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'GetAllUsers')
+	Drop Procedure GetAllUsers
 GO
 
 -- Create
@@ -168,17 +188,6 @@ Create Table StandingTeeTimeConfirmation
 	Constraint FK_StandingTeeTimeConfirmation_StandingTeeTime Foreign Key (StandingTeeTimeID) References StandingTeeTime(StandingTeeTimeID)
 )
 GO
-
-Create Table UserWarnings
-(
-	WarningID Int Identity(1, 1),
-	Email VarChar(100) Not Null,
-	WarningMessage VarChar(255) Not Null,
-	WarningStartDate Date Not Null,
-	WarningEndDate Date Not Null,
-	Constraint PK_UserWarnings Primary Key (WarningID),
-	Constraint FK_UserWarnings_TeeTimeUser Foreign Key (Email) References TeeTimeUser(Email)
-)
 
 -- Insert Data
 Insert into Roles (RoleName)

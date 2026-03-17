@@ -13,6 +13,7 @@ public class RequestStandingTeeTimeModel : PageModel
 		_configuration = configuration;
 	}
 
+	[BindProperty]
 	public string Email { get; set; } = string.Empty;
 	[BindProperty]
 	public string Member2 { get; set; } = string.Empty;
@@ -126,16 +127,16 @@ public class RequestStandingTeeTimeModel : PageModel
 
 	public async Task<IActionResult> GetEmail()
 	{
-		var Role = User.FindFirstValue(ClaimTypes.Role);
-		if (Role != "Stakeholder")
+		var RoleClaim = User.FindFirstValue(ClaimTypes.Role);
+		if (RoleClaim != "Stakeholder")
 		{
 			return RedirectToPage("/Index");
 		}
 
-		var TempEmail = User.FindFirstValue(ClaimTypes.Email);
-		if (TempEmail != null)
+		var EmailClaim = User.FindFirstValue(ClaimTypes.Email);
+		if (EmailClaim != null)
 		{
-			Email = TempEmail;
+			Email = EmailClaim;
 		}
 		else
 		{

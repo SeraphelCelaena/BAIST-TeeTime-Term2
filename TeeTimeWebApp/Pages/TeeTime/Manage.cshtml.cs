@@ -9,6 +9,7 @@ using TeeTimeWebApp.Functions;
 
 public class ManageModel : PageModel
 {
+	public string Message { get; set; } = string.Empty;
 	private readonly IConfiguration _configuration;
 
 	public ManageModel(IConfiguration configuration)
@@ -24,7 +25,7 @@ public class ManageModel : PageModel
 	[BindProperty]
 	public DateOnly DateEdit { get; set; }
 	[BindProperty]
-	public string StartTimeEdit { get; set; }
+	public string StartTimeEdit { get; set; } = string.Empty;
 	[BindProperty]
 	public int CountEdit { get; set; }
 	[BindProperty]
@@ -83,7 +84,7 @@ public class ManageModel : PageModel
 			return Page();
 		}
 
-		return Page();
+		return RedirectToPage();
 	}
 
 	public async Task<IActionResult> OnPostEdit()
@@ -128,13 +129,14 @@ public class ManageModel : PageModel
 		}
 		catch (Exception ex)
 		{
-			ViewData["Error"] = $"An error occurred while updating the tee time: {ex.Message}";
+			Message = $"An error occurred while updating the tee time: {ex.Message}";
 			return Page();
 		}
 
-		return Page();
+		return RedirectToPage();
 	}
 
+// I had AI help me with this help populate the edit form while keepign the client side from refreshing and losing the data
 	public async Task<IActionResult> OnPostEditPopulate()
 	{
 		await GetEmail();

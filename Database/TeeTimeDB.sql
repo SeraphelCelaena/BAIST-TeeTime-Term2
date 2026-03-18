@@ -333,7 +333,7 @@ AS
 				From TeeTimeStart
 				Where Date = @Date And StartTime = @StartTime
 				) + @Count > 4 -- Check if the tee time is already overbooked
-				Raiserror('BookTeeTime - Tee time already booked for this date and time.', 16, 1)
+				Raiserror('BookTeeTime - Tee time will be over capacity for this date and time.', 16, 1)
 			Else
 				Begin -- Insert the new Tee Time
 					Insert into TeeTimeStart (Date, StartTime, Count)
@@ -550,7 +550,7 @@ AS
 					If (
 						Select Sum(Count)
 						From TeeTimeStart
-						Where Date = @Date And StartTime = @StartTime
+						Where Date = @Date And StartTime = @StartTime And TeeTimeID <> @TeeTimeID
 						) + @Count > 4 -- Check if the tee time is already overbooked
 						Raiserror('UpdateTeeTimeForUser - Tee time already booked for this date and time.', 16, 1)
 					Else

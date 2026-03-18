@@ -115,6 +115,12 @@ public class BookModel : PageModel
 	{
 		VerifyDate();
 
+		if (SelectedTime == TimeOnly.MinValue)
+		{
+			Message = "Please select a time.";
+			return Page();
+		}
+
 		SqlConnection BookConnection = new()
 		{
 			ConnectionString = _configuration.GetConnectionString("DefaultConnection")

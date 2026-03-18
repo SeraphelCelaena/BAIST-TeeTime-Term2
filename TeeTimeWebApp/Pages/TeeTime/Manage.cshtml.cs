@@ -5,6 +5,7 @@ using System.Data;
 using TeeTimeWebApp.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using TeeTimeWebApp.Functions;
 
 public class ManageModel : PageModel
 {
@@ -23,19 +24,22 @@ public class ManageModel : PageModel
 	[BindProperty]
 	public DateOnly DateEdit { get; set; }
 	[BindProperty]
-	public TimeOnly StartTimeEdit { get; set; }
+	public string StartTimeEdit { get; set; }
 	[BindProperty]
 	public int CountEdit { get; set; }
 	[BindProperty]
 	public bool ConfirmedEdit { get; set; }
 	[BindProperty]
 	public int TeeTimeIDDelete { get; set; }
+	[BindProperty]
+	public int TeeTimeIDPopulate { get; set; }
+	public List<SelectListItem> AvailableTeeTimes { get; set; } = new List<SelectListItem>();
 
 	public async Task<IActionResult> OnGet()
 	{
 		await GetEmail();
 
-		await GetTeeTimes();
+		await GetAllTeeTimes();
 
 		return Page();
 	}
@@ -43,7 +47,7 @@ public class ManageModel : PageModel
 	public async Task<IActionResult> OnPostDelete()
 	{
 		await GetEmail();
-		await GetTeeTimes();
+		await GetAllTeeTimes();
 
 		SqlConnection DeleteTeeTimeConnection = new()
 		{
@@ -85,12 +89,14 @@ public class ManageModel : PageModel
 	public async Task<IActionResult> OnPostEdit()
 	{
 		await GetEmail();
-		await GetTeeTimes();
+		await GetAllTeeTimes();
 
 		SqlConnection EditTeeTimeConnection = new()
 		{
 			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
 		};
+
+		TimeOnly parsedStartTime = TimeOnly.Parse(StartTimeEdit);
 
 		SqlCommand EditTeeTimeCommand = new()
 		{
@@ -102,7 +108,7 @@ public class ManageModel : PageModel
 				new SqlParameter("@TeeTimeID", SqlDbType.Int) { Value = TeeTimeIDEdit },
 				new SqlParameter("@Email", SqlDbType.VarChar) { Value = Email },
 				new SqlParameter("@Date", SqlDbType.Date) { Value = DateEdit },
-				new SqlParameter("@StartTime", SqlDbType.Time) { Value = StartTimeEdit },
+				new SqlParameter("@StartTime", SqlDbType.Time) { Value = parsedStartTime },
 				new SqlParameter("@Count", SqlDbType.Int) { Value = CountEdit },
 				new SqlParameter("@Confirmed", SqlDbType.Bit) { Value = ConfirmedEdit }
 			}
@@ -129,6 +135,36 @@ public class ManageModel : PageModel
 		return Page();
 	}
 
+	public async Task<IActionResult> OnPostEditPopulate()
+	{
+		await GetEmail();
+		await GetAllTeeTimes();
+
+		// Find the tee time to edit
+		var teeTimeToEdit = TeeTimesList.FirstOrDefault(t => t.TeeTimeID == TeeTimeIDPopulate);
+		if (teeTimeToEdit != null)
+		{
+			TeeTimeIDEdit = teeTimeToEdit.TeeTimeID;
+			DateEdit = teeTimeToEdit.Date;
+			StartTimeEdit = teeTimeToEdit.StartTime.ToString("HH:mm");
+			CountEdit = teeTimeToEdit.Count;
+			ConfirmedEdit = teeTimeToEdit.Confirmed;
+
+			AvailableTeeTimes = GetTeeTimes.GetAvailableTeeTimes(DateEdit, Role);
+
+			// Ensure the current start time is in the list, even if not normally available
+			if (!AvailableTeeTimes.Any(item => item.Value == StartTimeEdit))
+			{
+				AvailableTeeTimes.Add(new SelectListItem
+				{
+					Value = StartTimeEdit,
+					Text = TimeOnly.Parse(StartTimeEdit).ToString("hh:mm")
+				});
+			}
+		}
+		return Page();
+	}
+
 	public async Task<IActionResult> GetEmail()
 	{
 		var RoleClaim = User.FindFirstValue(ClaimTypes.Role);
@@ -146,7 +182,7 @@ public class ManageModel : PageModel
 		}
 	}
 
-	public async Task<IActionResult> GetTeeTimes()
+	public async Task<IActionResult> GetAllTeeTimes()
 	{
 		SqlConnection GetTeeTimesConnection = new()
 		{

@@ -28,10 +28,13 @@
 					<td>@teeTime.Count</td>
 					<td>@teeTime.Confirmed</td>
 					<td>
-						<input type="button" value="Edit" onclick="populateEditForm(@teeTime.TeeTimeID, @teeTime.Date, @teeTime.StartTime, @teeTime.Count, @teeTime.Confirmed)" />
+						<form method="post" id="EditTeeTimeFormQuery">
+							<input type="hidden" name="TeeTimeIDPopulate" value="@teeTime.TeeTimeID" />
+							<input type="submit" value="Edit" asp-page-handler="EditPopulate" />
+						</form>
 						<form method="post" id="DeleteTeeTimeForm">
 							<input type="hidden" name="TeeTimeID" asp-for="TeeTimeIDDelete" value="@teeTime.TeeTimeID" />
-							<input type="button" value="Delete" onclick="return confirm('Are you sure you want to delete this tee time?');" asp-page-handler="Delete" />
+							<input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this tee time?');" asp-page-handler="Delete" />
 						</form>
 					</td>
 				</tr>
@@ -49,7 +52,15 @@
 			</tr>
 			<tr>
 				<td>Start Time: </td>
-				<td><input type="time" id="EditTeeTimeStartTime" asp-for="StartTimeEdit" /></td>
+				<td>
+					<select asp-for="StartTimeEdit" id="EditTeeTimeStartTime">
+						<option value="">Select a Time</option>
+						@foreach (SelectListItem teeTime in Model.AvailableTeeTimes)
+						{
+							<option value="@teeTime.Value">@teeTime.Text</option>
+						}
+					</select>
+				</td>
 			</tr>
 			<tr>
 				<td>Players Booked: </td>
@@ -66,13 +77,3 @@
 		</table>
 	</form>
 </div>
-
-<script>
-	function populateEditForm(teeTimeID, date, startTime, count, confirmed) {
-		document.getElementById('EditTeeTimeID').value = teeTimeID;
-		document.getElementById('EditTeeTimeDate').value = date;
-		document.getElementById('EditTeeTimeStartTime').value = startTime;
-		document.getElementById('EditTeeTimeCount').value = count;
-		document.getElementById('EditTeeTimeConfirmed').checked = confirmed;
-	}
-</script>

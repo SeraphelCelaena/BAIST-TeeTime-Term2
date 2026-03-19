@@ -4,7 +4,7 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>@ViewData["Title"] - TeeTimeWebApp</title>
-	<link rel="stylesheet" href="~/css/site.css" />
+	<link rel="stylesheet" href="~/css/layout.css" />
 </head>
 <body>
 
@@ -22,14 +22,14 @@
 			}
 			@if (User.IsInRole(role: "Admin"))
 			{
-				<li>
+				<li class="dropdown">
 					Admin Navigation
-					<ul>
+					<ul class="dropdown-content">
 						<li><a href="/Admin/ManageUsers">Manage Users</a></li>
 					</ul>
 				</li>
 			}
-			<li>
+			<li class="login">
 			@if (User.Identity != null && User.Identity.IsAuthenticated)
 			{
 				<a href="/Logout">Logout</a>

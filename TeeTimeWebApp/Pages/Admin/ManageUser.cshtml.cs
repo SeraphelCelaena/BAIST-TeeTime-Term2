@@ -21,6 +21,23 @@ public class ManageUserModel : PageModel
 	public List<User> UserList { get; set; } = new List<User>();
 	public List<SelectListItem> RolesList { get; set; } = new List<SelectListItem>();
 
+	[BindProperty]
+	public string EmailEdit { get; set; } = string.Empty;
+	[BindProperty]
+	public string FirstNameEdit { get; set; } = string.Empty;
+	[BindProperty]
+	public string LastNameEdit { get; set; } = string.Empty;
+	[BindProperty]
+	public string PhoneNumberEdit { get; set; } = string.Empty;
+	[BindProperty]
+	public string AddressEdit { get; set; } = string.Empty;
+	[BindProperty]
+	public string CityEdit { get; set; } = string.Empty;
+	[BindProperty]
+	public string ProvinceEdit { get; set; } = string.Empty;
+	[BindProperty]
+	public string PostalCodeEdit { get; set; } = string.Empty;
+
 	public async Task<IActionResult> OnGet()
 	{
 		await GetEmail();
@@ -28,6 +45,27 @@ public class ManageUserModel : PageModel
 		await GetAllUsers();
 
 		await GetRolesList();
+
+		return Page();
+	}
+
+	public async Task<IActionResult> OnPostEditForm()
+	{
+		await GetEmail();
+		await GetAllUsers();
+		await GetRolesList();
+
+		SqlConnection EditUserConnection = new()
+		{
+			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
+		};
+
+		SqlCommand EditUserCommand = new()
+		{
+			Connection = EditUserConnection,
+			CommandType = CommandType.StoredProcedure,
+			CommandText = "EditUser"
+		};
 
 		return Page();
 	}

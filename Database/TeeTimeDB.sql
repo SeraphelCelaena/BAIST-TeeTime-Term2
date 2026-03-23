@@ -100,6 +100,14 @@ If Exists (Select Name From sys.procedures Where Name = 'GetAllUsers')
 	Drop Procedure GetAllUsers
 GO
 
+If Exists (Select Name From sys.procedures Where Name = 'UpdateUserAdmin')
+	Drop Procedure UpdateUserAdmin
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'UpdateUser')
+	Drop Procedure UpdateUser
+GO
+
 -- Create
 Create Table Roles
 (
@@ -704,6 +712,94 @@ AS
 			Raiserror('GetAllUsers - Error retrieving users.', 16, 1)
 	End
 GO
+
+Create Procedure UpdateUserAdmin(
+	@Email VarChar(100),
+	@FirstName VarChar(50),
+	@LastName VarChar(50),
+	@PhoneNumber VarChar(10),
+	@Address VarChar(100),
+	@City VarChar(50),
+	@Province VarChar(50),
+	@PostalCode VarChar(6),
+	@RoleID Int
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @Email Is Null Or @FirstName Is Null Or @LastName Is Null Or @PhoneNumber Is Null Or @Address Is Null Or @City Is Null Or @Province Is Null Or @PostalCode Is Null Or @RoleID Is Null -- Checks if all fields are provided
+		Raiserror('UpdateUser - All fields must be provided.', 16, 1)
+	Else
+		If Not Exists (Select 1 From TeeTimeUser Where Email = @Email) -- Check for valid Email
+			Raiserror('UpdateUser - Invalid Email.', 16, 1)
+		Else
+			If Not Exists (Select 1 From Roles Where RoleID = @RoleID) -- Check for valid RoleID
+				Raiserror('UpdateUser - Invalid RoleID.', 16, 1)
+			Else
+				Begin -- Update the user
+					Update TeeTimeUser
+					Set FirstName = @FirstName,
+						LastName = @LastName,
+						PhoneNumber = @PhoneNumber,
+						Address = @Address,
+						City = @City,
+						Province = @Province,
+						PostalCode = @PostalCode,
+						RoleID = @RoleID
+					Where Email = @Email
+
+					If @@Error = 0
+						Set @TeeTimeReturnCode = 0 -- Success
+					Else
+						Raiserror('UpdateUser - Error updating user.', 16, 1)
+				End
+
+	Return @TeeTimeReturnCode
+GO
+
+Create Procedure UpdateUser(
+	@Email VarChar(100),
+	@Password VarChar(50),
+	@FirstName VarChar(50),
+	@LastName VarChar(50),
+	@PhoneNumber VarChar(10),
+	@Address VarChar(100),
+	@City VarChar(50),
+	@Province VarChar(50),
+	@PostalCode VarChar(6)
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @Email Is Null Or @Password Is Null Or @FirstName Is Null Or @LastName Is Null Or @PhoneNumber Is Null Or @Address Is Null Or @City Is Null Or @Province Is Null Or @PostalCode Is Null -- Checks if all fields are provided
+		Raiserror('UpdateUser - All fields must be provided.', 16, 1)
+	Else
+		If Not Exists (Select 1 From TeeTimeUser Where Email = @Email) -- Check for valid Email
+			Raiserror('UpdateUser - Invalid Email.', 16, 1)
+		Else
+			Begin -- Update the user
+				Update TeeTimeUser
+				Set Password = @Password,
+					FirstName = @FirstName,
+					LastName = @LastName,
+					PhoneNumber = @PhoneNumber,
+					Address = @Address,
+					City = @City,
+					Province = @Province,
+					PostalCode = @PostalCode
+				Where Email = @Email
+
+				If @@Error = 0
+					Set @TeeTimeReturnCode = 0 -- Success
+				Else
+					Raiserror('UpdateUser - Error updating user.', 16, 1)
+			End
+
+	Return @TeeTimeReturnCode
+GO
+
 
 -- Insert Data using stored procedures
 Exec RegisterUser

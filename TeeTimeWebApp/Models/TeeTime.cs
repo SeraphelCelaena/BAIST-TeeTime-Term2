@@ -7,6 +7,7 @@ namespace TeeTimeWebApp.Models
 		public DateOnly Date { get; set; }
 		public TimeOnly StartTime { get; set; }
 		public int Count { get; set; }
+		public int ConfirmedCount { get; set; }
 		public bool Confirmed { get; set; }
 	}
 }

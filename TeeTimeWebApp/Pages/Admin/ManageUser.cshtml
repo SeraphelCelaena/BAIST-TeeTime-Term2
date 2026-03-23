@@ -11,10 +11,33 @@
 }
 else
 {
-	
+	<table>
+		<tr>
+			<td>Email</td>
+			<td>Name</td>
+			<td>Phone Number</td>
+			<td>Actions</td>
+		</tr>
+		@foreach (Models.User User in @Model.UserList)
+		{
+			<tr>
+				<td>@User.Email</td>
+				<td>@User.FirstName @User.LastName</td>
+				<td>@User.PhoneNumber</td>
+				<td>
+
+				</td>
+			</tr>
+		}
+	</table>
 }
 <form id="ManageUserForm" method="post">
 	<table>
+		<tr>
 
+		</tr>
 	</table>
 </form>
+
+<script>
+</script>

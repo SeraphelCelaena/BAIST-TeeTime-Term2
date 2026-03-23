@@ -23,6 +23,28 @@ public class ViewModel : PageModel
 	{
 		await GetEmail();
 
+		await GetAllTeeTimes();
+
+		return Page();
+	}
+
+	public async Task<IActionResult> GetEmail()
+	{
+		var EmailClaim = User.FindFirstValue(ClaimTypes.Email);
+
+		if (EmailClaim == null)
+		{
+			return RedirectToPage("/Login");
+		}
+		else
+		{
+			Email = EmailClaim;
+			return Page();
+		}
+	}
+
+	public async Task<IActionResult> GetAllTeeTimes()
+	{
 		SqlConnection GetTeeTimesConnection = new()
 		{
 			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
@@ -32,11 +54,7 @@ public class ViewModel : PageModel
 		{
 			Connection = GetTeeTimesConnection,
 			CommandType = CommandType.StoredProcedure,
-			CommandText = "GetTeeTimesForUser",
-			Parameters =
-			{
-				new SqlParameter("@Email", SqlDbType.VarChar) { Value = Email }
-			}
+			CommandText = "GetAllTeeTimes"
 		};
 
 		try
@@ -56,10 +74,10 @@ public class ViewModel : PageModel
 								TeeTimesList.Add(new TeeTime
 								{
 									TeeTimeID = GetTeeTimesReader.GetInt32(0),
-									Email = GetTeeTimesReader.GetString(1),
-									Date = DateOnly.FromDateTime(GetTeeTimesReader.GetDateTime(2)),
-									StartTime = TimeOnly.FromTimeSpan(GetTeeTimesReader.GetTimeSpan(3)),
-									Count = GetTeeTimesReader.GetInt32(4),
+									Date = DateOnly.FromDateTime(GetTeeTimesReader.GetDateTime(1)),
+									StartTime = TimeOnly.FromTimeSpan(GetTeeTimesReader.GetTimeSpan(2)),
+									Count = GetTeeTimesReader.GetInt32(3),
+									ConfirmedCount = GetTeeTimesReader.GetInt32(4),
 									Confirmed = GetTeeTimesReader.GetBoolean(5)
 								});
 							}
@@ -71,24 +89,8 @@ public class ViewModel : PageModel
 		catch (Exception ex)
 		{
 			ViewData["Error"] = $"An error occurred while checking tee times: {ex.Message}";
-			return Page();
 		}
 
 		return Page();
-	}
-
-	public async Task<IActionResult> GetEmail()
-	{
-		var EmailClaim = User.FindFirstValue(ClaimTypes.Email);
-
-		if (EmailClaim == null)
-		{
-			return RedirectToPage("/Login");
-		}
-		else
-		{
-			Email = EmailClaim;
-			return Page();
-		}
 	}
 }

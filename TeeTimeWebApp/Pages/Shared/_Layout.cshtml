@@ -29,16 +29,18 @@
 					</ul>
 				</li>
 			}
-			<li class="login">
+
 			@if (User.Identity != null && User.Identity.IsAuthenticated)
 			{
-				<a href="/Logout">Logout</a>
+				<li class="login">
+					<a href="/Logout">Logout</a>
+				</li>
 			}
 			else
 			{
-				<div><a href="/Register">Register</a> / <a href="/Login">Login</a></div>
+				<li class="login"><a href="/Register">Register</a></li>
+				<li><a href="/Login">Login</a></li>
 			}
-			</li>
 		</ul>
 	</nav>
 

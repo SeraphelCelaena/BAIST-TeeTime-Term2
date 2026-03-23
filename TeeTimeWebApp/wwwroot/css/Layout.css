@@ -51,12 +51,13 @@ nav ul {
 }
 
 nav ul li {
-	padding: 4px 8px;
 	background-color: gray;
 	border: 1px solid black;
 }
 
 nav a {
+	display: inline-block;
+	padding: 4px 8px;
 	text-decoration: none;
 	color: black;
 }
@@ -72,6 +73,7 @@ nav ul .login {
 /* Dropdown */
 .dropdown {
 	position: relative;
+	padding: 4px 8px;
 }
 
 .dropdown-content {

@@ -5,75 +5,77 @@
 }
 
 <h2>Manage Tee Times</h2>
-<div>
-	@if (Model.TeeTimesList.Count == 0)
-	{
-		<p>No tee times found.</p>
-	}
-	else
-	{
-		<table>
-			<th>
-				<td>Date</td>
-				<td>Start Time</td>
-				<td>Players Booked</td>
-				<td>Confirmed</td>
-				<td>Actions</td>
-			</th>
-			@foreach (Models.TeeTime teeTime in Model.TeeTimesList)
-			{
+<div class="manage">
+	<div>
+		@if (Model.TeeTimesList.Count == 0)
+		{
+			<p>No tee times found.</p>
+		}
+		else
+		{
+			<table>
 				<tr>
-					<td>@teeTime.Date</td>
-					<td>@teeTime.StartTime</td>
-					<td>@teeTime.Count</td>
-					<td>@teeTime.Confirmed</td>
+					<td>Date</td>
+					<td>Start Time</td>
+					<td>Players Booked</td>
+					<td>Confirmed</td>
+					<td>Actions</td>
+				</tr>
+				@foreach (Models.TeeTime teeTime in Model.TeeTimesList)
+				{
+					<tr>
+						<td>@teeTime.Date</td>
+						<td>@teeTime.StartTime</td>
+						<td>@teeTime.Count</td>
+						<td>@teeTime.Confirmed</td>
+						<td>
+							<form method="post" id="EditTeeTimeFormQuery">
+								<input type="hidden" name="TeeTimeIDPopulate" value="@teeTime.TeeTimeID" />
+								<input type="submit" value="Edit" asp-page-handler="EditPopulate" />
+							</form>
+							<form method="post" id="DeleteTeeTimeForm">
+								<input type="hidden" name="TeeTimeIDDelete" asp-for="TeeTimeIDDelete" value="@teeTime.TeeTimeID" />
+								<input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this tee time?');" asp-page-handler="Delete" />
+							</form>
+						</td>
+					</tr>
+				}
+			</table>
+		}
+	</div>
+	<div>
+		<form id="EditTeeTimeForm" method="post">
+			<input type="hidden" id="EditTeeTimeID" asp-for="TeeTimeIDEdit" />
+			<table>
+				<tr>
+					<td>Date: </td>
+					<td><input type="date" id="EditTeeTimeDate" asp-for="DateEdit" /></td>
+				</tr>
+				<tr>
+					<td>Start Time: </td>
 					<td>
-						<form method="post" id="EditTeeTimeFormQuery">
-							<input type="hidden" name="TeeTimeIDPopulate" value="@teeTime.TeeTimeID" />
-							<input type="submit" value="Edit" asp-page-handler="EditPopulate" />
-						</form>
-						<form method="post" id="DeleteTeeTimeForm">
-							<input type="hidden" name="TeeTimeIDDelete" asp-for="TeeTimeIDDelete" value="@teeTime.TeeTimeID" />
-							<input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this tee time?');" asp-page-handler="Delete" />
-						</form>
+						<select asp-for="StartTimeEdit" id="EditTeeTimeStartTime">
+							<option value="">Select a Time</option>
+							@foreach (SelectListItem teeTime in Model.AvailableTeeTimes)
+							{
+								<option value="@teeTime.Value">@teeTime.Text</option>
+							}
+						</select>
 					</td>
 				</tr>
-			}
-		</table>
-	}
-</div>
-<div>
-	<form id="EditTeeTimeForm" method="post">
-		<input type="hidden" id="EditTeeTimeID" asp-for="TeeTimeIDEdit" />
-		<table>
-			<tr>
-				<td>Date: </td>
-				<td><input type="date" id="EditTeeTimeDate" asp-for="DateEdit" /></td>
-			</tr>
-			<tr>
-				<td>Start Time: </td>
-				<td>
-					<select asp-for="StartTimeEdit" id="EditTeeTimeStartTime">
-						<option value="">Select a Time</option>
-						@foreach (SelectListItem teeTime in Model.AvailableTeeTimes)
-						{
-							<option value="@teeTime.Value">@teeTime.Text</option>
-						}
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>Players Booked: </td>
-				<td><input type="number" id="EditTeeTimeCount" asp-for="CountEdit" min="0" max="4" /></td>
-			</tr>
-			<tr>
-				<td>Confirmed: </td>
-				<td><input type="checkbox" id="EditTeeTimeConfirmed" asp-for="ConfirmedEdit" /></td>
-			</tr>
-			<tr>
-				<td><input type="submit" value="Edit" asp-page-handler="Edit" /></td>
-				<td><input type="submit" value="Cancel" asp-page-handler="Cancel" /></td>
-			</tr>
-		</table>
-	</form>
+				<tr>
+					<td>Players Booked: </td>
+					<td><input type="number" id="EditTeeTimeCount" asp-for="CountEdit" min="0" max="4" /></td>
+				</tr>
+				<tr>
+					<td>Confirmed: </td>
+					<td><input type="checkbox" id="EditTeeTimeConfirmed" asp-for="ConfirmedEdit" /></td>
+				</tr>
+				<tr>
+					<td><input type="submit" value="Edit" asp-page-handler="Edit" /></td>
+					<td><input type="submit" value="Cancel" asp-page-handler="Cancel" /></td>
+				</tr>
+			</table>
+		</form>
+	</div>
 </div>

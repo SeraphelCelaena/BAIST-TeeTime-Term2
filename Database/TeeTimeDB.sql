@@ -405,8 +405,10 @@ AS
 
 	Begin
 		Select
-		TeeTimeID, Date, StartTime, (Select Count (*) From TeeTimeConfirmation Where TeeTimeConfirmation.TeeTimeID = TeeTimeStart.TeeTimeID And Confirmed = 1) As ConfirmedCount
+		TeeTimeStart.TeeTimeID, Date, StartTime, Count, (Select Count (*) From TeeTimeConfirmation Where TeeTimeConfirmation.TeeTimeID = TeeTimeStart.TeeTimeID And Confirmed = 1) As ConfirmedCount, TeeTimeConfirmation.Confirmed
 		From TeeTimeStart
+		Join TeeTimeConfirmation on TeeTimeStart.TeeTimeID = TeeTimeConfirmation.TeeTimeID
+		Where Date >= Cast(GetDate() As Date)
 
 		If @@Error = 0
 			Set @TeeTimeReturnCode = 0 -- Success

@@ -37,6 +37,15 @@ public class ManageUserModel : PageModel
 	public string ProvinceEdit { get; set; } = string.Empty;
 	[BindProperty]
 	public string PostalCodeEdit { get; set; } = string.Empty;
+	[BindProperty]
+	public int RoleEdit { get; set; }
+
+	[BindProperty]
+	public string WarningEmail { get; set; } = string.Empty;
+	[BindProperty]
+	public string WarningReason { get; set; } = string.Empty;
+	[BindProperty]
+	public DateOnly WarningEndDate { get; set; }
 
 	public async Task<IActionResult> OnGet()
 	{
@@ -64,8 +73,37 @@ public class ManageUserModel : PageModel
 		{
 			Connection = EditUserConnection,
 			CommandType = CommandType.StoredProcedure,
-			CommandText = "EditUser"
+			CommandText = "EditUser",
+			Parameters =
+			{
+				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = EmailEdit },
+				new SqlParameter("@FirstName", SqlDbType.VarChar, 50) { Value = FirstNameEdit },
+				new SqlParameter("@LastName", SqlDbType.VarChar, 50) { Value = LastNameEdit },
+				new SqlParameter("@PhoneNumber", SqlDbType.VarChar, 20) { Value = PhoneNumberEdit },
+				new SqlParameter("@Address", SqlDbType.VarChar, 200) { Value = AddressEdit },
+				new SqlParameter("@City", SqlDbType.VarChar, 50) { Value = CityEdit },
+				new SqlParameter("@Province", SqlDbType.VarChar, 50) { Value = ProvinceEdit },
+				new SqlParameter("@PostalCode", SqlDbType.VarChar, 10) { Value = PostalCodeEdit },
+				new SqlParameter("@RoleID", SqlDbType.Int) { Value = RoleEdit }
+			}
 		};
+
+		try
+		{
+			using (EditUserConnection)
+			{
+				EditUserConnection.Open();
+
+				using (EditUserCommand)
+				{
+					EditUserCommand.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex.Message);
+		}
 
 		return Page();
 	}

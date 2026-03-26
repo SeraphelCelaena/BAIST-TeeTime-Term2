@@ -82,7 +82,18 @@ else
 
 <form id="AddWarningForm" method="post">
 	<table>
-		<input 
+		<input type="hidden" asp-for="WarningEmail" />
+		<tr>
+			<td>Warning Reason: </td>
+			<td><input type="text" asp-for="WarningReason" /></td>
+		</tr>
+		<tr>
+			<td>Warning End Date: </td>
+			<td><input type="date" asp-for="WarningEndDate" /></td>
+		</tr>
+		<tr>
+			<td><input type="submit" value="Add Warning" asp-page-handler="AddWarning" /></td>
+		</tr>
 	</table>
 </form>
 

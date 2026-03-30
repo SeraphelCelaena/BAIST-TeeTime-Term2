@@ -1,0 +1,1 @@
+teetimewebappservice-grabacd4hubrgcdu.eastus2-01.azurewebsites.net

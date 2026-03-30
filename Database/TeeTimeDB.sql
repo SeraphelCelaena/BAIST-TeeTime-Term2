@@ -1,6 +1,6 @@
 -- Use Database
-use TeeTimeDB
-GO
+-- use TeeTimeDB
+-- GO
 
 -- Drop Tables if they exist
 If Exists (Select Name From sys.tables Where Name = 'StandingTeeTimeConfirmation')

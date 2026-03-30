@@ -25,7 +25,19 @@ else
 				<td>@User.FirstName @User.LastName</td>
 				<td>@User.PhoneNumber</td>
 				<td>
-
+					<button type="button"
+							onclick="populateEditForm(@User.Email, @User.FirstName, @User.LastName, @User.PhoneNumber, @User.Address, @User.City, @User.Province, @User.PostalCode, @User.Role)">
+						Edit
+					</button>
+					<button type="button"
+							data-email="@User.Email"
+							onclick="startAddWarning(this)">
+						Add Warning
+					</button>
+					<form method="post" id="DeleteUserForm">
+						<input type="hidden" name="EmailDelete" asp-for="EmailDelete" value="@User.Email" />
+						<input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this user?');" asp-page-handler="Delete" />
+					</form>
 				</td>
 			</tr>
 		}
@@ -80,7 +92,7 @@ else
 	</table>
 </form>
 
-<form id="AddWarningForm" method="post">
+<form id="AddWarningForm" method="post" style="display:none;">
 	<table>
 		<input type="hidden" asp-for="WarningEmail" />
 		<tr>
@@ -93,12 +105,56 @@ else
 		</tr>
 		<tr>
 			<td><input type="submit" value="Add Warning" asp-page-handler="AddWarning" /></td>
+			<td><button type="button" onclick="showManageUserForm()">Cancel</button></td>
 		</tr>
 	</table>
 </form>
 
 <script>
-	function populateEditForm() {
-
+	function showManageUserForm() {
+		document.getElementById("ManageUserForm").style.display = "block";
+		document.getElementById("AddWarningForm").style.display = "none";
 	}
+
+	function showAddWarningForm() {
+		document.getElementById("ManageUserForm").style.display = "none";
+		document.getElementById("AddWarningForm").style.display = "block";
+	}
+
+	function startEditFromButton(button) {
+		const data = button.dataset;
+		populateEditForm(
+			data.email,
+			data.firstName,
+			data.lastName,
+			data.phoneNumber,
+			data.address,
+			data.city,
+			data.province,
+			data.postalCode,
+			data.role
+		);
+		showManageUserForm();
+	}
+
+	function startAddWarning(button) {
+		document.getElementById("WarningEmail").value = button.dataset.email;
+		showAddWarningForm();
+	}
+
+	function populateEditForm(email, firstName, lastName, phoneNumber, address, city, province, postalCode, role) {
+		document.getElementById("EmailEdit").value = email;
+		document.getElementById("FirstNameEdit").value = firstName;
+		document.getElementById("LastNameEdit").value = lastName;
+		document.getElementById("PhoneNumberEdit").value = phoneNumber;
+		document.getElementById("AddressEdit").value = address;
+		document.getElementById("CityEdit").value = city;
+		document.getElementById("ProvinceEdit").value = province;
+		document.getElementById("PostalCodeEdit").value = postalCode;
+		document.getElementById("Role").value = role;
+	}
+
+	document.addEventListener("DOMContentLoaded", function() {
+		showManageUserForm();
+	});
 </script>

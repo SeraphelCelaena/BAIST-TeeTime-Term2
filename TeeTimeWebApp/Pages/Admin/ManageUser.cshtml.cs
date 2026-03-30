@@ -47,22 +47,19 @@ public class ManageUserModel : PageModel
 	[BindProperty]
 	public DateOnly WarningEndDate { get; set; }
 
+	[BindProperty]
+	public string EmailDelete { get; set; } = string.Empty;
+
 	public async Task<IActionResult> OnGet()
 	{
-		await GetEmail();
-
-		await GetAllUsers();
-
-		await GetRolesList();
+		await GetAll();
 
 		return Page();
 	}
 
 	public async Task<IActionResult> OnPostEditForm()
 	{
-		await GetEmail();
-		await GetAllUsers();
-		await GetRolesList();
+		await GetAll();
 
 		SqlConnection EditUserConnection = new()
 		{
@@ -106,6 +103,46 @@ public class ManageUserModel : PageModel
 		}
 
 		return Page();
+	}
+
+	public async Task<IActionResult> OnPostDelete()
+	{
+		await GetAll();
+
+		SqlConnection DeleteUserConnection = new()
+		{
+			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
+		};
+
+		SqlCommand DeleteUserCommand = new()
+		{
+			Connection = DeleteUserConnection,
+			CommandType = CommandType.StoredProcedure,
+			CommandText = "DeleteUser",
+			Parameters =
+			{
+				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = EmailDelete }
+			}
+		};
+
+		try
+		{
+			using (DeleteUserConnection)
+			{
+				DeleteUserConnection.Open();
+
+				using (DeleteUserCommand)
+				{
+					DeleteUserCommand.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex.Message);
+		}
+
+		return RedirectToPage();
 	}
 
 	public async Task<IActionResult> GetEmail()
@@ -208,6 +245,15 @@ public class ManageUserModel : PageModel
 		{
 			Console.WriteLine(ex.Message);
 		}
+
+		return Page();
+	}
+
+	public async Task<IActionResult> GetAll()
+	{
+		await GetEmail();
+		await GetAllUsers();
+		await GetRolesList();
 
 		return Page();
 	}

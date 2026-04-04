@@ -197,6 +197,35 @@ Create Table StandingTeeTimeConfirmation
 )
 GO
 
+Create Table MembershipApplication
+(
+	ApplicationID Int Identity(1, 1),
+	Email VarChar(100) Not Null,
+	FirstName VarChar(50) Not Null,
+	LastName VarChar(50) Not Null,
+	Address VarChar(100) Not Null,
+	City VarChar(50) Not Null,
+	Province VarChar(50) Not Null,
+	PostalCode VarChar(6) Not Null,
+	PhoneNumber VarChar(10) Not Null,
+	Alt_PhoneNumber VarChar(10) Null,
+	DateOfBirth Date Not Null,
+	Occupation VarChar(50) Not Null,
+	CompanyName VarChar(50) Null,
+	CompanyAddress VarChar(100) Null,
+	CompanyPostalCode VarChar(6) Null,
+	CompanyPhoneNumber VarChar(10) Null,
+	DateApplied Date Not Null,
+	Status VarChar(20) Not Null,
+	Constraint PK_MembershipApplication Primary Key (ApplicationID),
+	Constraint Valid_Email Check (Email Like '%_@__%.__%'), -- Stole the Regex from the internet
+	Constraint Valid_Phone Check (PhoneNumber Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' And Len(PhoneNumber) = 10),
+	Constraint Valid_Alt_Phone Check (Alt_PhoneNumber Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' And Len(Alt_PhoneNumber) = 10),
+	Constraint Valid_CompanyPhone Check (CompanyPhoneNumber Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' And Len(CompanyPhoneNumber) = 10),
+	Constraint Valid_PostalCode Check (PostalCode Like '[A-Z][0-9][A-Z][0-9][A-Z][0-9]'),
+	Constraint Valid_CompanyPostalCode Check (CompanyPostalCode Like '[A-Z][0-9][A-Z][0-9][A-Z][0-9]')
+)
+
 -- Insert Data
 Insert into Roles (RoleName)
 values
@@ -800,6 +829,66 @@ AS
 	Return @TeeTimeReturnCode
 GO
 
+Create Procedure AddMembershipApplication(
+	@Email VarChar(100),
+	@FirstName VarChar(50),
+	@LastName VarChar(50),
+	@Address VarChar(100),
+	@City VarChar(50),
+	@Province VarChar(50),
+	@PostalCode VarChar(6),
+	@PhoneNumber VarChar(10),
+	@Alt_PhoneNumber VarChar(10),
+	@DateOfBirth Date,
+	@Occupation VarChar(50),
+	@CompanyName VarChar(50),
+	@CompanyAddress VarChar(100),
+	@CompanyPostalCode VarChar(6),
+	@CompanyPhoneNumber VarChar(10)
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @Email Is Null Or @FirstName Is Null Or @LastName Is Null Or @Address Is Null Or @City Is Null Or @Province Is Null Or @PostalCode Is Null Or @PhoneNumber Is Null Or @DateOfBirth Is Null Or @Occupation Is Null -- Checks if all required fields are provided
+		Raiserror('AddMembershipApplication - All required fields must be provided.', 16, 1)
+	Else
+		If @Email Not Like '%_@__%.__%' -- Check Email format
+			Raiserror('AddMembershipApplication - Invalid Email format.', 16, 1)
+		Else
+			If Not Exists (Select 1 From TeeTimeUser Where Email = @Email) -- Check if the email is already associated with a user account
+				Raiserror('AddMembershipApplication - An account with this email already exists.', 16, 1)
+			Else
+				If Len(@PhoneNumber) <> 10 Or @PhoneNumber Not Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' -- Check PhoneNumber format
+					Raiserror('AddMembershipApplication - Invalid PhoneNumber format.', 16, 1)
+				Else
+					If Len(@Alt_PhoneNumber) <> 10 Or @Alt_PhoneNumber Not Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' -- Check Alt_PhoneNumber format
+						Raiserror('AddMembershipApplication - Invalid Alt_PhoneNumber format.', 16, 1)
+					Else
+						If Len(@CompanyPhoneNumber) <> 10 Or @CompanyPhoneNumber Not Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' -- Check CompanyPhoneNumber format
+							Raiserror('AddMembershipApplication - Invalid CompanyPhoneNumber format.', 16, 1)
+						Else
+							If Len(@PostalCode) <> 6 Or @PostalCode Not Like '[A-Z][0-9][A-Z][0-9][A-Z][0-9]' -- Check PostalCode format
+								Raiserror('AddMembershipApplication - Invalid PostalCode format.', 16, 1)
+							Else
+								If Len(@CompanyPostalCode) <> 6 Or @CompanyPostalCode Not Like '[A-Z][0-9][A-Z][0-9][A-Z][0-9]' -- Check CompanyPostalCode format
+									Raiserror('AddMembershipApplication - Invalid CompanyPostalCode format.', 16, 1)
+								Else
+									If Not Exists (Select 1 From MembershipApplication Where Email = @Email) -- Check for existing application with the same email
+										Begin -- Insert the new membership application
+											Insert into MembershipApplication (Email, FirstName, LastName, Address, City, Province, PostalCode, PhoneNumber, Alt_PhoneNumber, DateOfBirth, Occupation, CompanyName, CompanyAddress, CompanyPostalCode, CompanyPhoneNumber, DateApplied, Status)
+											Values (@Email, @FirstName, @LastName, @Address, @City, @Province, @PostalCode, @PhoneNumber, @Alt_PhoneNumber, @DateOfBirth, @Occupation, @CompanyName, @CompanyAddress, @CompanyPostalCode, @CompanyPhoneNumber, Cast(GetDate() As Date), 'Pending')
+
+											If @@Error = 0
+												Set @TeeTimeReturnCode = 0 -- Success
+											Else
+												Raiserror('AddMembershipApplication - Error adding membership application.', 16, 1)
+										End
+									Else
+										Raiserror('AddMembershipApplication - An application with this email already exists.', 16, 1)
+
+	Return @TeeTimeReturnCode
+GO
 
 -- Insert Data using stored procedures
 Exec RegisterUser

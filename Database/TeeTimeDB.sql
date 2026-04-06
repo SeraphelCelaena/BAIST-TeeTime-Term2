@@ -3,6 +3,10 @@
 -- GO
 
 -- Drop Tables if they exist
+If Exists (Select Name From sys.tables Where Name = 'MembershipApplication')
+	Drop Table MembershipApplication
+GO
+
 If Exists (Select Name From sys.tables Where Name = 'StandingTeeTimeConfirmation')
 	Drop Table StandingTeeTimeConfirmation
 GO
@@ -106,6 +110,10 @@ GO
 
 If Exists (Select Name From sys.procedures Where Name = 'UpdateUser')
 	Drop Procedure UpdateUser
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'AddMembershipApplication')
+	Drop Procedure AddMembershipApplication
 GO
 
 -- Create
@@ -218,13 +226,14 @@ Create Table MembershipApplication
 	DateApplied Date Not Null,
 	Status VarChar(20) Not Null,
 	Constraint PK_MembershipApplication Primary Key (ApplicationID),
-	Constraint Valid_Email Check (Email Like '%_@__%.__%'), -- Stole the Regex from the internet
-	Constraint Valid_Phone Check (PhoneNumber Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' And Len(PhoneNumber) = 10),
-	Constraint Valid_Alt_Phone Check (Alt_PhoneNumber Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' And Len(Alt_PhoneNumber) = 10),
-	Constraint Valid_CompanyPhone Check (CompanyPhoneNumber Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' And Len(CompanyPhoneNumber) = 10),
-	Constraint Valid_PostalCode Check (PostalCode Like '[A-Z][0-9][A-Z][0-9][A-Z][0-9]'),
-	Constraint Valid_CompanyPostalCode Check (CompanyPostalCode Like '[A-Z][0-9][A-Z][0-9][A-Z][0-9]')
+	Constraint Valid_Membership_Email Check (Email Like '%_@__%.__%'), -- Stole the Regex from the internet
+	Constraint Valid_Membership_Phone Check (PhoneNumber Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' And Len(PhoneNumber) = 10),
+	Constraint Valid_Membership_Alt_Phone Check (Alt_PhoneNumber Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' And Len(Alt_PhoneNumber) = 10),
+	Constraint Valid_Membership_CompanyPhone Check (CompanyPhoneNumber Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' And Len(CompanyPhoneNumber) = 10),
+	Constraint Valid_Membership_PostalCode Check (PostalCode Like '[A-Z][0-9][A-Z][0-9][A-Z][0-9]'),
+	Constraint Valid_Membership_CompanyPostalCode Check (CompanyPostalCode Like '[A-Z][0-9][A-Z][0-9][A-Z][0-9]')
 )
+GO
 
 -- Insert Data
 Insert into Roles (RoleName)
@@ -734,6 +743,7 @@ AS
 	Begin
 		Select Email, FirstName, LastName, PhoneNumber, Address, City, Province, PostalCode, RoleID
 		From TeeTimeUser
+		Where Email != 'SuperUser'
 
 		If @@Error = 0
 			Set @TeeTimeReturnCode = 0 -- Success
@@ -892,6 +902,19 @@ GO
 
 -- Insert Data using stored procedures
 Exec RegisterUser
+	@Email = 'SuperUser@baist.ca',
+	@Password = 'SuperPass123',
+	@FirstName = 'Super',
+	@LastName = 'User',
+	@PhoneNumber = '0123456789',
+	@Address = '123 Super St.',
+	@City = 'SuperCity',
+	@Province = 'SuperProvince',
+	@PostalCode = 'A1A1A1',
+	@RoleID = 1
+GO
+
+Exec RegisterUser
 	@Email = 'admin@baist.ca',
 	@Password = 'AdminPass123',
 	@FirstName = 'Admin',
@@ -954,4 +977,30 @@ Exec RegisterUser
 	@Province = 'BronzeProvince',
 	@PostalCode = 'E5E5E5',
 	@RoleID = 5
+GO
+
+Exec RegisterUser
+	@Email = 'copper@baist.ca',
+	@Password = 'CopperPass123',
+	@FirstName = 'Copper',
+	@LastName = 'Member',
+	@PhoneNumber = '6789012345',
+	@Address = '123 Copper St.',
+	@City = 'CopperCity',
+	@Province = 'CopperProvince',
+	@PostalCode = 'F6F6F6',
+	@RoleID = 6
+GO
+
+Exec RegisterUser
+	@Email = 'user@baist.ca',
+	@Password = 'UserPass123',
+	@FirstName = 'Regular',
+	@LastName = 'User',
+	@PhoneNumber = '7890123456',
+	@Address = '123 User St.',
+	@City = 'UserCity',
+	@Province = 'UserProvince',
+	@PostalCode = 'G7G7G7',
+	@RoleID = 7
 GO

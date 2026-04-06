@@ -13,9 +13,13 @@
 			<h1><a href="/Index">TeeTimeWebApp</a></h1>
 		</header>
 		<ul>
-			<li><a href="/TeeTime/Book">Book Tee Time</a></li>
-			<li><a href="/TeeTime/View">View Tee Times</a></li>
-			<li><a href="/TeeTime/Manage">Manage Tee Times</a></li>
+			@if (User.Identity != null && User.Identity.IsAuthenticated)
+			{
+				<li><a href="/TeeTime/Book">Book Tee Time</a></li>
+				<li><a href="/TeeTime/View">View Tee Times</a></li>
+				<li><a href="/TeeTime/Manage">Manage Tee Times</a></li>
+			}
+
 			@if (User.IsInRole(role: "Admin") || User.IsInRole(role: "Stakeholder"))
 			{
 				<li><a href="/TeeTime/RequestStandingTeeTime">Request Standing TeeTime</a></li>
@@ -26,6 +30,7 @@
 					Admin Navigation
 					<ul class="dropdown-content">
 						<li><a href="/Admin/ManageUser">Manage Users</a></li>
+						<li><a href="/Admin/ReviewMembershipApplication">Review Membership Applications</a></li>
 					</ul>
 				</li>
 			}
@@ -33,6 +38,9 @@
 			@if (User.Identity != null && User.Identity.IsAuthenticated)
 			{
 				<li class="login">
+					<a href="/Profile">Profile</a>
+				</li>
+				<li>
 					<a href="/Logout">Logout</a>
 				</li>
 			}

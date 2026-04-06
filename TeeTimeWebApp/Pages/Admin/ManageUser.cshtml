@@ -5,120 +5,126 @@
 }
 
 <h2>Manage Users</h2>
-@if (Model.UserList.Count == 0)
-{
-	<p>No users found.</p>
-}
-else
-{
-	<table>
-		<tr>
-			<td>Email</td>
-			<td>Name</td>
-			<td>Phone Number</td>
-			<td>Actions</td>
-		</tr>
-		@foreach (Models.User User in @Model.UserList)
-		{
+<div id="UserList">
+	@if (Model.UserList.Count == 0)
+	{
+		<p>No users found.</p>
+	}
+	else
+	{
+		<table>
 			<tr>
-				<td>@User.Email</td>
-				<td>@User.FirstName @User.LastName</td>
-				<td>@User.PhoneNumber</td>
+				<td>Email</td>
+				<td>Name</td>
+				<td>Phone Number</td>
+				<td>Actions</td>
+			</tr>
+			@foreach (Models.User User in @Model.UserList)
+			{
+				<tr>
+					<td>@User.Email</td>
+					<td>@User.FirstName @User.LastName</td>
+					<td>@User.PhoneNumber</td>
+					<td>
+						<button type="button"
+								onclick="populateEditForm(@User.Email, @User.FirstName, @User.LastName, @User.PhoneNumber, @User.Address, @User.City, @User.Province, @User.PostalCode, @User.Role)">
+							Edit
+						</button>
+						<button type="button"
+								data-email="@User.Email"
+								onclick="startAddWarning(this)">
+							Add Warning
+						</button>
+						<form method="post" id="DeleteUserForm">
+							<input type="hidden" name="EmailDelete" asp-for="EmailDelete" value="@User.Email" />
+							<input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this user?');" asp-page-handler="Delete" />
+						</form>
+					</td>
+				</tr>
+			}
+		</table>
+	}
+
+	<form id="ManageUserForm" method="post">
+		<table>
+			<tr>
+				<tr>
+				<td>Email: </td>
+				<td><input type="text" asp-for="EmailEdit" /></td>
+			</tr>
+			<tr>
+				<td>First Name: </td>
+				<td><input type="text" asp-for="FirstNameEdit" /></td>
+				<td>Last Name: </td>
+				<td><input type="text" asp-for="LastNameEdit" /></td>
+			</tr>
+			<tr>
+				<td>Phone Number: </td>
+				<td><input type="number" asp-for="PhoneNumberEdit" /></td>
+			</tr>
+			<tr>
+				<td>Address: </td>
+				<td><input type="text" asp-for="AddressEdit" /></td>
+				<td>City: </td>
+				<td><input type="text" asp-for="CityEdit" /></td>
+			</tr>
+			<tr>
+				<td>Province: </td>
+				<td><input type="text" asp-for="ProvinceEdit" /></td>
+				<td>Postal Code: </td>
+				<td><input type="text" asp-for="PostalCodeEdit" /></td>
+			</tr>
+			<tr>
+				<td>Role: </td>
 				<td>
-					<button type="button"
-							onclick="populateEditForm(@User.Email, @User.FirstName, @User.LastName, @User.PhoneNumber, @User.Address, @User.City, @User.Province, @User.PostalCode, @User.Role)">
-						Edit
-					</button>
-					<button type="button"
-							data-email="@User.Email"
-							onclick="startAddWarning(this)">
-						Add Warning
-					</button>
-					<form method="post" id="DeleteUserForm">
-						<input type="hidden" name="EmailDelete" asp-for="EmailDelete" value="@User.Email" />
-						<input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this user?');" asp-page-handler="Delete" />
-					</form>
+					<select asp-for="Role">
+						<option value="">Select a Role</option>
+						@foreach (SelectListItem role in Model.RolesList)
+						{
+							<option value="@role.Value">@role.Text</option>
+						}
+					</select>
 				</td>
 			</tr>
-		}
-	</table>
-}
-
-<form id="ManageUserForm" method="post">
-	<table>
-		<tr>
 			<tr>
-			<td>Email: </td>
-			<td><input type="text" asp-for="EmailEdit" /></td>
-		</tr>
-		<tr>
-			<td>First Name: </td>
-			<td><input type="text" asp-for="FirstNameEdit" /></td>
-			<td>Last Name: </td>
-			<td><input type="text" asp-for="LastNameEdit" /></td>
-		</tr>
-		<tr>
-			<td>Phone Number: </td>
-			<td><input type="number" asp-for="PhoneNumberEdit" /></td>
-		</tr>
-		<tr>
-			<td>Address: </td>
-			<td><input type="text" asp-for="AddressEdit" /></td>
-			<td>City: </td>
-			<td><input type="text" asp-for="CityEdit" /></td>
-		</tr>
-		<tr>
-			<td>Province: </td>
-			<td><input type="text" asp-for="ProvinceEdit" /></td>
-			<td>Postal Code: </td>
-			<td><input type="text" asp-for="PostalCodeEdit" /></td>
-		</tr>
-		<tr>
-			<td>Role: </td>
-			<td>
-				<select asp-for="Role">
-					<option value="">Select a Role</option>
-					@foreach (SelectListItem role in Model.RolesList)
-					{
-						<option value="@role.Value">@role.Text</option>
-					}
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td><input type="submit" value="Submit" asp-page-handler="Submit" /></td>
-		</tr>
-		</tr>
-	</table>
-</form>
+				<td><input type="submit" value="Submit" asp-page-handler="Submit" /></td>
+			</tr>
+			</tr>
+		</table>
+	</form>
+</div>
 
-<form id="AddWarningForm" method="post" style="display:none;">
-	<table>
-		<input type="hidden" asp-for="WarningEmail" />
-		<tr>
-			<td>Warning Reason: </td>
-			<td><input type="text" asp-for="WarningReason" /></td>
-		</tr>
-		<tr>
-			<td>Warning End Date: </td>
-			<td><input type="date" asp-for="WarningEndDate" /></td>
-		</tr>
-		<tr>
-			<td><input type="submit" value="Add Warning" asp-page-handler="AddWarning" /></td>
-			<td><button type="button" onclick="showManageUserForm()">Cancel</button></td>
-		</tr>
-	</table>
-</form>
+
+
+<div id="WarningList">
+	<form id="AddWarningForm" method="post" style="display:none;">
+		<table>
+			<input type="hidden" asp-for="WarningEmail" />
+			<tr>
+				<td>Warning Reason: </td>
+				<td><input type="text" asp-for="WarningReason" /></td>
+			</tr>
+			<tr>
+				<td>Warning End Date: </td>
+				<td><input type="date" asp-for="WarningEndDate" /></td>
+			</tr>
+			<tr>
+				<td><input type="submit" value="Add Warning" asp-page-handler="AddWarning" /></td>
+				<td><button type="button" onclick="showManageUserForm()">Cancel</button></td>
+			</tr>
+		</table>
+	</form>
+</div>
 
 <script>
 	function showManageUserForm() {
-		document.getElementById("ManageUserForm").style.display = "block";
-		document.getElementById("AddWarningForm").style.display = "none";
+		document.getElementById("UserList").style.display = "block";
+		document.getElementById("WarningList").style.display = "none";
 	}
 
 	function showAddWarningForm() {
-		document.getElementById("ManageUserForm").style.display = "none";
-		document.getElementById("AddWarningForm").style.display = "block";
+		document.getElementById("UserList").style.display = "none";
+		document.getElementById("WarningList").style.display = "block";
 	}
 
 	function startEditFromButton(button) {

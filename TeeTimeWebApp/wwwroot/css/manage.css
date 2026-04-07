@@ -1,15 +1,31 @@
 .manage {
 	display: flex;
-	flex-wrap: wrap;
 	gap: 1.5rem;
 	align-items: flex-start;
+	flex-wrap: wrap;
 }
 
 .manage > * {
-	flex: 1 1 420px;
+	flex: 1 1 calc(50% - 0.75rem);
+	max-width: calc(50% - 0.75rem);
 	min-width: 0;
+	box-sizing: border-box;
+	overflow-x: auto;
 }
 
 .manage table {
 	width: 100%;
+	max-width: 100%;
+	border-collapse: collapse;
+}
+
+@media (max-width: 900px) {
+	.manage {
+		flex-wrap: wrap;
+	}
+
+	.manage > * {
+		flex-basis: 100%;
+		max-width: 100%;
+	}
 }

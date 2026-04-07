@@ -3,6 +3,7 @@
 @{
 	ViewData["Title"] = "Manage User";
 }
+<link rel="stylesheet" href="~/css/manage.css" />
 
 <h2>Manage Users</h2>
 <div id="UserList" class="manage">
@@ -102,32 +103,34 @@
 
 
 
-<div id="WarningList" style="display:none;">
+<div id="WarningList" style="display:none;" class="manage">
 	@if (Model.ShowWarningList)
 	{
-		<h3>Warnings for @Model.WarningEmail</h3>
-		@if (Model.WarningList.Count == 0)
-		{
-			<p>No warnings found for this user.</p>
-		}
-		else
-		{
-			<table>
-				<tr>
-					<td>Warning</td>
-					<td>Start Date</td>
-					<td>End Date</td>
-				</tr>
-				@foreach (var warning in Model.WarningList)
-				{
+		<div>
+			<h3>Warnings for @Model.WarningEmail</h3>
+			@if (Model.WarningList.Count == 0)
+			{
+				<p>No warnings found for this user.</p>
+			}
+			else
+			{
+				<table>
 					<tr>
-						<td>@warning.Message</td>
-						<td>@warning.StartDate</td>
-						<td>@warning.EndDate</td>
+						<td>Warning</td>
+						<td>Start Date</td>
+						<td>End Date</td>
 					</tr>
-				}
-			</table>
-		}
+					@foreach (Models.Warning warning in Model.WarningList)
+					{
+						<tr>
+							<td>@warning.Message</td>
+							<td>@warning.StartDate</td>
+							<td>@warning.EndDate</td>
+						</tr>
+					}
+				</table>
+			}
+		</div>
 	}
 
 	<form id="AddWarningForm" method="post" >
@@ -151,13 +154,13 @@
 
 <script>
 	function showManageUserForm() {
-		document.getElementById("UserList").style.display = "block";
+		document.getElementById("UserList").style.display = "flex";
 		document.getElementById("WarningList").style.display = "none";
 	}
 
 	function showAddWarningForm() {
 		document.getElementById("UserList").style.display = "none";
-		document.getElementById("WarningList").style.display = "block";
+		document.getElementById("WarningList").style.display = "flex";
 	}
 
 	function startAddWarning(button) {

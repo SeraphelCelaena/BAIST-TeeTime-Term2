@@ -10,16 +10,50 @@
 	@if (User.Identity != null && User.Identity.IsAuthenticated)
 	{
 		<h2>Hello, @User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value!</h2>
+		<table>
+			<tr>
+				<td>Tee Time</td>
+				@if (User.IsInRole(role: "Admin"))
+				{
+					<td>Admin Tools</td>
+				}
+				<td>Profile</td>
+			</tr>
+			<tr>
+				<td>
+					<ul>
+						<li><a href="/TeeTime/Book">Book Tee Time</a></li>
+						<li><a href="/TeeTime/View">View Tee Times</a></li>
+						<li><a href="/TeeTime/Manage">Manage Tee Times</a></li>
+						@if (User.IsInRole(role: "Admin") || User.IsInRole(role: "Stakeholder"))
+						{
+							<li><a href="/TeeTime/RequestStandingTeeTime">Request Standing TeeTime</a></li>
+						}
+					</ul>
+				</td>
+				<td>
+					<ul>
+						<li><a href="/Admin/ManageUser">Manage Users</a></li>
+						<li><a href="/Admin/ReviewMembershipApplication">Review Membership Applications</a></li>
+					</ul>
+				</td>
+				<td>
+					<ul>
+						<li><a href="/Profile">Profile</a></li>
+					</ul>
+				</td>
+			</tr>
+		</table>
 	}
 	else
 	{
 		<h2>Please log in to access more features.</h2>
 	}
 
-	<ul>
+	@* <ul>
 		@foreach (Claim claim in User.Claims)
 		{
 			<li>@claim.Type: @claim.Value</li>
 		}
-	</ul>
+	</ul> *@
 </div>

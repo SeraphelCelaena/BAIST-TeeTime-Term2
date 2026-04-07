@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 
-[Authorize(Policy = "PayingMember")]
+[Authorize(Policy = "View")]
 public class ViewModel : PageModel
 {
 	private readonly IConfiguration _configuration;

@@ -897,7 +897,7 @@ GO
 
 -- Insert Data using stored procedures
 Exec RegisterUser
-	@Email = 'SuperUser@baist.ca',
+	@Email = 'superuser@baist.ca',
 	@Password = 'SuperPass123',
 	@FirstName = 'Super',
 	@LastName = 'User',
@@ -924,7 +924,7 @@ GO
 
 Exec RegisterUser
 	@Email = 'stakeholder@baist.ca',
-	@Password = 'StakeholderPass123',
+	@Password = 'StakePass123',
 	@FirstName = 'Stake',
 	@LastName = 'Holder',
 	@PhoneNumber = '2345678901',

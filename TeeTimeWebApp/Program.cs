@@ -26,7 +26,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorizationBuilder()
 	.AddPolicy("Authenticated", policy => policy.RequireClaim(ClaimTypes.Role))
 	.AddPolicy("AdminOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Admin"))
-	.AddPolicy("PayingMember", policy => policy.RequireClaim(ClaimTypes.Role, "Admin", "Shareholder", "Gold", "Silver", "Bronze", "Copper"))
+	.AddPolicy("PayingMember", policy => policy.RequireClaim(ClaimTypes.Role, "Admin", "Shareholder", "Gold", "Silver", "Bronze"))
+	.AddPolicy("View", policy => policy.RequireClaim(ClaimTypes.Role, "Admin", "Shareholder", "Gold", "Silver", "Bronze", "Copper"))
 	.AddPolicy("Shareholder", policy => policy.RequireClaim(ClaimTypes.Role, "Admin", "Shareholder"));
 
 builder.Services.AddRazorPages();

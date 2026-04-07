@@ -6,7 +6,9 @@ using TeeTimeWebApp.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize(Policy = "PayingMember")]
 public class ViewModel : PageModel
 {
 	private readonly IConfiguration _configuration;

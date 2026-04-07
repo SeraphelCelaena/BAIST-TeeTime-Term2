@@ -6,7 +6,9 @@ using TeeTimeWebApp.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TeeTimeWebApp.Functions;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize(Policy = "PayingMember")]
 public class ManageModel : PageModel
 {
 	public string Message { get; set; } = string.Empty;

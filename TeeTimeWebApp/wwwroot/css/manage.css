@@ -1,0 +1,15 @@
+.manage {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem;
+	align-items: flex-start;
+}
+
+.manage > * {
+	flex: 1 1 420px;
+	min-width: 0;
+}
+
+.manage table {
+	width: 100%;
+}

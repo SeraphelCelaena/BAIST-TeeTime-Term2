@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using System.Security.Claims;
 using System.Data;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize(Policy = "Shareholder")]
 public class RequestStandingTeeTimeModel : PageModel
 {
 	private readonly IConfiguration _configuration;

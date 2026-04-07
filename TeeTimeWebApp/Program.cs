@@ -22,6 +22,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 	}
 );
 
+builder.Services.AddAuthorizationBuilder()
+	.AddPolicy("AdminOnly", policy => policy.RequireClaim("Role", "Admin"))
+	.AddPolicy("PayingMember", policy => policy.RequireClaim("Role", "Admin", "Shareholder", "Gold", "Silver", "Bronze", "Copper"))
+	.AddPolicy("Shareholder", policy => policy.RequireClaim("Role", "Admin", "Shareholder"));
+
 builder.Services.AddRazorPages();
 
 var app = builder.Build();

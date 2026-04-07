@@ -13,7 +13,7 @@
 			<h1><a href="/Index">TeeTimeWebApp</a></h1>
 		</header>
 		<ul>
-			@if (User.Identity != null && User.Identity.IsAuthenticated)
+			@if (User.Identity != null && User.Identity.IsAuthenticated && !User.IsInRole(role: "User"))
 			{
 				<li><a href="/TeeTime/Book">Book Tee Time</a></li>
 				<li><a href="/TeeTime/View">View Tee Times</a></li>

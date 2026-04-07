@@ -1,6 +1,6 @@
 -- Use Database
--- use TeeTimeDB
--- GO
+use TeeTimeDB
+GO
 
 -- Drop Tables if they exist
 If Exists (Select Name From sys.tables Where Name = 'MembershipApplication')
@@ -33,10 +33,6 @@ GO
 
 If Exists (Select Name From sys.tables Where Name = 'TeeTimeStart')
 	Drop Table TeeTimeStart
-GO
-
-If Exists (Select Name From sys.tables Where Name = 'UserWarnings')
-	Drop Table UserWarnings
 GO
 
 -- Drop Stored Procedures if they exist
@@ -132,10 +128,10 @@ Create Table TeeTimeUser
 	FirstName VarChar(50) Not Null,
 	LastName VarChar(50) Not Null,
 	PhoneNumber VarChar(10) Not Null,
-	Address VarChar(100) Not Null,
-	City VarChar(50) Not Null,
-	Province VarChar(50) Not Null,
-	PostalCode VarChar(6) Not Null,
+	Address VarChar(100) Null,
+	City VarChar(50) Null,
+	Province VarChar(50) Null,
+	PostalCode VarChar(6) Null,
 	RoleID Int Not Null,
 	Constraint PK_TeeTimeUser Primary Key (Email),
 	Constraint FK_TeeTimeUser_Roles Foreign Key (RoleID) References Roles(RoleID),
@@ -265,8 +261,7 @@ AS
 	Set @TeeTimeReturnCode = 1 -- Default to failure
 
 	If @Email Is Null Or @Password Is Null Or @FirstName Is Null Or @LastName Is Null Or
-		@PhoneNumber Is Null Or @Address Is Null Or @City Is Null Or @Province Is Null Or
-		@PostalCode Is Null Or @RoleID Is Null -- Checks if all fields are provided
+		@PhoneNumber Is Null Or @RoleID Is Null -- Checks if all fields are provided
 		Raiserror('RegisterUser - All fields must be provided.', 16, 1)
 	Else
 		If Exists (Select 1 From TeeTimeUser Where Email = @Email) -- Check for existing email
@@ -998,9 +993,9 @@ Exec RegisterUser
 	@FirstName = 'Regular',
 	@LastName = 'User',
 	@PhoneNumber = '7890123456',
-	@Address = '123 User St.',
-	@City = 'UserCity',
-	@Province = 'UserProvince',
-	@PostalCode = 'G7G7G7',
+	@Address = null,
+	@City = null,
+	@Province = null,
+	@PostalCode = null,
 	@RoleID = 7
 GO

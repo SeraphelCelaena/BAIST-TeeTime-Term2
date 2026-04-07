@@ -26,14 +26,14 @@ public class RegisterModel : PageModel
 	public string LastName { get; set;} = string.Empty;
 	[BindProperty]
 	public int PhoneNumber { get; set;}
-	[BindProperty]
-	public string Address { get; set;} = string.Empty;
-	[BindProperty]
-	public string City { get; set;} = string.Empty;
-	[BindProperty]
-	public string Province { get; set;} = string.Empty;
-	[BindProperty]
-	public string PostalCode { get; set;} = string.Empty;
+	// [BindProperty]
+	// public string Address { get; set;} = string.Empty;
+	// [BindProperty]
+	// public string City { get; set;} = string.Empty;
+	// [BindProperty]
+	// public string Province { get; set;} = string.Empty;
+	// [BindProperty]
+	// public string PostalCode { get; set;} = string.Empty;
 	[BindProperty]
 	public string Role { get; set;}
 
@@ -53,7 +53,7 @@ public class RegisterModel : PageModel
 
 		await GetRolesList();
 
-		if (Email == null || Password == null || FirstName == null || LastName == null || Address == null || City == null || Province == null || PostalCode == null)
+		if (Email == null || Password == null || FirstName == null || LastName == null)
 		{
 			ViewData["Error"] = "Please fill in all fields.";
 			return Page();
@@ -71,11 +71,11 @@ public class RegisterModel : PageModel
 			return Page();
 		}
 
-		if (!Regex.IsMatch(PostalCode, RegexPostalCode))
-		{
-			ViewData["Error"] = "Please enter a valid postal code.";
-			return Page();
-		}
+		// if (!Regex.IsMatch(PostalCode, RegexPostalCode))
+		// {
+		// 	ViewData["Error"] = "Please enter a valid postal code.";
+		// 	return Page();
+		// }
 
 		if (Password != ConfirmPassword)
 		{
@@ -100,10 +100,10 @@ public class RegisterModel : PageModel
 				new SqlParameter("@FirstName", SqlDbType.VarChar) { Value = FirstName },
 				new SqlParameter("@LastName", SqlDbType.VarChar) { Value = LastName },
 				new SqlParameter("@PhoneNumber", SqlDbType.VarChar) { Value = PhoneNumber },
-				new SqlParameter("@Address", SqlDbType.VarChar) { Value = Address },
-				new SqlParameter("@City", SqlDbType.VarChar) { Value = City },
-				new SqlParameter("@Province", SqlDbType.VarChar) { Value = Province },
-				new SqlParameter("@PostalCode", SqlDbType.VarChar) { Value = PostalCode },
+				// new SqlParameter("@Address", SqlDbType.VarChar) { Value = Address },
+				// new SqlParameter("@City", SqlDbType.VarChar) { Value = City },
+				// new SqlParameter("@Province", SqlDbType.VarChar) { Value = Province },
+				// new SqlParameter("@PostalCode", SqlDbType.VarChar) { Value = PostalCode },
 				new SqlParameter("@RoleID", SqlDbType.Int) { Value = 7 }
 			}
 		};

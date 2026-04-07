@@ -5,7 +5,9 @@ using System.Data;
 using TeeTimeWebApp.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize(Policy = "AdminOnly")]
 public class ManageUserModel : PageModel
 {
 	private readonly IConfiguration _configuration;
@@ -20,6 +22,8 @@ public class ManageUserModel : PageModel
 
 	public List<User> UserList { get; set; } = new List<User>();
 	public List<SelectListItem> RolesList { get; set; } = new List<SelectListItem>();
+	public List<Warning> WarningList { get; set; } = new List<Warning>();
+	public bool ShowWarningList { get; set; }
 
 	[BindProperty]
 	public string EmailEdit { get; set; } = string.Empty;
@@ -145,6 +149,62 @@ public class ManageUserModel : PageModel
 		return RedirectToPage();
 	}
 
+	public async Task<IActionResult> OnPostViewWarnings()
+	{
+		await GetAll();
+		await LoadWarningsForUser(WarningEmail);
+
+		ShowWarningList = true;
+
+		return Page();
+	}
+
+	public async Task<IActionResult> OnPostAddWarning()
+	{
+		await GetAll();
+
+		SqlConnection AddWarningConnection = new()
+		{
+			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
+		};
+
+		SqlCommand AddWarningCommand = new()
+		{
+			Connection = AddWarningConnection,
+			CommandType = CommandType.StoredProcedure,
+			CommandText = "AddWarningToUser",
+			Parameters =
+			{
+				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = WarningEmail },
+				new SqlParameter("@WarningMessage", SqlDbType.VarChar, 255) { Value = WarningReason },
+				new SqlParameter("@WarningStartDate", SqlDbType.Date) { Value = DateOnly.FromDateTime(DateTime.Today) },
+				new SqlParameter("@WarningEndDate", SqlDbType.Date) { Value = WarningEndDate }
+			}
+		};
+
+		try
+		{
+			using (AddWarningConnection)
+			{
+				AddWarningConnection.Open();
+
+				using (AddWarningCommand)
+				{
+					AddWarningCommand.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex.Message);
+		}
+
+		await LoadWarningsForUser(WarningEmail);
+		ShowWarningList = true;
+
+		return Page();
+	}
+
 	public async Task<IActionResult> GetEmail()
 	{
 		var RoleClaim = User.FindFirstValue(ClaimTypes.Role);
@@ -256,5 +316,61 @@ public class ManageUserModel : PageModel
 		await GetRolesList();
 
 		return Page();
+	}
+
+	private async Task LoadWarningsForUser(string email)
+	{
+		WarningList = new List<Warning>();
+
+		if (string.IsNullOrWhiteSpace(email))
+		{
+			return;
+		}
+
+		SqlConnection GetWarningsConnection = new()
+		{
+			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
+		};
+
+		SqlCommand GetWarningsCommand = new()
+		{
+			Connection = GetWarningsConnection,
+			CommandType = CommandType.StoredProcedure,
+			CommandText = "GetWarningsForUser",
+			Parameters =
+			{
+				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = email }
+			}
+		};
+
+		try
+		{
+			using (GetWarningsConnection)
+			{
+				GetWarningsConnection.Open();
+
+				using (GetWarningsCommand)
+				{
+					using (SqlDataReader reader = GetWarningsCommand.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							WarningList.Add(new Warning
+							{
+								Email = email,
+								Id = reader.GetInt32(0),
+								Message = reader.GetString(1),
+								StartDate = DateOnly.FromDateTime(reader.GetDateTime(2)),
+								EndDate = DateOnly.FromDateTime(reader.GetDateTime(3))
+							});
+						}
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex.Message);
+		}
 	}
 }

@@ -6,7 +6,9 @@ using TeeTimeWebApp.Models;
 using TeeTimeWebApp.Functions;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize(Policy = "PayingMember")]
 public class BookModel : PageModel
 {
 	private readonly IConfiguration _configuration;

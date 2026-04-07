@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,9 +24,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 );
 
 builder.Services.AddAuthorizationBuilder()
-	.AddPolicy("AdminOnly", policy => policy.RequireClaim("Role", "Admin"))
-	.AddPolicy("PayingMember", policy => policy.RequireClaim("Role", "Admin", "Shareholder", "Gold", "Silver", "Bronze", "Copper"))
-	.AddPolicy("Shareholder", policy => policy.RequireClaim("Role", "Admin", "Shareholder"));
+	.AddPolicy("Authenticated", policy => policy.RequireClaim(ClaimTypes.Role))
+	.AddPolicy("AdminOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Admin"))
+	.AddPolicy("PayingMember", policy => policy.RequireClaim(ClaimTypes.Role, "Admin", "Shareholder", "Gold", "Silver", "Bronze", "Copper"))
+	.AddPolicy("Shareholder", policy => policy.RequireClaim(ClaimTypes.Role, "Admin", "Shareholder"));
 
 builder.Services.AddRazorPages();
 

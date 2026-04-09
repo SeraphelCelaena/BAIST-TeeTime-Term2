@@ -3,10 +3,149 @@
 @{
 	ViewData["Title"] = "Profile";
 }
+<link rel="stylesheet" href="~/css/Profile.css" />
 
 <h2>Welcome to your profile</h2>
-<form id="ManageProfileForm" method="post">
-	<table>
-		
-	</table>
-</form>
+<table>
+	<tr>
+		<td colspan="2">
+			<h3>Change Email</h3>
+			<div id="ChangeEmailPlaceholder">
+				<input type="text" value="@Model.Email" disabled />
+				<button type="button" onclick="toggleChangeEmailForm()">Change Email</button>
+			</div>
+			<form id="ChangeEmailForm" method="post" style="display:none;">
+				<input type="text" name="EmailEdit" placeholder="New Email" asp-for="EmailEdit" />
+				<input type="text" name="EmailEditConfirm" placeholder="Confirm New Email" asp-for="EmailEditConfirm" />
+				<input type="submit" value="Submit" asp-page-handler="ChangeEmail" />
+				<button type="button" onclick="toggleChangeEmailForm()">Cancel</button>
+			</form>
+		</td>
+		<td colspan="2">
+			<h3>Name</h3>
+			<div id="ChangeNamePlaceholder">
+				<input type="text" value="@Model.FirstName @Model.LastName" disabled />
+				<button type="button" onclick="toggleChangeNameForm()">Change Name</button>
+			</div>
+			<form id="ChangeNameForm" method="post" style="display:none;">
+				<input type="text" name="FirstNameEdit" placeholder="First Name" asp-for="FirstNameEdit" />
+				<input type="text" name="LastNameEdit" placeholder="Last Name" asp-for="LastNameEdit" />
+				<input type="submit" value="Submit" asp-page-handler="ChangeName" />
+				<button type="button" onclick="toggleChangeNameForm()">Cancel</button>
+			</form>
+		</td>
+		<td colspan="2">
+			<h3>Phone Number</h3>
+			<div id="ChangePhonePlaceholder">
+				<input type="number" value="@Model.PhoneNumber" disabled />
+				<button type="button" onclick="toggleChangePhoneForm()">Change Phone Number</button>
+			</div>
+			<form id="ChangePhoneForm" method="post" style="display:none;">
+				<input type="number" name="PhoneNumberEdit" placeholder="New Phone Number" asp-for="PhoneNumberEdit" />
+				<input type="submit" value="Submit" asp-page-handler="ChangePhoneNumber" />
+				<button type="button" onclick="toggleChangePhoneForm()">Cancel</button>
+			</form>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="6">
+			<h3>Change Address</h3>
+			<div>
+				<input type="text" value="@Model.Address" disabled />
+				<input type="text" value="@Model.City" disabled />
+				<input type="text" value="@Model.Province" disabled />
+				<input type="text" value="@Model.PostalCode" disabled />
+				<button type="button" onclick="toggleChangeAddressForm()">Change Address</button>
+			</div>
+
+			<form id="ChangeAddressForm" method="post" style="display:none;">
+				<input type="text" name="AddressEdit" placeholder="New Address" asp-for="AddressEdit" />
+				<input type="text" name="CityEdit" placeholder="New City" asp-for="CityEdit" />
+				<input type="text" name="ProvinceEdit" placeholder="New Province" asp-for="ProvinceEdit" />
+				<input type="text" name="PostalCodeEdit" placeholder="New Postal Code" asp-for="PostalCodeEdit" />
+				<input type="submit" value="Submit" asp-page-handler="ChangeAddress" />
+				<button type="button" onclick="toggleChangeAddressForm()">Cancel</button>
+			</form>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3">
+			<h3>Change Password</h3>
+			<form id="ChangePasswordForm" method="post">
+				<input type="password" name="CurrentPasswordEdit" placeholder="Current Password" asp-for="CurrentPasswordEdit" />
+				<input type="password" name="NewPasswordEdit" placeholder="New Password" asp-for="NewPasswordEdit" />
+				<input type="password" name="NewPasswordEditConfirm" placeholder="Confirm New Password" asp-for="NewPasswordEditConfirm" />
+				<input type="submit" value="Submit" asp-page-handler="ChangePassword" />
+			</form>
+		</td>
+		<td colspan="3">
+			<h3>Shareholder Member Application</h3>
+			@if (Model.Role == "Shareholder" || Model.Role == "Admin")
+			{
+				<p>Already a @Model.Role</p>
+			}
+			else
+			{
+				<a href="/Profile/Application">View Shareholder Application</a>
+			}
+		</td>
+	</tr>
+</table>
+
+<script>
+	function toggleChangeEmailForm() {
+		var placeholder = document.getElementById("ChangeEmailPlaceholder");
+		var form = document.getElementById("ChangeEmailForm");
+		if (form.style.display === "none") {
+			form.style.display = "block";
+			placeholder.style.display = "none";
+		} else {
+			form.style.display = "none";
+			placeholder.style.display = "block";
+			document.querySelector("#ChangeEmailForm input[name='EmailEdit']").value = "";
+		}
+	}
+
+	function toggleChangeNameForm() {
+		var placeholder = document.getElementById("ChangeNamePlaceholder");
+		var form = document.getElementById("ChangeNameForm");
+		if (form.style.display === "none") {
+			form.style.display = "block";
+			placeholder.style.display = "none";
+		} else {
+			form.style.display = "none";
+			placeholder.style.display = "block";
+			document.querySelector("#ChangeNameForm input[name='FirstNameEdit']").value = "";
+			document.querySelector("#ChangeNameForm input[name='LastNameEdit']").value = "";
+		}
+	}
+
+	function toggleChangePhoneForm() {
+		var placeholder = document.getElementById("ChangePhonePlaceholder");
+		var form = document.getElementById("ChangePhoneForm");
+		if (form.style.display === "none") {
+			form.style.display = "block";
+			placeholder.style.display = "none";
+		} else {
+			form.style.display = "none";
+			placeholder.style.display = "block";
+			document.querySelector("#ChangePhoneForm input[name='PhoneNumberEdit']").value = "";
+		}
+	}
+
+	function toggleChangeAddressForm() {
+		var placeholder = document.querySelector("#ChangeAddressForm").previousElementSibling;
+		var form = document.getElementById("ChangeAddressForm");
+		if (form.style.display === "none") {
+			form.style.display = "block";
+			placeholder.style.display = "none";
+		} else {
+			form.style.display = "none";
+			placeholder.style.display = "block";
+			document.querySelector("#ChangeAddressForm input[name='AddressEdit']").value = "";
+			document.querySelector("#ChangeAddressForm input[name='CityEdit']").value = "";
+			document.querySelector("#ChangeAddressForm input[name='ProvinceEdit']").value = "";
+			document.querySelector("#ChangeAddressForm input[name='PostalCodeEdit']").value = "";
+		}
+	}
+</script>

@@ -1,0 +1,20 @@
+td {
+	margin: 1rem;
+	padding: 1rem;
+	width: auto;
+	flex: 1 1 0;
+	min-width: 0;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+tr {
+	display: flex;
+	flex-wrap: nowrap;
+}

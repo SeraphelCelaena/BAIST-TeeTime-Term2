@@ -112,6 +112,21 @@ If Exists (Select Name From sys.procedures Where Name = 'AddMembershipApplicatio
 	Drop Procedure AddMembershipApplication
 GO
 
+If Exists (Select Name From sys.procedures Where Name = 'GetAllMembershipApplications')
+	Drop Procedure GetAllMembershipApplications
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'GetMembershipApplication')
+	Drop Procedure GetMembershipApplication
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'GetUserInformation')
+	Drop Procedure GetUserInformation
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'UpdateEmail')
+	Drop Procedure UpdateEmail
+
 -- Create
 Create Table Roles
 (
@@ -150,7 +165,7 @@ Create Table UserWarnings
 	WarningStartDate Date Not Null,
 	WarningEndDate Date Not Null,
 	Constraint PK_UserWarnings Primary Key (WarningID),
-	Constraint FK_UserWarnings_TeeTimeUser Foreign Key (Email) References TeeTimeUser(Email)
+	Constraint FK_UserWarnings_TeeTimeUser Foreign Key (Email) References TeeTimeUser(Email) On Update Cascade
 )
 GO
 
@@ -170,7 +185,7 @@ Create Table TeeTimeConfirmation
 	Email VarChar(100) Not Null,
 	Confirmed Bit Not Null,
 	Constraint PK_TeeTimeConfirmation Primary Key (TeeTimeID, Email),
-	Constraint FK_TeeTimeConfirmation_TeeTimeUser Foreign Key (Email) References TeeTimeUser(Email),
+	Constraint FK_TeeTimeConfirmation_TeeTimeUser Foreign Key (Email) References TeeTimeUser(Email) On Update Cascade,
 	Constraint FK_TeeTimeConfirmation_TeeTimeStart Foreign Key (TeeTimeID) References TeeTimeStart(TeeTimeID)
 )
 GO
@@ -185,7 +200,7 @@ Create Table StandingTeeTime
 	RequestedTime Time Not Null,
 	NumberOfCarts Int Not Null,
 	Constraint PK_StandingTeeTime Primary Key (StandingTeeTimeID),
-	Constraint FK_StandingTeeTime_TeeTimeUser Foreign Key (StakeholderEmail) References TeeTimeUser(Email)
+	Constraint FK_StandingTeeTime_TeeTimeUser Foreign Key (StakeholderEmail) References TeeTimeUser(Email) On Update Cascade
 )
 GO
 
@@ -196,7 +211,7 @@ Create Table StandingTeeTimeConfirmation
 	Email VarChar(100) Not Null,
 	Confirmed Bit Not Null,
 	Constraint PK_StandingTeeTimeConfirmation Primary Key (StandingTeeTimeConfirmationID),
-	Constraint FK_StandingTeeTimeConfirmation_TeeTimeUser Foreign Key (Email) References TeeTimeUser(Email),
+	Constraint FK_StandingTeeTimeConfirmation_TeeTimeUser Foreign Key (Email) References TeeTimeUser(Email) On Update Cascade,
 	Constraint FK_StandingTeeTimeConfirmation_StandingTeeTime Foreign Key (StandingTeeTimeID) References StandingTeeTime(StandingTeeTimeID)
 )
 GO
@@ -227,7 +242,8 @@ Create Table MembershipApplication
 	Constraint Valid_Membership_Alt_Phone Check (Alt_PhoneNumber Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' And Len(Alt_PhoneNumber) = 10),
 	Constraint Valid_Membership_CompanyPhone Check (CompanyPhoneNumber Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' And Len(CompanyPhoneNumber) = 10),
 	Constraint Valid_Membership_PostalCode Check (PostalCode Like '[A-Z][0-9][A-Z][0-9][A-Z][0-9]'),
-	Constraint Valid_Membership_CompanyPostalCode Check (CompanyPostalCode Like '[A-Z][0-9][A-Z][0-9][A-Z][0-9]')
+	Constraint Valid_Membership_CompanyPostalCode Check (CompanyPostalCode Like '[A-Z][0-9][A-Z][0-9][A-Z][0-9]'),
+	Constraint FK_MembershipApplication_TeeTimeUser Foreign Key (Email) References TeeTimeUser(Email) On Update Cascade
 )
 GO
 
@@ -893,6 +909,108 @@ AS
 										Raiserror('AddMembershipApplication - An application with this email already exists.', 16, 1)
 
 	Return @TeeTimeReturnCode
+GO
+
+Create Procedure GetMembershipApplication(
+	@Email VarChar(100)
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @Email Is Null -- Checks if Email is provided
+		Raiserror('GetMembershipApplication - Email must be provided.', 16, 1)
+	Else
+		If Not Exists (Select 1 From MembershipApplication Where Email = @Email) -- Check for valid Email
+			Raiserror('GetMembershipApplication - Invalid Email.', 16, 1)
+		Else
+			Begin -- Get membership application information
+				Select Email, FirstName, LastName, Address, City, Province, PostalCode, PhoneNumber, Alt_PhoneNumber, DateOfBirth, Occupation, CompanyName, CompanyAddress, CompanyPostalCode, CompanyPhoneNumber, DateApplied, Status
+				From MembershipApplication
+				Where Email = @Email
+
+				If @@Error = 0
+					Set @TeeTimeReturnCode = 0 -- Success
+				Else
+					Raiserror('GetMembershipApplication - Error retrieving membership application information.', 16, 1)
+			End
+
+	Return @TeeTimeReturnCode
+GO
+
+Create Procedure GetAllMembershipApplications
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	Begin
+		Select Email, FirstName, LastName, Address, City, Province, PostalCode, PhoneNumber, Alt_PhoneNumber, DateOfBirth, Occupation, CompanyName, CompanyAddress, CompanyPostalCode, CompanyPhoneNumber, DateApplied, Status
+		From MembershipApplication
+
+		If @@Error = 0
+			Set @TeeTimeReturnCode = 0 -- Success
+		Else
+			Raiserror('GetAllMembershipApplications - Error retrieving membership applications.', 16, 1)
+	End
+GO
+
+Create Procedure GetUserInformation(
+	@Email VarChar(100)
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @Email Is Null -- Checks if Email is provided
+		Raiserror('GetUserInformation - Email must be provided.', 16, 1)
+	Else
+		If Not Exists (Select 1 From TeeTimeUser Where Email = @Email) -- Check for valid Email
+			Raiserror('GetUserInformation - Invalid Email.', 16, 1)
+		Else
+			Begin -- Get user information
+				Select Email, FirstName, LastName, PhoneNumber, Address, City, Province, PostalCode, RoleID
+				From TeeTimeUser
+				Where Email = @Email
+
+				If @@Error = 0
+					Set @TeeTimeReturnCode = 0 -- Success
+				Else
+					Raiserror('GetUserInformation - Error retrieving user information.', 16, 1)
+			End
+
+	Return @TeeTimeReturnCode
+GO
+
+Create Procedure UpdateEmail(
+	@OldEmail VarChar(100),
+	@NewEmail VarChar(100)
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @OldEmail Is Null or @NewEmail Is Null -- Checks if Emails are provided
+		Raiserror('UpdateEmail - Both Old and New Emails must be provided.', 16, 1)
+	Else
+		If Not Exists (Select 1 From TeeTimeUser Where Email = @OldEmail) -- Check for valid Old Email
+			Raiserror('UpdateEmail - Invalid Old Email.', 16, 1)
+		Else
+			If Exists (Select 1 From TeeTimeUser Where Email = @NewEmail) -- Check if New Email is already in use
+				Raiserror('UpdateEmail - New Email is already in use.', 16, 1)
+			Else
+				Begin -- Update user's email
+					Update TeeTimeUser
+					Set Email = @NewEmail
+					Where Email = @OldEmail
+
+					If @@Error = 0
+						Set @TeeTimeReturnCode = 0 -- Success
+					Else
+						Raiserror('UpdateEmail - Error updating user email.', 16, 1)
+				End
+
+	Return @TeeTimeReturnCode
+
 GO
 
 -- Insert Data using stored procedures

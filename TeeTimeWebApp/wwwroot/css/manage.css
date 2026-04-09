@@ -10,7 +10,14 @@
 	max-width: calc(50% - 0.75rem);
 	min-width: 0;
 	box-sizing: border-box;
+}
+
+.manage-list {
 	overflow-x: auto;
+}
+
+.manage-form {
+	overflow: visible;
 }
 
 .manage table {

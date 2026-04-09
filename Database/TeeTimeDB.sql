@@ -982,18 +982,18 @@ AS
 GO
 
 Create Procedure UpdateEmail(
-	@OldEmail VarChar(100),
+	@CurrentEmail VarChar(100),
 	@NewEmail VarChar(100)
 )
 AS
 	Declare @TeeTimeReturnCode Int
 	Set @TeeTimeReturnCode = 1 -- Default to failure
 
-	If @OldEmail Is Null or @NewEmail Is Null -- Checks if Emails are provided
-		Raiserror('UpdateEmail - Both Old and New Emails must be provided.', 16, 1)
+	If @CurrentEmail Is Null or @NewEmail Is Null -- Checks if Emails are provided
+		Raiserror('UpdateEmail - Both Current and New Emails must be provided.', 16, 1)
 	Else
-		If Not Exists (Select 1 From TeeTimeUser Where Email = @OldEmail) -- Check for valid Old Email
-			Raiserror('UpdateEmail - Invalid Old Email.', 16, 1)
+		If Not Exists (Select 1 From TeeTimeUser Where Email = @CurrentEmail) -- Check for valid Current Email
+			Raiserror('UpdateEmail - Invalid Current Email.', 16, 1)
 		Else
 			If Exists (Select 1 From TeeTimeUser Where Email = @NewEmail) -- Check if New Email is already in use
 				Raiserror('UpdateEmail - New Email is already in use.', 16, 1)
@@ -1001,7 +1001,7 @@ AS
 				Begin -- Update user's email
 					Update TeeTimeUser
 					Set Email = @NewEmail
-					Where Email = @OldEmail
+					Where Email = @CurrentEmail
 
 					If @@Error = 0
 						Set @TeeTimeReturnCode = 0 -- Success
@@ -1014,14 +1014,14 @@ GO
 
 Create Procedure UpdateName(
 	@Email VarChar(100),
-	@FirstName VarChar(50),
-	@LastName VarChar(50)
+	@NewFirstName VarChar(50),
+	@NewLastName VarChar(50)
 )
 AS
 	Declare @TeeTimeReturnCode Int
 	Set @TeeTimeReturnCode = 1 -- Default to failure
 
-	If @Email Is Null Or @FirstName Is Null Or @LastName Is Null -- Checks if all fields are provided
+	If @Email Is Null Or @NewFirstName Is Null Or @NewLastName Is Null -- Checks if all fields are provided
 		Raiserror('UpdateName - All fields must be provided.', 16, 1)
 	Else
 		If Not Exists (Select 1 From TeeTimeUser Where Email = @Email) -- Check for valid Email
@@ -1029,8 +1029,8 @@ AS
 		Else
 			Begin -- Update user's name
 				Update TeeTimeUser
-				Set FirstName = @FirstName,
-					LastName = @LastName
+				Set FirstName = @NewFirstName,
+					LastName = @NewLastName
 				Where Email = @Email
 
 				If @@Error = 0
@@ -1076,24 +1076,24 @@ GO
 
 Create Procedure UpdatePhoneNumber(
 	@Email VarChar(100),
-	@PhoneNumber VarChar(10)
+	@NewPhoneNumber VarChar(10)
 )
 AS
 	Declare @TeeTimeReturnCode Int
 	Set @TeeTimeReturnCode = 1 -- Default to failure
 
-	If @Email Is Null Or @PhoneNumber Is Null -- Checks if all fields are provided
+	If @Email Is Null Or @NewPhoneNumber Is Null -- Checks if all fields are provided
 		Raiserror('UpdatePhoneNumber - All fields must be provided.', 16, 1)
 	Else
 		If Not Exists (Select 1 From TeeTimeUser Where Email = @Email) -- Check for valid Email
 			Raiserror('UpdatePhoneNumber - Invalid Email.', 16, 1)
 		Else
-			If Len(@PhoneNumber) <> 10 Or @PhoneNumber Not Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'
+			If Len(@NewPhoneNumber) <> 10 Or @NewPhoneNumber Not Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'
 				Raiserror('UpdatePhoneNumber - Invalid PhoneNumber format.', 16, 1)
 			Else
 				Begin -- Update user's phone number
 					Update TeeTimeUser
-					Set PhoneNumber = @PhoneNumber
+					Set PhoneNumber = @NewPhoneNumber
 					Where Email = @Email
 
 					If @@Error = 0
@@ -1107,30 +1107,30 @@ GO
 
 Create Procedure UpdateAddress(
 	@Email VarChar(100),
-	@Address VarChar(100),
-	@City VarChar(50),
-	@Province VarChar(50),
-	@PostalCode VarChar(6)
+	@NewAddress VarChar(100),
+	@NewCity VarChar(50),
+	@NewProvince VarChar(50),
+	@NewPostalCode VarChar(6)
 )
 AS
 	Declare @TeeTimeReturnCode Int
 	Set @TeeTimeReturnCode = 1 -- Default to failure
 
-	If @Email Is Null Or @Address Is Null Or @City Is Null Or @Province Is Null Or @PostalCode Is Null -- Checks if all fields are provided
+	If @Email Is Null Or @NewAddress Is Null Or @NewCity Is Null Or @NewProvince Is Null Or @NewPostalCode Is Null -- Checks if all fields are provided
 		Raiserror('UpdateAddress - All fields must be provided.', 16, 1)
 	Else
 		If Not Exists (Select 1 From TeeTimeUser Where Email = @Email) -- Check for valid Email
 			Raiserror('UpdateAddress - Invalid Email.', 16, 1)
 		Else
-			If Len(@PostalCode) <> 6 Or @PostalCode Not Like '[A-Z][0-9][A-Z][0-9][A-Z][0-9]' -- Check PostalCode format
+			If Len(@NewPostalCode) <> 6 Or @NewPostalCode Not Like '[A-Z][0-9][A-Z][0-9][A-Z][0-9]' -- Check PostalCode format
 				Raiserror('UpdateAddress - Invalid PostalCode format.', 16, 1)
 			Else
 				Begin -- Update user's address
 					Update TeeTimeUser
-					Set Address = @Address,
-						City = @City,
-						Province = @Province,
-						PostalCode = @PostalCode
+					Set Address = @NewAddress,
+						City = @NewCity,
+						Province = @NewProvince,
+						PostalCode = @NewPostalCode
 					Where Email = @Email
 
 					If @@Error = 0

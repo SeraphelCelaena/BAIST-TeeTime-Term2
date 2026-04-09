@@ -60,26 +60,207 @@ public class ProfileModel : PageModel
 
 	public async Task<IActionResult> OnPostChangeEmail()
 	{
+		if (EmailEdit != EmailEditConfirm)
+		{
+			ViewData["Error"] = "New email and confirmation do not match.";
+			return Page();
+		}
+
+		SqlConnection ChangeEmailConnection = new()
+		{
+			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
+		};
+
+		SqlCommand ChangeEmailCommand = new()
+		{
+			Connection = ChangeEmailConnection,
+			CommandType = CommandType.StoredProcedure,
+			CommandText = "ChangeEmail",
+			Parameters =
+			{
+				new SqlParameter("@CurrentEmail", SqlDbType.VarChar, 100) { Value = User.FindFirstValue(ClaimTypes.Email) },
+				new SqlParameter("@NewEmail", SqlDbType.VarChar, 100) { Value = EmailEdit }
+			}
+		};
+
+		try
+		{
+			using (ChangeEmailConnection)
+			{
+				ChangeEmailConnection.Open();
+				using (ChangeEmailCommand)
+				{
+					ChangeEmailCommand.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+			ViewData["Error"] = $"An error occurred while changing email: {ex.Message}";
+			return Page();
+		}
+
 		return RedirectToPage();
 	}
 
 	public async Task<IActionResult> OnPostChangeName()
 	{
+		SqlConnection ChangeNameConnection = new()
+		{
+			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
+		};
+
+		SqlCommand ChangeNameCommand = new()
+		{
+			Connection = ChangeNameConnection,
+			CommandType = CommandType.StoredProcedure,
+			CommandText = "ChangeName",
+			Parameters =
+			{
+				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = User.FindFirstValue(ClaimTypes.Email) },
+				new SqlParameter("@NewFirstName", SqlDbType.VarChar, 50) { Value = FirstNameEdit },
+				new SqlParameter("@NewLastName", SqlDbType.VarChar, 50) { Value = LastNameEdit }
+			}
+		};
+
+		try
+		{
+			using (ChangeNameConnection)
+			{
+				ChangeNameConnection.Open();
+				using (ChangeNameCommand)
+				{
+					ChangeNameCommand.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+			ViewData["Error"] = $"An error occurred while changing name: {ex.Message}";
+			return Page();
+		}
+
 		return RedirectToPage();
 	}
 
 	public async Task<IActionResult> OnPostChangePhoneNumber()
 	{
+		SqlConnection ChangePhoneNumberConnection = new()
+		{
+			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
+		};
+
+		SqlCommand ChangePhoneNumberCommand = new()
+		{
+			Connection = ChangePhoneNumberConnection,
+			CommandType = CommandType.StoredProcedure,
+			CommandText = "ChangePhoneNumber",
+			Parameters =
+			{
+				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = User.FindFirstValue(ClaimTypes.Email) },
+				new SqlParameter("@NewPhoneNumber", SqlDbType.VarChar, 10) { Value = PhoneNumberEdit }
+			}
+		};
+
+		try
+		{
+			using (ChangePhoneNumberConnection)
+			{
+				ChangePhoneNumberConnection.Open();
+				using (ChangePhoneNumberCommand)
+				{
+					ChangePhoneNumberCommand.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+			ViewData["Error"] = $"An error occurred while changing phone number: {ex.Message}";
+			return Page();
+		}
+
 		return RedirectToPage();
 	}
 
 	public async Task<IActionResult> OnPostChangeAddress()
 	{
+		SqlConnection ChangeAddressConnection = new()
+		{
+			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
+		};
+
+		SqlCommand ChangeAddressCommand = new()
+		{
+			Connection = ChangeAddressConnection,
+			CommandType = CommandType.StoredProcedure,
+			CommandText = "ChangeAddress",
+			Parameters =
+			{
+				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = User.FindFirstValue(ClaimTypes.Email) },
+				new SqlParameter("@NewAddress", SqlDbType.VarChar, 200) { Value = AddressEdit },
+				new SqlParameter("@NewCity", SqlDbType.VarChar, 100) { Value = CityEdit },
+				new SqlParameter("@NewProvince", SqlDbType.VarChar, 100) { Value = ProvinceEdit },
+				new SqlParameter("@NewPostalCode", SqlDbType.VarChar, 6) { Value = PostalCodeEdit }
+			}
+		};
+
+		try
+		{
+			using (ChangeAddressConnection)
+			{
+				ChangeAddressConnection.Open();
+				using (ChangeAddressCommand)
+				{
+					ChangeAddressCommand.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+			ViewData["Error"] = $"An error occurred while changing address: {ex.Message}";
+			return Page();
+		}
+
 		return RedirectToPage();
 	}
 
 	public async Task<IActionResult> OnPostChangePassword()
 	{
+		SqlConnection ChangePasswordConnection = new()
+		{
+			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
+		};
+
+		SqlCommand ChangePasswordCommand = new()
+		{
+			Connection = ChangePasswordConnection,
+			CommandType = CommandType.StoredProcedure,
+			CommandText = "ChangePassword",
+			Parameters =
+			{
+				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = User.FindFirstValue(ClaimTypes.Email) },
+				new SqlParameter("@CurrentPassword", SqlDbType.VarChar, 255) { Value = CurrentPasswordEdit },
+				new SqlParameter("@NewPassword", SqlDbType.VarChar, 255) { Value = NewPasswordEdit }
+			}
+		};
+
+		try
+		{
+			using (ChangePasswordConnection)
+			{
+				ChangePasswordConnection.Open();
+				using (ChangePasswordCommand)
+				{
+					ChangePasswordCommand.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+			ViewData["Error"] = $"An error occurred while changing password: {ex.Message}";
+			return Page();
+		}
+
 		return RedirectToPage();
 	}
 

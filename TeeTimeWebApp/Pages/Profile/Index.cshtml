@@ -47,27 +47,39 @@
 			</form>
 		</td>
 	</tr>
-	<tr>
-		<td colspan="6">
-			<h3>Change Address</h3>
-			<div>
-				<input type="text" value="@Model.Address" disabled />
-				<input type="text" value="@Model.City" disabled />
-				<input type="text" value="@Model.Province" disabled />
-				<input type="text" value="@Model.PostalCode" disabled />
-				<button type="button" onclick="toggleChangeAddressForm()">Change Address</button>
-			</div>
+	@if (Model.Role != "Shareholder") {
+		<tr>
+			<td>
+				<h3>Membership Status</h3>
+				<p>@Model.FirstName is not a Shareholder</p>
+			</td>
+		</tr>
+	}
+	else
+	{
+		<tr>
+			<td colspan="6">
+				<h3>Change Address</h3>
+				<div>
+					<input type="text" value="@Model.Address" disabled />
+					<input type="text" value="@Model.City" disabled />
+					<input type="text" value="@Model.Province" disabled />
+					<input type="text" value="@Model.PostalCode" disabled />
+					<button type="button" onclick="toggleChangeAddressForm()">Change Address</button>
+				</div>
 
-			<form id="ChangeAddressForm" method="post" style="display:none;">
-				<input type="text" name="AddressEdit" placeholder="New Address" asp-for="AddressEdit" />
-				<input type="text" name="CityEdit" placeholder="New City" asp-for="CityEdit" />
-				<input type="text" name="ProvinceEdit" placeholder="New Province" asp-for="ProvinceEdit" />
-				<input type="text" name="PostalCodeEdit" placeholder="New Postal Code" asp-for="PostalCodeEdit" />
-				<input type="submit" value="Submit" asp-page-handler="ChangeAddress" />
-				<button type="button" onclick="toggleChangeAddressForm()">Cancel</button>
-			</form>
-		</td>
-	</tr>
+				<form id="ChangeAddressForm" method="post" style="display:none;">
+					<input type="text" name="AddressEdit" placeholder="New Address" asp-for="AddressEdit" />
+					<input type="text" name="CityEdit" placeholder="New City" asp-for="CityEdit" />
+					<input type="text" name="ProvinceEdit" placeholder="New Province" asp-for="ProvinceEdit" />
+					<input type="text" name="PostalCodeEdit" placeholder="New Postal Code" asp-for="PostalCodeEdit" />
+					<input type="submit" value="Submit" asp-page-handler="ChangeAddress" />
+					<button type="button" onclick="toggleChangeAddressForm()">Cancel</button>
+				</form>
+			</td>
+		</tr>
+	}
+
 	<tr>
 		<td colspan="3">
 			<h3>Change Password</h3>

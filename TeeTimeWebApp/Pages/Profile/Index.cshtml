@@ -15,7 +15,7 @@
 				<button type="button" onclick="toggleChangeEmailForm()">Change Email</button>
 			</div>
 			<form id="ChangeEmailForm" method="post" style="display:none;">
-				<input type="text" name="EmailEdit" placeholder="New Email" asp-for="EmailEdit" />
+				<input type="text" name="EmailEdit" placeholder="New Email" asp-for="EmailEdit" value="@Model.Email" />
 				<input type="text" name="EmailEditConfirm" placeholder="Confirm New Email" asp-for="EmailEditConfirm" />
 				<input type="submit" value="Submit" asp-page-handler="ChangeEmail" />
 				<button type="button" onclick="toggleChangeEmailForm()">Cancel</button>
@@ -28,8 +28,8 @@
 				<button type="button" onclick="toggleChangeNameForm()">Change Name</button>
 			</div>
 			<form id="ChangeNameForm" method="post" style="display:none;">
-				<input type="text" name="FirstNameEdit" placeholder="First Name" asp-for="FirstNameEdit" />
-				<input type="text" name="LastNameEdit" placeholder="Last Name" asp-for="LastNameEdit" />
+				<input type="text" name="FirstNameEdit" placeholder="First Name" asp-for="FirstNameEdit" value="@Model.FirstName" />
+				<input type="text" name="LastNameEdit" placeholder="Last Name" asp-for="LastNameEdit" value="@Model.LastName" />
 				<input type="submit" value="Submit" asp-page-handler="ChangeName" />
 				<button type="button" onclick="toggleChangeNameForm()">Cancel</button>
 			</form>
@@ -41,7 +41,7 @@
 				<button type="button" onclick="toggleChangePhoneForm()">Change Phone Number</button>
 			</div>
 			<form id="ChangePhoneForm" method="post" style="display:none;">
-				<input type="number" name="PhoneNumberEdit" placeholder="New Phone Number" asp-for="PhoneNumberEdit" />
+				<input type="number" name="PhoneNumberEdit" placeholder="New Phone Number" asp-for="PhoneNumberEdit" value="@Model.PhoneNumber" />
 				<input type="submit" value="Submit" asp-page-handler="ChangePhoneNumber" />
 				<button type="button" onclick="toggleChangePhoneForm()">Cancel</button>
 			</form>
@@ -69,10 +69,10 @@
 				</div>
 
 				<form id="ChangeAddressForm" method="post" style="display:none;">
-					<input type="text" name="AddressEdit" placeholder="New Address" asp-for="AddressEdit" />
-					<input type="text" name="CityEdit" placeholder="New City" asp-for="CityEdit" />
-					<input type="text" name="ProvinceEdit" placeholder="New Province" asp-for="ProvinceEdit" />
-					<input type="text" name="PostalCodeEdit" placeholder="New Postal Code" asp-for="PostalCodeEdit" />
+					<input type="text" name="AddressEdit" placeholder="New Address" asp-for="AddressEdit" value="@Model.Address" />
+					<input type="text" name="CityEdit" placeholder="New City" asp-for="CityEdit" value="@Model.City" />
+					<input type="text" name="ProvinceEdit" placeholder="New Province" asp-for="ProvinceEdit" value="@Model.Province" />
+					<input type="text" name="PostalCodeEdit" placeholder="New Postal Code" asp-for="PostalCodeEdit" value="@Model.PostalCode" />
 					<input type="submit" value="Submit" asp-page-handler="ChangeAddress" />
 					<button type="button" onclick="toggleChangeAddressForm()">Cancel</button>
 				</form>

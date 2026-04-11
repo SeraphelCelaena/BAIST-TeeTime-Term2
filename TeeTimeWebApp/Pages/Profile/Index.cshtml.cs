@@ -75,7 +75,7 @@ public class ProfileModel : PageModel
 		{
 			Connection = ChangeEmailConnection,
 			CommandType = CommandType.StoredProcedure,
-			CommandText = "ChangeEmail",
+			CommandText = "UpdateEmail",
 			Parameters =
 			{
 				new SqlParameter("@CurrentEmail", SqlDbType.VarChar, 100) { Value = User.FindFirstValue(ClaimTypes.Email) },
@@ -100,7 +100,7 @@ public class ProfileModel : PageModel
 			return Page();
 		}
 
-		return RedirectToPage();
+		return RedirectToPage("/Logout");
 	}
 
 	public async Task<IActionResult> OnPostChangeName()
@@ -114,7 +114,7 @@ public class ProfileModel : PageModel
 		{
 			Connection = ChangeNameConnection,
 			CommandType = CommandType.StoredProcedure,
-			CommandText = "ChangeName",
+			CommandText = "UpdateName",
 			Parameters =
 			{
 				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = User.FindFirstValue(ClaimTypes.Email) },
@@ -154,7 +154,7 @@ public class ProfileModel : PageModel
 		{
 			Connection = ChangePhoneNumberConnection,
 			CommandType = CommandType.StoredProcedure,
-			CommandText = "ChangePhoneNumber",
+			CommandText = "UpdatePhoneNumber",
 			Parameters =
 			{
 				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = User.FindFirstValue(ClaimTypes.Email) },
@@ -193,7 +193,7 @@ public class ProfileModel : PageModel
 		{
 			Connection = ChangeAddressConnection,
 			CommandType = CommandType.StoredProcedure,
-			CommandText = "ChangeAddress",
+			CommandText = "UpdateAddress",
 			Parameters =
 			{
 				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = User.FindFirstValue(ClaimTypes.Email) },
@@ -235,7 +235,7 @@ public class ProfileModel : PageModel
 		{
 			Connection = ChangePasswordConnection,
 			CommandType = CommandType.StoredProcedure,
-			CommandText = "ChangePassword",
+			CommandText = "UpdatePassword",
 			Parameters =
 			{
 				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = User.FindFirstValue(ClaimTypes.Email) },

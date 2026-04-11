@@ -126,6 +126,23 @@ GO
 
 If Exists (Select Name From sys.procedures Where Name = 'UpdateEmail')
 	Drop Procedure UpdateEmail
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'UpdateName')
+	Drop Procedure UpdateName
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'UpdatePhoneNumber')
+	Drop Procedure UpdatePhoneNumber
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'UpdateAddress')
+	Drop Procedure UpdateAddress
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'UpdatePassword')
+	Drop Procedure UpdatePassword
+GO
 
 -- Create
 Create Table Roles

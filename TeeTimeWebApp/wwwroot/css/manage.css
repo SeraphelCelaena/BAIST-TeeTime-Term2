@@ -1,13 +1,11 @@
 .manage {
-	display: flex;
+	display: grid;
+	grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
 	gap: 1.5rem;
-	align-items: flex-start;
-	flex-wrap: wrap;
+	align-items: start;
 }
 
 .manage > * {
-	flex: 1 1 calc(50% - 0.75rem);
-	max-width: calc(50% - 0.75rem);
 	min-width: 0;
 	box-sizing: border-box;
 }
@@ -23,16 +21,20 @@
 .manage table {
 	width: 100%;
 	max-width: 100%;
-	border-collapse: collapse;
+	table-layout: fixed;
+	/* border: 1px solid #ccc;
+	border-radius: 5px;
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); */
+}
+
+.manage th,
+.manage td {
+	padding: 0.6rem 0.75rem;
+	overflow-wrap: anywhere;
 }
 
 @media (max-width: 900px) {
 	.manage {
-		flex-wrap: wrap;
-	}
-
-	.manage > * {
-		flex-basis: 100%;
-		max-width: 100%;
+		grid-template-columns: 1fr;
 	}
 }

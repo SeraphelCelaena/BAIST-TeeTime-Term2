@@ -1,2 +1,23 @@
 @page
 @model MembershipApplicationModel
+@{
+	ViewData["Title"] = "Membership Application";
+}
+
+<h2>Membership Application</h2>
+@if (Model.Role == "Shareholder")
+{
+	<p>You are already a Shareholder member.</p>
+}
+else if (Model.Role == "Admin")
+{
+	<p>You are already a Admin member.</p>
+}
+else
+{
+	<form method="post" id="MemberApplicationForm">
+		<table>
+			
+		</table>
+	</form>
+}

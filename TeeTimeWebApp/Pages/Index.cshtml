@@ -31,12 +31,15 @@
 						}
 					</ul>
 				</td>
-				<td>
-					<ul>
-						<li><a href="/Admin/ManageUser">Manage Users</a></li>
-						<li><a href="/Admin/ReviewMembershipApplication">Review Membership Applications</a></li>
-					</ul>
-				</td>
+				@if (User.IsInRole(role: "Admin"))
+				{
+					<td>
+						<ul>
+							<li><a href="/Admin/ManageUser">Manage Users</a></li>
+							<li><a href="/Admin/ReviewMembershipApplication">Review Membership Applications</a></li>
+						</ul>
+					</td>
+				}
 				<td>
 					<ul>
 						<li><a href="/Profile">Profile</a></li>

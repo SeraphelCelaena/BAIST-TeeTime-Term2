@@ -3,30 +3,32 @@
 @{
 	ViewData["Title"] = "View Tee Time";
 }
+<link rel="stylesheet" href="~/css/GenericForm.css" />
 
 <h2>View Tee Times</h2>
 
-<input type="date" />
-
-@if (Model.TeeTimesList.Count == 0)
-{
-	<p>No tee times found.</p>
-}
-else
-{
-	<table>
-		<tr>
-			<td>Time</td>
-			<td>Players Booked</td>
-			<td>Confirmed</td>
-		</tr>
-		<tr>
-			@foreach (var TeeTime in Model.TeeTimesList)
-			{
-				<td>@TeeTime.StartTime</td>
-				<td>@TeeTime.Count / 4</td>
-				<td>@TeeTime.Confirmed</td>
-			}
-		</tr>
-	</table>
-}
+<div class="genericform">
+	<input type="date" />
+	@if (Model.TeeTimesList.Count == 0)
+	{
+		<p>No tee times found.</p>
+	}
+	else
+	{
+		<table>
+			<tr>
+				<td>Time</td>
+				<td>Players Booked</td>
+				<td>Confirmed</td>
+			</tr>
+			<tr>
+				@foreach (var TeeTime in Model.TeeTimesList)
+				{
+					<td>@TeeTime.StartTime</td>
+					<td>@TeeTime.Count / 4</td>
+					<td>@TeeTime.Confirmed</td>
+				}
+			</tr>
+		</table>
+	}
+</div>

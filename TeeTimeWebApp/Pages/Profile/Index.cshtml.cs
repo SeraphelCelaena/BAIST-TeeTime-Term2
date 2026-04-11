@@ -93,6 +93,17 @@ public class ProfileModel : PageModel
 					ChangeEmailCommand.ExecuteNonQuery();
 				}
 			}
+
+			var identity = User.Identity as ClaimsIdentity;
+			if (identity != null)
+			{
+				var emailClaim = identity.FindFirst(ClaimTypes.Email);
+				if (emailClaim != null)
+				{
+					identity.RemoveClaim(emailClaim);
+					identity.AddClaim(new Claim(ClaimTypes.Email, EmailEdit));
+				}
+			}
 		}
 		catch (SqlException ex)
 		{
@@ -100,7 +111,7 @@ public class ProfileModel : PageModel
 			return Page();
 		}
 
-		return RedirectToPage("/Logout");
+		return RedirectToPage();
 	}
 
 	public async Task<IActionResult> OnPostChangeName()
@@ -131,6 +142,21 @@ public class ProfileModel : PageModel
 				using (ChangeNameCommand)
 				{
 					ChangeNameCommand.ExecuteNonQuery();
+				}
+			}
+
+			var identity = User.Identity as ClaimsIdentity;
+			if (identity != null)
+			{
+				var firstNameClaim = identity.FindFirst(ClaimTypes.GivenName);
+				var lastNameClaim = identity.FindFirst(ClaimTypes.Surname);
+
+				if (firstNameClaim != null && lastNameClaim != null)
+				{
+					identity.RemoveClaim(firstNameClaim);
+					identity.RemoveClaim(lastNameClaim);
+					identity.AddClaim(new Claim(ClaimTypes.GivenName, FirstNameEdit));
+					identity.AddClaim(new Claim(ClaimTypes.Surname, LastNameEdit));
 				}
 			}
 		}

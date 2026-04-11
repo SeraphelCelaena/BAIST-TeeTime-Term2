@@ -3,11 +3,12 @@
 @{
 	ViewData["Title"] = "Manage Tee Times";
 }
+<link rel="stylesheet" href="~/css/GenericForm.css" />
 <link rel="stylesheet" href="~/css/Manage.css" />
 
 <h2>Manage Tee Times</h2>
 <div class="manage">
-	<div class="manage-list">
+	<div class="manage-list genericform">
 		@if (Model.TeeTimesList.Count == 0)
 		{
 			<p>No tee times found.</p>
@@ -44,7 +45,7 @@
 			</table>
 		}
 	</div>
-	<div class="manage-form">
+	<div class="manage-form genericform">
 		<form id="EditTeeTimeForm" method="post">
 			<input type="hidden" id="EditTeeTimeID" asp-for="TeeTimeIDEdit" />
 			<table>

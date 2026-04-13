@@ -12,3 +12,31 @@
 table {
 	width: 100%;
 }
+
+.actions-cell {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	white-space: nowrap;
+}
+
+.actions-cell form,
+.actions-cell button,
+.actions-cell input[type="submit"] {
+	display: inline-flex;
+	vertical-align: middle;
+	margin: 0;
+}
+
+.actions-cell input[type="submit"],
+.actions-cell button {
+	margin-top: 0;
+	white-space: nowrap;
+}
+
+.actions-cell form + form,
+.actions-cell button + form,
+.actions-cell form + button,
+.actions-cell button + button {
+	margin-left: 0;
+}

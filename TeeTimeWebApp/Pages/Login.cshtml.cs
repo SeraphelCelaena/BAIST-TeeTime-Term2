@@ -68,7 +68,7 @@ public class LoginModel : PageModel
 									new Claim(ClaimTypes.Email, Email.ToLower()),
 									new Claim(ClaimTypes.GivenName, LoginDataReader["FirstName"].ToString()!),
 									new Claim(ClaimTypes.Surname, LoginDataReader["LastName"].ToString()!),
-									// new Claim(ClaimTypes.MobilePhone, LoginDataReader["PhoneNumber"].ToString()!),
+									new Claim(ClaimTypes.MobilePhone, LoginDataReader["PhoneNumber"].ToString()!),
 									new Claim(ClaimTypes.Role, LoginDataReader["RoleName"].ToString()!)
 								};
 

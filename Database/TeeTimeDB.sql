@@ -144,6 +144,10 @@ If Exists (Select Name From sys.procedures Where Name = 'UpdatePassword')
 	Drop Procedure UpdatePassword
 GO
 
+If Exists (Select Name From sys.procedures Where Name = 'UpdateMembershipApplicationStatus')
+	Drop Procedure UpdateMembershipApplicationStatus
+GO
+
 -- Create
 Create Table Roles
 (
@@ -771,7 +775,7 @@ AS
 	Begin
 		Select Email, FirstName, LastName, PhoneNumber, Address, City, Province, PostalCode, RoleID
 		From TeeTimeUser
-		Where Email != 'SuperUser'
+		Where Email != 'superuser@baist.ca'
 
 		If @@Error = 0
 			Set @TeeTimeReturnCode = 0 -- Success
@@ -876,17 +880,22 @@ Create Procedure AddMembershipApplication(
 	@Province VarChar(50),
 	@PostalCode VarChar(6),
 	@PhoneNumber VarChar(10),
-	@Alt_PhoneNumber VarChar(10),
+	@Alt_PhoneNumber VarChar(10) = Null,
 	@DateOfBirth Date,
 	@Occupation VarChar(50),
-	@CompanyName VarChar(50),
-	@CompanyAddress VarChar(100),
-	@CompanyPostalCode VarChar(6),
-	@CompanyPhoneNumber VarChar(10)
+	@CompanyName VarChar(50) = Null,
+	@CompanyAddress VarChar(100) = Null,
+	@CompanyPostalCode VarChar(6) = Null,
+	@CompanyPhoneNumber VarChar(10) = Null
 )
 AS
 	Declare @TeeTimeReturnCode Int
 	Set @TeeTimeReturnCode = 1 -- Default to failure
+	Set @Alt_PhoneNumber = NullIf(Ltrim(Rtrim(@Alt_PhoneNumber)), '')
+	Set @CompanyName = NullIf(Ltrim(Rtrim(@CompanyName)), '')
+	Set @CompanyAddress = NullIf(Ltrim(Rtrim(@CompanyAddress)), '')
+	Set @CompanyPostalCode = NullIf(Ltrim(Rtrim(@CompanyPostalCode)), '')
+	Set @CompanyPhoneNumber = NullIf(Ltrim(Rtrim(@CompanyPhoneNumber)), '')
 
 	If @Email Is Null Or @FirstName Is Null Or @LastName Is Null Or @Address Is Null Or @City Is Null Or @Province Is Null Or @PostalCode Is Null Or @PhoneNumber Is Null Or @DateOfBirth Is Null Or @Occupation Is Null -- Checks if all required fields are provided
 		Raiserror('AddMembershipApplication - All required fields must be provided.', 16, 1)
@@ -900,7 +909,7 @@ AS
 				If Len(@PhoneNumber) <> 10 Or @PhoneNumber Not Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' -- Check PhoneNumber format
 					Raiserror('AddMembershipApplication - Invalid PhoneNumber format.', 16, 1)
 				Else
-					If Len(@Alt_PhoneNumber) <> 10 Or @Alt_PhoneNumber Not Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' -- Check Alt_PhoneNumber format
+					If @Alt_PhoneNumber Is Not Null And (Len(@Alt_PhoneNumber) <> 10 Or @Alt_PhoneNumber Not Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]') -- Check Alt_PhoneNumber format only when supplied
 						Raiserror('AddMembershipApplication - Invalid Alt_PhoneNumber format.', 16, 1)
 					Else
 						If Len(@CompanyPhoneNumber) <> 10 Or @CompanyPhoneNumber Not Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' -- Check CompanyPhoneNumber format
@@ -961,7 +970,7 @@ AS
 	Set @TeeTimeReturnCode = 1 -- Default to failure
 
 	Begin
-		Select Email, FirstName, LastName, Address, City, Province, PostalCode, PhoneNumber, Alt_PhoneNumber, DateOfBirth, Occupation, CompanyName, CompanyAddress, CompanyPostalCode, CompanyPhoneNumber, DateApplied, Status
+		Select ApplicationID, Email, FirstName, LastName, Address, City, Province, PostalCode, PhoneNumber, Alt_PhoneNumber, DateOfBirth, Occupation, CompanyName, CompanyAddress, CompanyPostalCode, CompanyPhoneNumber, DateApplied, Status
 		From MembershipApplication
 
 		If @@Error = 0
@@ -1154,6 +1163,37 @@ AS
 						Set @TeeTimeReturnCode = 0 -- Success
 					Else
 						Raiserror('UpdateAddress - Error updating user address.', 16, 1)
+				End
+
+	Return @TeeTimeReturnCode
+GO
+
+Create Procedure UpdateMembershipApplicationStatus(
+	@ApplicationID Int,
+	@Status VarChar(20)
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @ApplicationID Is Null Or @Status Is Null -- Checks if all fields are provided
+		Raiserror('UpdateMembershipApplicationStatus - All fields must be provided.', 16, 1)
+	Else
+		If Not Exists (Select 1 From MembershipApplication Where ApplicationID = @ApplicationID) -- Check for valid ApplicationID
+			Raiserror('UpdateMembershipApplicationStatus - Invalid ApplicationID.', 16, 1)
+		Else
+			If @Status Not In ('Pending', 'Approved', 'Rejected') -- Check for valid status value
+				Raiserror('UpdateMembershipApplicationStatus - Invalid status value.', 16, 1)
+			Else
+				Begin -- Update the application status
+					Update MembershipApplication
+					Set Status = @Status
+					Where ApplicationID = @ApplicationID
+
+					If @@Error = 0
+						Set @TeeTimeReturnCode = 0 -- Success
+					Else
+						Raiserror('UpdateMembershipApplicationStatus - Error updating membership application status.', 16, 1)
 				End
 
 	Return @TeeTimeReturnCode

@@ -30,7 +30,7 @@
 						<td>@teeTime.StartTime</td>
 						<td>@teeTime.Count</td>
 						<td>@teeTime.Confirmed</td>
-						<td>
+						<td class="actions-cell">
 							<form method="post" id="EditTeeTimeFormQuery">
 								<input type="hidden" name="TeeTimeIDPopulate" value="@teeTime.TeeTimeID" />
 								<input type="submit" value="Edit" asp-page-handler="EditPopulate" />

@@ -1,2 +1,146 @@
 @page
+@using TeeTimeWebApp.Models
 @model ReviewMembershipApplicationModel
+@{
+	ViewData["Title"] = "Review Membership Application";
+}
+<link rel="stylesheet" href="~/css/GenericForm.css" />
+
+@ViewData["Error"]
+
+<h2>Review Membership Application</h2>
+<div class="genericform" id="MembershipApplicationsList">
+	@if (Model.MembershipApplicationsList.Count == 0)
+	{
+		<p>No Active Membership Applications Found</p>
+	}
+	else
+	{
+		<table>
+			<tr>
+				<td>Email</td>
+				<td>Name</td>
+				<td>Phone Number</td>
+				<td>Status</td>
+				<td>Application Date</td>
+				<td>Actions</td>
+			</tr>
+			@foreach (MembershipApplication membershipApplication in Model.MembershipApplicationsList)
+			{
+				<tr>
+					<td>@membershipApplication.Email</td>
+					<td>@membershipApplication.FirstName @membershipApplication.LastName</td>
+					<td>@membershipApplication.PhoneNumber</td>
+					<td>@membershipApplication.Status</td>
+					<td>@membershipApplication.DateApplied</td>
+					<td class="actions-cell">
+						<button type="button"
+								data-id="@membershipApplication.MembershipApplicationID"
+								data-email="@membershipApplication.Email"
+								data-first-name="@membershipApplication.FirstName"
+								data-last-name="@membershipApplication.LastName"
+								data-phone-number="@membershipApplication.PhoneNumber"
+								data-alternative-phone-number="@(string.IsNullOrWhiteSpace(membershipApplication.Alt_PhoneNumber) ? "N/A" : membershipApplication.Alt_PhoneNumber)"
+								data-address="@membershipApplication.Address"
+								data-city="@membershipApplication.City"
+								data-province="@membershipApplication.Province"
+								data-postal-code="@membershipApplication.PostalCode"
+								data-date-of-birth="@membershipApplication.DateOfBirth"
+								data-occupation="@membershipApplication.Occupation"
+								data-companyname="@(string.IsNullOrWhiteSpace(membershipApplication.CompanyName) ? "N/A" : membershipApplication.CompanyName)"
+								data-companyaddress="@(string.IsNullOrWhiteSpace(membershipApplication.CompanyAddress) ? "N/A" : membershipApplication.CompanyAddress)"
+								data-companypostalcode="@(string.IsNullOrWhiteSpace(membershipApplication.CompanyPostalCode) ? "N/A" : membershipApplication.CompanyPostalCode)"
+								data-companyphonenumber="@(string.IsNullOrWhiteSpace(membershipApplication.CompanyPhoneNumber) ? "N/A" : membershipApplication.CompanyPhoneNumber)"
+								data-status="@(string.IsNullOrWhiteSpace(membershipApplication.Status) ? "N/A" : membershipApplication.Status)"
+								data-date-applied="@membershipApplication.DateApplied.ToString("yyyy-MM-dd")"
+								onclick="populateReviewForm(this)">
+							Review
+						</button>
+					</td>
+				</tr>
+			}
+		</table>
+	}
+</div>
+
+<div class="genericform" style="display:none;" id="ReviewForm">
+	<h3>Review Application</h3>
+	<table>
+		<tr>
+			<td>
+				<h3>User Information</h3>
+				<p><strong>Email:</strong> <span id="ReviewEmail"></span></p>
+				<p><strong>Name:</strong> <span id="ReviewName"></span></p>
+				<p><strong>Date of Birth:</strong> <span id="ReviewDateOfBirth"></span></p>
+				<p><strong>Phone Number:</strong> <span id="ReviewPhoneNumber"></span></p>
+				<p><strong>Alternative Phone Number:</strong> <span id="ReviewAltPhoneNumber"></span></p>
+			</td>
+			<td>
+				<h3>Address</h3>
+				<p><strong>Address:</strong> <span id="ReviewAddress"></span></p>
+				<p><strong>City:</strong> <span id="ReviewCity"></span></p>
+				<p><strong>Province:</strong> <span id="ReviewProvince"></span></p>
+				<p><strong>Postal Code:</strong> <span id="ReviewPostalCode"></span></p>
+				<p><strong>Occupation:</strong> <span id="ReviewOccupation"></span></p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<h3>Company Information</h3>
+				<p><strong>Company Name:</strong> <span id="ReviewCompanyName"></span></p>
+				<p><strong>Company Address:</strong> <span id="ReviewCompanyAddress"></span></p>
+				<p><strong>Company Postal Code:</strong> <span id="ReviewCompanyPostalCode"></span></p>
+				<p><strong>Company Phone Number:</strong> <span id="ReviewCompanyPhoneNumber"></span></p>
+			</td>
+			<td>
+				<h3>Application Details</h3>
+				<p><strong>Status:</strong> <span id="ReviewStatus"></span></p>
+				<p><strong>Date Applied:</strong> <span id="ReviewDateApplied"></span></p>
+			</td>
+		</tr>
+		<tr>
+			<td col-span="2" class="actions-cell">
+				<form method="post" asp-page-handler="Approve">
+					<input type="hidden" id="ApproveMembershipApplicationID" name="MembershipApplicationID" value="" asp-for="MembershipApplicationID" />
+					<input type="submit" value="Approve" asp-page-handler="Approve" />
+				</form>
+				<form method="post" asp-page-handler="Reject">
+					<input type="hidden" id="RejectMembershipApplicationID" name="MembershipApplicationID" value="" asp-for="MembershipApplicationID" />
+					<input type="submit" value="Reject" asp-page-handler="Reject" />
+				</form>
+				<button type="button" onclick="cancelReview()">Cancel</button>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<script>
+	function populateReviewForm(button) {
+		document.getElementById("ReviewEmail").textContent = button.getAttribute("data-email");
+		document.getElementById("ReviewName").textContent = button.getAttribute("data-first-name") + " " + button.getAttribute("data-last-name");
+		document.getElementById("ReviewPhoneNumber").textContent = button.getAttribute("data-phone-number");
+		document.getElementById("ReviewAltPhoneNumber").textContent = button.getAttribute("data-alternative-phone-number");
+		document.getElementById("ReviewAddress").textContent = button.getAttribute("data-address");
+		document.getElementById("ReviewCity").textContent = button.getAttribute("data-city");
+		document.getElementById("ReviewProvince").textContent = button.getAttribute("data-province");
+		document.getElementById("ReviewPostalCode").textContent = button.getAttribute("data-postal-code");
+		document.getElementById("ReviewDateOfBirth").textContent = button.getAttribute("data-date-of-birth");
+		document.getElementById("ReviewOccupation").textContent = button.getAttribute("data-occupation");
+		document.getElementById("ReviewCompanyName").textContent = button.getAttribute("data-companyname");
+		document.getElementById("ReviewCompanyAddress").textContent = button.getAttribute("data-companyaddress");
+		document.getElementById("ReviewCompanyPostalCode").textContent = button.getAttribute("data-companypostalcode");
+		document.getElementById("ReviewCompanyPhoneNumber").textContent = button.getAttribute("data-companyphonenumber");
+		document.getElementById("ReviewStatus").textContent = button.getAttribute("data-status");
+		document.getElementById("ReviewDateApplied").textContent = button.getAttribute("data-date-applied");
+		document.getElementById("ApproveMembershipApplicationID").value = button.getAttribute("data-id");
+		document.getElementById("RejectMembershipApplicationID").value = button.getAttribute("data-id");
+
+		document.getElementById("ReviewForm").style.display = "block";
+		document.getElementById("MembershipApplicationsList").style.display = "none";
+	}
+
+	function cancelReview() {
+		document.getElementById("ReviewForm").style.display = "none";
+		document.getElementById("MembershipApplicationsList").style.display = "block";
+	}
+</script>

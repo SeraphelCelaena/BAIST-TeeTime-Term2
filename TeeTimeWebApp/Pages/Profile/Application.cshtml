@@ -3,21 +3,65 @@
 @{
 	ViewData["Title"] = "Membership Application";
 }
+<link rel="stylesheet" href="~/css/GenericForm.css" />
 
-<h2>Membership Application</h2>
-@if (Model.Role == "Shareholder")
-{
-	<p>You are already a Shareholder member.</p>
-}
-else if (Model.Role == "Admin")
-{
-	<p>You are already a Admin member.</p>
-}
-else
-{
-	<form method="post" id="MemberApplicationForm">
-		<table>
-			
-		</table>
-	</form>
-}
+@ViewData["Error"]
+
+<h2>Shareholder Membership Application</h2>
+<div class="genericform">
+	@if (Model.Role == "Shareholder")
+	{
+		<p>You are already a Shareholder member.</p>
+	}
+	else if (Model.Role == "Admin")
+	{
+		<p>You are already a Admin member.</p>
+	}
+	else
+	{
+		<form method="post" id="MemberApplicationForm">
+			<table>
+				<tr>
+					<td>
+						<h3>Email</h3>
+						<input type="text" value="@Model.Email" disabled />
+						<h3>Name</h3>
+						<input type="text" value="@Model.FirstName @Model.LastName" disabled />
+					</td>
+					<td>
+						<h3>Phone Number</h3>
+						<input type="text" value="@Model.PhoneNumber" disabled />
+						<h3>Alternative Phone Number</h3>
+						<input type="text" asp-for="AlternativePhoneNumber" />
+					</td>
+					<td>
+						<h3>Date of Birth</h3>
+						<input type="date" asp-for="DateOfBirth" />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<h3>Address</h3>
+						<input type="text" asp-for="Address" placeholder="Address" />
+						<input type="text" asp-for="City" placeholder="City" />
+						<input type="text" asp-for="Province" placeholder="Province" />
+						<input type="text" asp-for="PostalCode" placeholder="Postal Code" />
+					</td>
+					<td>
+						<h3>Occupation & Employer</h3>
+						<input type="text" asp-for="Occupation" placeholder="Occupation" />
+						<input type="text" asp-for="CompanyName" placeholder="Company Name" />
+						<input type="text" asp-for="CompanyAddress" placeholder="Company Address" />
+						<input type="text" asp-for="CompanyPostalCode" placeholder="Company Postal Code" />
+						<input type="text" asp-for="CompanyPhoneNumber" placeholder="Company Phone Number" />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<input type="submit" value="Submit Application" asp-page-handler="SubmitApplication" />
+					</td>
+				</tr>
+			</table>
+		</form>
+	}
+</div>

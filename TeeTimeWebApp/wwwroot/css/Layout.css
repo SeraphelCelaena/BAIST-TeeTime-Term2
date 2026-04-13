@@ -83,6 +83,8 @@ nav ul .login {
 	min-width: 130px;
 	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
 	padding: 12px 16px;
+	flex-direction: column;
+	gap: 6px;
 }
 
 .dropdown-content li {
@@ -90,5 +92,5 @@ nav ul .login {
 }
 
 .dropdown:hover .dropdown-content {
-	display: block;
+	display: flex;
 }

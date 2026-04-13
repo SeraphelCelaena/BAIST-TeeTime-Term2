@@ -33,8 +33,10 @@
 				</td>
 			</tr>
 			<tr>
-				<td><input type="submit" value="Book" asp-page-handler="Book" /></td>
-				<td><input type="submit" value="Cancel" asp-page-handler="Cancel" /></td>
+				<td>
+					<input type="submit" value="Book" asp-page-handler="Book" />
+					<input type="submit" value="Cancel" asp-page-handler="Cancel" />
+				</td>
 			</tr>
 		}
 		else
@@ -45,7 +47,6 @@
 		}
 	</table>
 </form>
-@Model.Message
 
 @foreach (var teeTime in Model.UsedTeeTimes)
 {

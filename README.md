@@ -4,7 +4,7 @@
 ## Users
 | Email | Password |
 | --- | --- |
-| superuser@baist.ca | SuperPAss123 |
+| superuser@baist.ca | SuperPass123 |
 | admin@baist.ca | AdminPass123 |
 | stakeholder@baist.ca | StakePass123 |
 | gold@baist.ca | GoldPass123 |

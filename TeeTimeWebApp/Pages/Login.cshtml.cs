@@ -17,7 +17,6 @@ public class LoginModel : PageModel
 		_configuration = configuration;
 	}
 
-	public string Message { get; set; } = string.Empty;
 	[BindProperty]
 	public string Email { get; set; } = string.Empty;
 	[BindProperty]
@@ -27,7 +26,7 @@ public class LoginModel : PageModel
 	{
 		if (string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(Password))
 		{
-			Message = "Please enter both email and password.";
+			ViewData["Error"] = "Please enter both email and password.";
 			return Page();
 		}
 
@@ -93,7 +92,7 @@ public class LoginModel : PageModel
 		}
 		catch (Exception ex)
 		{
-			Message = $"An error occurred during login: {ex.Message}";
+			ViewData["Error"] = $"An error occurred while attempting to log in: {ex.Message}";
 		}
 
 		return Page();

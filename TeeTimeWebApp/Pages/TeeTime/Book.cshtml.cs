@@ -18,7 +18,6 @@ public class BookModel : PageModel
 		_configuration = configuration;
 	}
 
-	public string Message { get; set; } = string.Empty;
 	public string Role { get; set; } = string.Empty;
 
 	[BindProperty]
@@ -97,7 +96,7 @@ public class BookModel : PageModel
 		}
 		catch (Exception ex)
 		{
-			Message = $"An error occurred while checking tee times: {ex.Message}";
+			ViewData["Error"] = $"An error occurred while verifying the date: {ex.Message}";
 		}
 
 		return Page();
@@ -106,7 +105,7 @@ public class BookModel : PageModel
 	public async Task<IActionResult> OnPostCancel()
 	{
 		ValidDate = false;
-		Message = "OnCancel";
+		ViewData["Error"] = "OnCancel";
 		UsedTeeTimes = new List<UsedTeeTime>();
 		AvailableTeeTimes = new List<SelectListItem>();
 
@@ -119,7 +118,7 @@ public class BookModel : PageModel
 
 		if (SelectedTime == TimeOnly.MinValue)
 		{
-			Message = "Please select a time.";
+			ViewData["Error"] = "Please select a time.";
 			return Page();
 		}
 
@@ -171,7 +170,7 @@ public class BookModel : PageModel
 						using (AddBookConfirm)
 						{
 							AddBookConfirm.ExecuteNonQuery();
-							Message = "TeeTime Booked Successfully";
+							ViewData["Success"] = "TeeTime Booked Successfully";
 						}
 					}
 				}
@@ -179,7 +178,7 @@ public class BookModel : PageModel
 		}
 		catch (Exception ex)
 		{
-			Message = $"An error occurred while booking the tee time: {ex.Message}";
+			ViewData["Error"] = $"An error occurred while booking the tee time: {ex.Message}";
 		}
 
 		return Page();
@@ -190,13 +189,13 @@ public class BookModel : PageModel
 		if (SelectedDate == default || SelectedDate < DateOnly.FromDateTime(DateTime.Now))
 		{
 			ValidDate = false;
-			Message = "Please select a valid date.";
+			ViewData["Error"] = "Please select a valid date.";
 		}
 
 		if (SelectedDate > DateOnly.FromDateTime(DateTime.Now.AddDays(14)))
 		{
 			ValidDate = false;
-			Message = "Please select a date within the next 2 weeks.";
+			ViewData["Error"] = "Please select a date within the next 2 weeks.";
 		}
 
 		var RoleClaim = User.FindFirstValue(ClaimTypes.Role);

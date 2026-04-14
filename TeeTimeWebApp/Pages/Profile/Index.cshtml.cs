@@ -105,7 +105,7 @@ public class ProfileModel : PageModel
 				}
 			}
 		}
-		catch (SqlException ex)
+		catch (Exception ex)
 		{
 			ViewData["Error"] = $"An error occurred while changing email: {ex.Message}";
 			return Page();
@@ -160,7 +160,7 @@ public class ProfileModel : PageModel
 				}
 			}
 		}
-		catch (SqlException ex)
+		catch (Exception ex)
 		{
 			ViewData["Error"] = $"An error occurred while changing name: {ex.Message}";
 			return Page();
@@ -199,7 +199,7 @@ public class ProfileModel : PageModel
 				}
 			}
 		}
-		catch (SqlException ex)
+		catch (Exception ex)
 		{
 			ViewData["Error"] = $"An error occurred while changing phone number: {ex.Message}";
 			return Page();
@@ -241,7 +241,7 @@ public class ProfileModel : PageModel
 				}
 			}
 		}
-		catch (SqlException ex)
+		catch (Exception ex)
 		{
 			ViewData["Error"] = $"An error occurred while changing address: {ex.Message}";
 			return Page();
@@ -281,7 +281,7 @@ public class ProfileModel : PageModel
 				}
 			}
 		}
-		catch (SqlException ex)
+		catch (Exception ex)
 		{
 			ViewData["Error"] = $"An error occurred while changing password: {ex.Message}";
 			return Page();

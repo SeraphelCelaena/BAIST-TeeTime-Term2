@@ -6,6 +6,7 @@
 	<title>@ViewData["Title"] - TeeTimeWebApp</title>
 	<link rel="stylesheet" href="~/css/Layout.css" />
 	<link rel="stylesheet" href="~/css/GlobalForm.css" />
+	<link rel="stylesheet" href="~/css/ViewData.css" />
 </head>
 <body>
 
@@ -54,6 +55,15 @@
 	</nav>
 
 	<main>
+		@if (ViewData["Error"] != null)
+		{
+			<div class="viewdata error">@ViewData["Error"]</div>
+		}
+
+		@if (ViewData["Success"] != null)
+		{
+			<div class="viewdata success">@ViewData["Success"]</div>
+		}
 		@RenderBody()
 	</main>
 

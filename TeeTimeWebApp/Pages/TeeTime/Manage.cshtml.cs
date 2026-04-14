@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authorization;
 [Authorize(Policy = "PayingMember")]
 public class ManageModel : PageModel
 {
-	public string Message { get; set; } = string.Empty;
 	private readonly IConfiguration _configuration;
 
 	public ManageModel(IConfiguration configuration)
@@ -131,7 +130,7 @@ public class ManageModel : PageModel
 		}
 		catch (Exception ex)
 		{
-			Message = $"An error occurred while updating the tee time: {ex.Message}";
+			ViewData["Error"] = $"An error occurred while editing the tee time: {ex.Message}";
 			return Page();
 		}
 

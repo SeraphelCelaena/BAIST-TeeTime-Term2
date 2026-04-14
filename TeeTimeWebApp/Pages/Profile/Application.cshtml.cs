@@ -103,7 +103,6 @@ public class MembershipApplicationModel : PageModel
 		catch (Exception ex)
 		{
 			ViewData["Error"] = $"An error occurred while submitting your application: {ex.Message}";
-			return Page();
 		}
 
 		return Page();

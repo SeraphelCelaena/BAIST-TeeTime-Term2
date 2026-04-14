@@ -103,7 +103,7 @@ public class ManageUserModel : PageModel
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine(ex.Message);
+			ViewData["Error"] = $"An error occurred while editing the user: {ex.Message}";
 		}
 
 		return Page();
@@ -143,7 +143,7 @@ public class ManageUserModel : PageModel
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine(ex.Message);
+			ViewData["Error"] = $"An error occurred while deleting the user: {ex.Message}";
 		}
 
 		return RedirectToPage();
@@ -196,7 +196,7 @@ public class ManageUserModel : PageModel
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine(ex.Message);
+			ViewData["Error"] = $"An error occurred while adding the warning: {ex.Message}";
 		}
 
 		await LoadWarningsForUser(WarningEmail);
@@ -303,7 +303,7 @@ public class ManageUserModel : PageModel
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine(ex.Message);
+			ViewData["Error"] = $"An error occurred while retrieving the user list: {ex.Message}";
 		}
 
 		return Page();
@@ -370,7 +370,7 @@ public class ManageUserModel : PageModel
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine(ex.Message);
+			ViewData["Error"] = $"An error occurred while retrieving warnings for the user: {ex.Message}";
 		}
 	}
 }

@@ -1,0 +1,40 @@
+.viewdata {
+	position: fixed;
+	top: 1.25rem;
+	right: 1.25rem;
+	z-index: 9999;
+	display: block;
+	max-width: min(28rem, calc(100vw - 2rem));
+	padding: 0.85rem 1rem;
+	border: 1px solid transparent;
+	border-radius: 0.6rem;
+	box-shadow: 0 0.45rem 1rem rgba(0, 0, 0, 0.2);
+	font-weight: 600;
+	line-height: 1.4;
+	word-break: break-word;
+	background: #f3f4f6;
+	color: #111827;
+}
+
+.viewdata.success,
+.success {
+	background: #dcfce7;
+	border-color: #22c55e;
+	color: #166534;
+}
+
+.viewdata.error,
+.error {
+	background: #fee2e2;
+	border-color: #ef4444;
+	color: #991b1b;
+}
+
+@media (max-width: 640px) {
+	.viewdata {
+		top: 1rem;
+		right: 1rem;
+		left: 1rem;
+		max-width: none;
+	}
+}

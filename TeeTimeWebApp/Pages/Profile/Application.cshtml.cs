@@ -99,6 +99,8 @@ public class MembershipApplicationModel : PageModel
 					SubmitApplicationCommand.ExecuteNonQuery();
 				}
 			}
+
+			ViewData["Success"] = "Membership application submitted successfully.";
 		}
 		catch (Exception ex)
 		{

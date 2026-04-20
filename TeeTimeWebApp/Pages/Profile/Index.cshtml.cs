@@ -104,6 +104,8 @@ public class ProfileModel : PageModel
 					identity.AddClaim(new Claim(ClaimTypes.Email, EmailEdit));
 				}
 			}
+
+			ViewData["Success"] = "Email changed successfully.";
 		}
 		catch (Exception ex)
 		{
@@ -159,6 +161,8 @@ public class ProfileModel : PageModel
 					identity.AddClaim(new Claim(ClaimTypes.Surname, LastNameEdit));
 				}
 			}
+
+			ViewData["Success"] = "Name changed successfully.";
 		}
 		catch (Exception ex)
 		{
@@ -198,6 +202,8 @@ public class ProfileModel : PageModel
 					ChangePhoneNumberCommand.ExecuteNonQuery();
 				}
 			}
+
+			ViewData["Success"] = "Phone number changed successfully.";
 		}
 		catch (Exception ex)
 		{
@@ -240,6 +246,8 @@ public class ProfileModel : PageModel
 					ChangeAddressCommand.ExecuteNonQuery();
 				}
 			}
+
+			ViewData["Success"] = "Address changed successfully.";
 		}
 		catch (Exception ex)
 		{
@@ -280,6 +288,8 @@ public class ProfileModel : PageModel
 					ChangePasswordCommand.ExecuteNonQuery();
 				}
 			}
+
+			ViewData["Success"] = "Password changed successfully.";
 		}
 		catch (Exception ex)
 		{

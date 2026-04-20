@@ -15,7 +15,6 @@ public class RequestStandingTeeTimeModel : PageModel
 		_configuration = configuration;
 	}
 
-	[BindProperty]
 	public string Email { get; set; } = string.Empty;
 	[BindProperty]
 	public string Member2 { get; set; } = string.Empty;
@@ -114,6 +113,7 @@ public class RequestStandingTeeTimeModel : PageModel
 						using (AddStandingTeeTimeMembersCommand)
 						{
 							AddStandingTeeTimeMembersCommand.ExecuteNonQuery();
+							ViewData["Success"] = "Standing tee time request submitted successfully.";
 						}
 					}
 				}
@@ -130,12 +130,12 @@ public class RequestStandingTeeTimeModel : PageModel
 	public async Task<IActionResult> GetEmail()
 	{
 		var RoleClaim = User.FindFirstValue(ClaimTypes.Role);
+		var EmailClaim = User.FindFirstValue(ClaimTypes.Email);
 		if (RoleClaim != "Stakeholder")
 		{
 			return RedirectToPage("/Index");
 		}
 
-		var EmailClaim = User.FindFirstValue(ClaimTypes.Email);
 		if (EmailClaim != null)
 		{
 			Email = EmailClaim;

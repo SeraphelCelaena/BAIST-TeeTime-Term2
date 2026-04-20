@@ -57,12 +57,18 @@
 	<main>
 		@if (ViewData["Error"] != null)
 		{
-			<div class="viewdata error">@ViewData["Error"]</div>
+			<div class="viewdata error" role="alert">
+				<span>@ViewData["Error"]</span>
+				<button type="button" class="viewdata-close" aria-label="Close message" onclick="this.closest('.viewdata')?.remove()">&times;</button>
+			</div>
 		}
 
 		@if (ViewData["Success"] != null)
 		{
-			<div class="viewdata success">@ViewData["Success"]</div>
+			<div class="viewdata success" role="status">
+				<span>@ViewData["Success"]</span>
+				<button type="button" class="viewdata-close" aria-label="Close message" onclick="this.closest('.viewdata')?.remove()">&times;</button>
+			</div>
 		}
 		@RenderBody()
 	</main>

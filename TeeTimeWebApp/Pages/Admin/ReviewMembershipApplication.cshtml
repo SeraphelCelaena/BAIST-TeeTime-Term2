@@ -100,6 +100,7 @@
 			<td col-span="2" class="actions-cell">
 				<form method="post" asp-page-handler="Approve">
 					<input type="hidden" id="ApproveMembershipApplicationID" name="MembershipApplicationID" value="" asp-for="MembershipApplicationID" />
+					<input type="hidden" name="MemberEmail" asp-for="MemberEmail" />
 					<input type="submit" value="Approve" asp-page-handler="Approve" />
 				</form>
 				<form method="post" asp-page-handler="Reject">
@@ -132,6 +133,7 @@
 		document.getElementById("ReviewDateApplied").textContent = button.getAttribute("data-date-applied");
 		document.getElementById("ApproveMembershipApplicationID").value = button.getAttribute("data-id");
 		document.getElementById("RejectMembershipApplicationID").value = button.getAttribute("data-id");
+		document.getElementById("MemberEmail").value = button.getAttribute("data-email");
 
 		document.getElementById("ReviewForm").style.display = "block";
 		document.getElementById("MembershipApplicationsList").style.display = "none";

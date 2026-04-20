@@ -100,6 +100,8 @@ public class ManageUserModel : PageModel
 					EditUserCommand.ExecuteNonQuery();
 				}
 			}
+
+			ViewData["Success"] = "User details updated successfully.";
 		}
 		catch (Exception ex)
 		{
@@ -140,6 +142,8 @@ public class ManageUserModel : PageModel
 					DeleteUserCommand.ExecuteNonQuery();
 				}
 			}
+
+			ViewData["Success"] = "User deleted successfully.";
 		}
 		catch (Exception ex)
 		{
@@ -193,6 +197,8 @@ public class ManageUserModel : PageModel
 					AddWarningCommand.ExecuteNonQuery();
 				}
 			}
+
+			ViewData["Success"] = "Warning added successfully.";
 		}
 		catch (Exception ex)
 		{

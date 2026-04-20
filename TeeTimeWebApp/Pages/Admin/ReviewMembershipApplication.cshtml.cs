@@ -19,6 +19,8 @@ public class ReviewMembershipApplicationModel : PageModel
 
 	[BindProperty]
 	public int MembershipApplicationID { get; set; }
+	[BindProperty]
+	public string MemberEmail { get; set; } = string.Empty;
 
 	public async Task<IActionResult> OnGet()
 	{
@@ -70,6 +72,32 @@ public class ReviewMembershipApplicationModel : PageModel
 					UpdateStatusCommand.ExecuteNonQuery();
 				}
 			}
+
+			if (newStatus == "Approved")
+			{
+				SqlCommand UpdateUserRoleCommand = new()
+				{
+					Connection = UpdateStatusConnection,
+					CommandType = CommandType.StoredProcedure,
+					CommandText = "UpdateUserRole",
+					Parameters =
+					{
+						new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = MemberEmail },
+						new SqlParameter("@NewRoleID", SqlDbType.Int) { Value = 2 }
+					}
+				};
+
+				using (UpdateStatusConnection)
+				{
+					UpdateStatusConnection.Open();
+					using (UpdateUserRoleCommand)
+					{
+						UpdateUserRoleCommand.ExecuteNonQuery();
+					}
+				}
+			}
+
+			ViewData["Success"] = $"Application {newStatus.ToLower()} successfully.";
 		}
 		catch (Exception ex)
 		{

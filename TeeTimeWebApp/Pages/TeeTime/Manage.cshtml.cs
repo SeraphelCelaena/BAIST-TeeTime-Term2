@@ -78,6 +78,8 @@ public class ManageModel : PageModel
 					DeleteTeeTimeCommand.ExecuteNonQuery();
 				}
 			}
+
+			ViewData["Success"] = "Tee time deleted successfully.";
 		}
 		catch (Exception ex)
 		{
@@ -127,6 +129,8 @@ public class ManageModel : PageModel
 					EditTeeTimeCommand.ExecuteNonQuery();
 				}
 			}
+
+			ViewData["Success"] = "Tee time updated successfully.";
 		}
 		catch (Exception ex)
 		{

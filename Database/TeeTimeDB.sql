@@ -1,6 +1,6 @@
 -- Use Database
-use TeeTimeDB
-GO
+-- use TeeTimeDB
+-- GO
 
 -- Drop Tables if they exist
 If Exists (Select Name From sys.tables Where Name = 'MembershipApplication')
@@ -147,6 +147,9 @@ GO
 If Exists (Select Name From sys.procedures Where Name = 'UpdateMembershipApplicationStatus')
 	Drop Procedure UpdateMembershipApplicationStatus
 GO
+
+If Exists (Select Name From sys.procedures Where Name = 'UpdateUserRole')
+	Drop Procedure UpdateUserRole
 
 -- Create
 Create Table Roles
@@ -1195,6 +1198,34 @@ AS
 					Else
 						Raiserror('UpdateMembershipApplicationStatus - Error updating membership application status.', 16, 1)
 				End
+
+	Return @TeeTimeReturnCode
+GO
+
+Create Procedure UpdateUserRole(
+	@Email VarChar(100),
+	@NewRoleID Int
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @Email Is Null Or @NewRoleID Is Null -- Checks if all fields are provided
+		Raiserror('UpdateUserRole - All fields must be provided.', 16, 1)
+	Else
+		If Not Exists (Select 1 From TeeTimeUser Where Email = @Email) -- Check for valid Email
+			Raiserror('UpdateUserRole - Invalid Email.', 16, 1)
+		Else
+			Begin -- Update user's role
+				Update TeeTimeUser
+				Set RoleID = @NewRoleID
+				Where Email = @Email
+
+				If @@Error = 0
+					Set @TeeTimeReturnCode = 0 -- Success
+				Else
+					Raiserror('UpdateUserRole - Error updating user role.', 16, 1)
+			End
 
 	Return @TeeTimeReturnCode
 GO

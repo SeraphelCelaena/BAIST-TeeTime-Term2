@@ -1,0 +1,46 @@
+.home-page table {
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 2rem 0;
+	table-layout: fixed;
+}
+
+.home-page td {
+	vertical-align: top;
+	padding: 1rem;
+	border: 1px solid #ccc;
+	border-radius: 0.5rem;
+}
+
+.home-page ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.home-page li {
+	margin-bottom: 0.5rem;
+}
+
+.home-page li:last-child {
+	margin-bottom: 0;
+}
+
+.home-page a {
+	display: inline-block;
+	padding: 0.35rem 0.65rem;
+	border: 1px solid #bfdbfe;
+	border-radius: 0.4rem;
+	color: #1d4ed8;
+	text-decoration: none;
+	font-weight: 600;
+	transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.home-page a:hover,
+.home-page a:focus-visible {
+	background-color: #eff6ff;
+	border-color: #93c5fd;
+	color: #1e40af;
+	text-decoration: underline;
+}

@@ -292,15 +292,15 @@ public class ManageUserModel : PageModel
 						{
 							UserList.Add(new User
 							{
-								Email = GetUserListReader.GetString(0),
-								FirstName = GetUserListReader.GetString(1),
-								LastName = GetUserListReader.GetString(2),
-								PhoneNumber = GetUserListReader.GetString(3),
-								Address = GetUserListReader.GetString(4),
-								City = GetUserListReader.GetString(5),
-								Province = GetUserListReader.GetString(6),
-								PostalCode = GetUserListReader.GetString(7),
-								Role = GetUserListReader.GetInt32(8)
+								Email = GetNullableString(GetUserListReader, 0) ?? string.Empty,
+								FirstName = GetNullableString(GetUserListReader, 1) ?? string.Empty,
+								LastName = GetNullableString(GetUserListReader, 2) ?? string.Empty,
+								PhoneNumber = GetNullableString(GetUserListReader, 3) ?? string.Empty,
+								Address = GetNullableString(GetUserListReader, 4) ?? string.Empty,
+								City = GetNullableString(GetUserListReader, 5) ?? string.Empty,
+								Province = GetNullableString(GetUserListReader, 6) ?? string.Empty,
+								PostalCode = GetNullableString(GetUserListReader, 7) ?? string.Empty,
+								Role = GetInt32OrDefault(GetUserListReader, 8)
 							});
 						}
 					}
@@ -378,5 +378,15 @@ public class ManageUserModel : PageModel
 		{
 			ViewData["Error"] = $"An error occurred while retrieving warnings for the user: {ex.Message}";
 		}
+	}
+
+	private static string? GetNullableString(SqlDataReader reader, int ordinal)
+	{
+		return reader.IsDBNull(ordinal) ? null : reader.GetString(ordinal);
+	}
+
+	private static int GetInt32OrDefault(SqlDataReader reader, int ordinal, int defaultValue = 0)
+	{
+		return reader.IsDBNull(ordinal) ? defaultValue : reader.GetInt32(ordinal);
 	}
 }

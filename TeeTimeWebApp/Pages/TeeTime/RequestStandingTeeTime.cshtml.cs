@@ -25,9 +25,9 @@ public class RequestStandingTeeTimeModel : PageModel
 	[BindProperty]
 	public int DayOfWeek { get; set; }
 	[BindProperty]
-	public DateOnly StartDate { get; set; }
+	public DateOnly StartDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 	[BindProperty]
-	public DateOnly EndDate { get; set; }
+	public DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 	[BindProperty]
 	public TimeOnly PreferredTime { get; set; }
 	[BindProperty]
@@ -131,7 +131,7 @@ public class RequestStandingTeeTimeModel : PageModel
 	{
 		var RoleClaim = User.FindFirstValue(ClaimTypes.Role);
 		var EmailClaim = User.FindFirstValue(ClaimTypes.Email);
-		if (RoleClaim != "Stakeholder")
+		if (RoleClaim is not ("Stakeholder" or "Admin"))
 		{
 			return RedirectToPage("/Index");
 		}

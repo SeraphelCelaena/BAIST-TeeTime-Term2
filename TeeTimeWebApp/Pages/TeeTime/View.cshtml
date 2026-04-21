@@ -8,27 +8,64 @@
 <h2>View Tee Times</h2>
 
 <div class="genericform">
-	<input type="date" />
+	<label for="teeTimeDateFilter">Filter by date:</label>
+	<input type="date" id="teeTimeDateFilter" />
 	@if (Model.TeeTimesList.Count == 0)
 	{
-		<p>No tee times found.</p>
+		<p id="noTeeTimesMessage">No tee times found.</p>
 	}
 	else
 	{
 		<table>
 			<tr>
+				<td>Date</td>
 				<td>Time</td>
 				<td>Players Booked</td>
 				<td>Confirmed</td>
 			</tr>
-			<tr>
-				@foreach (var TeeTime in Model.TeeTimesList)
-				{
+			@foreach (var TeeTime in Model.TeeTimesList)
+			{
+				<tr class="tee-time-row" data-date="@TeeTime.Date.ToString("yyyy-MM-dd")">
+					<td>@TeeTime.Date</td>
 					<td>@TeeTime.StartTime</td>
 					<td>@TeeTime.Count / 4</td>
 					<td>@TeeTime.Confirmed</td>
-				}
-			</tr>
+				</tr>
+			}
 		</table>
+		<p id="noFilterResultsMessage" style="display:none;">No tee times found for the selected date.</p>
 	}
 </div>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		const dateFilterInput = document.getElementById("teeTimeDateFilter");
+		const rows = document.querySelectorAll(".tee-time-row");
+		const noFilterResultsMessage = document.getElementById("noFilterResultsMessage");
+
+		if (!dateFilterInput || rows.length === 0) {
+			return;
+		}
+
+		function applyDateFilter() {
+			const selectedDate = dateFilterInput.value;
+			let visibleRowCount = 0;
+
+			rows.forEach(function (row) {
+				const rowDate = row.getAttribute("data-date");
+				const isVisible = !selectedDate || rowDate === selectedDate;
+				row.style.display = isVisible ? "" : "none";
+				if (isVisible) {
+					visibleRowCount++;
+				}
+			});
+
+			if (noFilterResultsMessage) {
+				noFilterResultsMessage.style.display = visibleRowCount === 0 ? "block" : "none";
+			}
+		}
+
+		dateFilterInput.addEventListener("input", applyDateFilter);
+		dateFilterInput.addEventListener("change", applyDateFilter);
+	});
+</script>

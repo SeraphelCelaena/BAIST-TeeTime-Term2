@@ -105,7 +105,6 @@ public class BookModel : PageModel
 	public async Task<IActionResult> OnPostCancel()
 	{
 		ValidDate = false;
-		ViewData["Error"] = "OnCancel";
 		UsedTeeTimes = new List<UsedTeeTime>();
 		AvailableTeeTimes = new List<SelectListItem>();
 

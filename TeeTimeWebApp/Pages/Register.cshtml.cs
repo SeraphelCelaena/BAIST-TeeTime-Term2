@@ -71,12 +71,6 @@ public class RegisterModel : PageModel
 			return Page();
 		}
 
-		// if (!Regex.IsMatch(PostalCode, RegexPostalCode))
-		// {
-		// 	ViewData["Error"] = "Please enter a valid postal code.";
-		// 	return Page();
-		// }
-
 		if (Password != ConfirmPassword)
 		{
 			ViewData["Error"] = "Passwords do not match.";
@@ -100,22 +94,25 @@ public class RegisterModel : PageModel
 				new SqlParameter("@FirstName", SqlDbType.VarChar) { Value = FirstName },
 				new SqlParameter("@LastName", SqlDbType.VarChar) { Value = LastName },
 				new SqlParameter("@PhoneNumber", SqlDbType.VarChar) { Value = PhoneNumber },
-				// new SqlParameter("@Address", SqlDbType.VarChar) { Value = Address },
-				// new SqlParameter("@City", SqlDbType.VarChar) { Value = City },
-				// new SqlParameter("@Province", SqlDbType.VarChar) { Value = Province },
-				// new SqlParameter("@PostalCode", SqlDbType.VarChar) { Value = PostalCode },
 				new SqlParameter("@RoleID", SqlDbType.Int) { Value = 7 }
 			}
 		};
 
-		using (RegisterConnection)
+		try
 		{
-			RegisterConnection.Open();
-
-			using (RegisterCommand)
+			using (RegisterConnection)
 			{
-				RegisterCommand.ExecuteNonQuery();
+				RegisterConnection.Open();
+
+				using (RegisterCommand)
+				{
+					RegisterCommand.ExecuteNonQuery();
+				}
 			}
+		}
+		catch (Exception ex)
+		{
+			ViewData["Error"] = $"An error occurred while registering: {ex.Message}";
 		}
 
 		return Page();

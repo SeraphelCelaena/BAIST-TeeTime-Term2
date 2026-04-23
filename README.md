@@ -1,4 +1,5 @@
 # Website
+[Git Repository](https://github.com/SeraphelCelaena/BAIST-TeeTime-Term2)
 [Public Website](teetimewebappservice-grabacd4hubrgcdu.eastus2-01.azurewebsites.net)
 
 ## Users

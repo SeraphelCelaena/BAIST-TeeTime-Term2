@@ -74,7 +74,7 @@ public class ManageUserModel : PageModel
 		{
 			Connection = EditUserConnection,
 			CommandType = CommandType.StoredProcedure,
-			CommandText = "EditUser",
+			CommandText = "UpdateUserAdmin",
 			Parameters =
 			{
 				new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = EmailEdit },

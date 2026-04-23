@@ -109,7 +109,7 @@
 <div id="WarningList" style="display:none;" class="manage">
 	@if (Model.ShowWarningList)
 	{
-		<div>
+		<div class="genericform">
 			<h3>Warnings for @Model.WarningEmail</h3>
 			@if (Model.WarningList.Count == 0)
 			{
@@ -136,7 +136,7 @@
 		</div>
 	}
 
-	<form id="AddWarningForm" method="post" >
+	<form id="AddWarningForm" method="post" class="genericform" >
 		<table>
 			<input type="hidden" asp-for="WarningEmail" />
 			<tr>

@@ -42,6 +42,8 @@ public class RequestStandingTeeTimeModel : PageModel
 
 	public async Task<IActionResult> OnPostSubmit()
 	{
+		await GetEmail();
+
 		if (Member2 == null || Member3 == null || Member4 == null || PreferredTime == TimeOnly.MinValue)
 		{
 			ViewData["Error"] = "Please fill in all fields.";
@@ -77,7 +79,7 @@ public class RequestStandingTeeTimeModel : PageModel
 				new SqlParameter("@StartDate", SqlDbType.Date) { Value = StartDate.ToDateTime(TimeOnly.MinValue) },
 				new SqlParameter("@EndDate", SqlDbType.Date) { Value = EndDate.ToDateTime(TimeOnly.MinValue) },
 				new SqlParameter("@RequestedTime", SqlDbType.Time) { Value = PreferredTime },
-				new SqlParameter("@NumberOfCarts", SqlDbType.Int) { Value = NumberOfCarts },
+				new SqlParameter("@NumberOfCarts", SqlDbType.Int) { Value = 1 },
 				new SqlParameter("@TeeTimeIDReturn", SqlDbType.Int) { Direction = ParameterDirection.Output }
 			}
 		};

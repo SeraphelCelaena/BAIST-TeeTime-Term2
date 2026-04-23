@@ -560,8 +560,8 @@ AS
 	If @ShareholderEmail Is Null Or @DayOfWeek Is Null Or @StartDate Is Null Or @EndDate Is Null Or @RequestedTime Is Null -- Checks if all fields are provided
 		Raiserror('AddStandingTeeTime - All fields must be provided.', 16, 1)
 	Else
-		If (@ShareholderEmail Not In (Select Email From TeeTimeUser Where RoleID = (Select RoleID From Roles Where RoleName = 'Shareholder')) ) -- Check if user is a Shareholder
-			Raiserror('AddStandingTeeTime - User is not a Shareholder.', 16, 1)
+		If (@ShareholderEmail Not In (Select Email From TeeTimeUser Where Email = @ShareholderEmail And RoleID In (Select RoleID From Roles Where RoleName In ('Shareholder', 'Admin'))) ) -- Check if user is a Shareholder or Admin
+			Raiserror('AddStandingTeeTime - User is not a Shareholder', 16, 1)
 		Else
 			If @StartDate < Cast(GetDate() As Date) -- Check if StartDate is in the past
 				Raiserror('AddStandingTeeTime - StartDate cannot be in the past.', 16, 1)

@@ -32,7 +32,7 @@ public class MembershipApplicationModel : PageModel
 	[BindProperty]
 	public string PostalCode { get; set; } = string.Empty;
 	[BindProperty]
-	public DateOnly DateOfBirth { get; set; }
+	public DateOnly DateOfBirth { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 	[BindProperty]
 	public string Occupation { get; set; } = string.Empty;
 	[BindProperty]

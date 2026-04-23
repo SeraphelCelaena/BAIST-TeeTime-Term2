@@ -26,14 +26,6 @@ public class RegisterModel : PageModel
 	public string LastName { get; set;} = string.Empty;
 	[BindProperty]
 	public int PhoneNumber { get; set;}
-	// [BindProperty]
-	// public string Address { get; set;} = string.Empty;
-	// [BindProperty]
-	// public string City { get; set;} = string.Empty;
-	// [BindProperty]
-	// public string Province { get; set;} = string.Empty;
-	// [BindProperty]
-	// public string PostalCode { get; set;} = string.Empty;
 	[BindProperty]
 	public string Role { get; set;}
 
@@ -109,6 +101,13 @@ public class RegisterModel : PageModel
 					RegisterCommand.ExecuteNonQuery();
 				}
 			}
+
+			Email = string.Empty;
+			Password = string.Empty;
+			ConfirmPassword = string.Empty;
+			FirstName = string.Empty;
+			LastName = string.Empty;
+			PhoneNumber = 0;
 
 			ViewData["Success"] = "Registration successful! You can now log in.";
 		}

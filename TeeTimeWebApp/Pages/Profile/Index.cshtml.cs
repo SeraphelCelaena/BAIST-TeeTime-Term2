@@ -19,10 +19,10 @@ public class ProfileModel : PageModel
 	public string FirstName { get; set; } = string.Empty;
 	public string LastName { get; set; } = string.Empty;
 	public string PhoneNumber { get; set; } = string.Empty;
-	public string Address { get; set; } = string.Empty;
-	public string City { get; set; } = string.Empty;
-	public string Province { get; set; } = string.Empty;
-	public string PostalCode { get; set; } = string.Empty;
+	public string? Address { get; set; } = string.Empty;
+	public string? City { get; set; } = string.Empty;
+	public string? Province { get; set; } = string.Empty;
+	public string? PostalCode { get; set; } = string.Empty;
 	public string Role { get; set; } = string.Empty;
 
 	[BindProperty]
@@ -302,6 +302,16 @@ public class ProfileModel : PageModel
 
 	public async Task<IActionResult> GetProfileProperties()
 	{
+		static string GetSafeString(SqlDataReader reader, int ordinal)
+		{
+			return reader.IsDBNull(ordinal) ? string.Empty : reader.GetString(ordinal);
+		}
+
+		static string GetSafeValueAsString(SqlDataReader reader, int ordinal)
+		{
+			return reader.IsDBNull(ordinal) ? string.Empty : Convert.ToString(reader.GetValue(ordinal)) ?? string.Empty;
+		}
+
 		SqlConnection GetProfilePropertiesConnection = new()
 		{
 			ConnectionString = _configuration.GetConnectionString("DefaultConnection")
@@ -331,16 +341,15 @@ public class ProfileModel : PageModel
 						{
 							while (GetProfileReader.Read())
 							{
-								Email = GetProfileReader.GetString(0);
-								FirstName = GetProfileReader.GetString(1);
-								LastName = GetProfileReader.GetString(2);
-								PhoneNumber = GetProfileReader.GetString(3);
-								Address = GetProfileReader.GetString(4);
-								City = GetProfileReader.GetString(5);
-								Province = GetProfileReader.GetString(6);
-								PostalCode = GetProfileReader.GetString(7);
-								Role = GetProfileReader.GetString(8);
-
+								Email = GetSafeString(GetProfileReader, 0);
+								FirstName = GetSafeString(GetProfileReader, 1);
+								LastName = GetSafeString(GetProfileReader, 2);
+								PhoneNumber = GetSafeString(GetProfileReader, 3);
+								Address = GetSafeString(GetProfileReader, 4);
+								City = GetSafeString(GetProfileReader, 5);
+								Province = GetSafeString(GetProfileReader, 6);
+								PostalCode = GetSafeString(GetProfileReader, 7);
+								Role = GetSafeValueAsString(GetProfileReader, 8);
 							}
 						}
 					}

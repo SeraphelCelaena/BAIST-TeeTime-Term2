@@ -58,7 +58,7 @@ public class ReviewMembershipApplicationModel : PageModel
 			Parameters =
 			{
 				new SqlParameter("@ApplicationID", SqlDbType.Int) { Value = MembershipApplicationID },
-				new SqlParameter("@NewStatus", SqlDbType.NVarChar, 20) { Value = newStatus }
+				new SqlParameter("@Status", SqlDbType.NVarChar, 20) { Value = newStatus }
 			}
 		};
 
@@ -104,7 +104,7 @@ public class ReviewMembershipApplicationModel : PageModel
 			ViewData["Error"] = $"An error occurred while updating application status: {ex.Message}";
 		}
 
-		return Page();
+		return RedirectToPage();
 	}
 
 	public async Task<IActionResult> GetAllApplications()

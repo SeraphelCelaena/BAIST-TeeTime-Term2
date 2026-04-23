@@ -72,7 +72,7 @@ public class RequestStandingTeeTimeModel : PageModel
 			CommandText = "AddStandingTeeTime",
 			Parameters =
 			{
-				new SqlParameter("@StakeholderEmail", SqlDbType.VarChar) { Value = Email },
+				new SqlParameter("@ShareholderEmail", SqlDbType.VarChar) { Value = Email },
 				new SqlParameter("@DayOfWeek", SqlDbType.Int) { Value = DayOfWeek },
 				new SqlParameter("@StartDate", SqlDbType.Date) { Value = StartDate.ToDateTime(TimeOnly.MinValue) },
 				new SqlParameter("@EndDate", SqlDbType.Date) { Value = EndDate.ToDateTime(TimeOnly.MinValue) },
@@ -131,7 +131,7 @@ public class RequestStandingTeeTimeModel : PageModel
 	{
 		var RoleClaim = User.FindFirstValue(ClaimTypes.Role);
 		var EmailClaim = User.FindFirstValue(ClaimTypes.Email);
-		if (RoleClaim is not ("Stakeholder" or "Admin"))
+		if (RoleClaim is not ("Shareholder" or "Admin"))
 		{
 			return RedirectToPage("/Index");
 		}

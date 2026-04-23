@@ -222,14 +222,14 @@ GO
 Create Table StandingTeeTime
 (
 	StandingTeeTimeID Int Identity(100000, 1),
-	StakeholderEmail VarChar(100) Not Null,
+	ShareholderEmail VarChar(100) Not Null,
 	DayOfWeek Int Not Null,
 	StartDate Date Not Null,
 	EndDate Date Not Null,
 	RequestedTime Time Not Null,
 	NumberOfCarts Int Not Null,
 	Constraint PK_StandingTeeTime Primary Key (StandingTeeTimeID),
-	Constraint FK_StandingTeeTime_TeeTimeUser Foreign Key (StakeholderEmail) References TeeTimeUser(Email) On Update Cascade
+	Constraint FK_StandingTeeTime_TeeTimeUser Foreign Key (ShareholderEmail) References TeeTimeUser(Email) On Update Cascade
 )
 GO
 
@@ -280,7 +280,7 @@ GO
 Insert into Roles (RoleName)
 values
 	('Admin'),
-	('Stakeholder'),
+	('Shareholder'),
 	('Gold'),
 	('Silver'),
 	('Bronze'),
@@ -545,7 +545,7 @@ AS
 GO
 
 Create Procedure AddStandingTeeTime(
-	@StakeholderEmail VarChar(100),
+	@ShareholderEmail VarChar(100),
 	@DayOfWeek Int,
 	@StartDate Date,
 	@EndDate Date,
@@ -557,11 +557,11 @@ AS
 	Declare @TeeTimeReturnCode Int
 	Set @TeeTimeReturnCode = 1 -- Default to failure
 
-	If @StakeholderEmail Is Null Or @DayOfWeek Is Null Or @StartDate Is Null Or @EndDate Is Null Or @RequestedTime Is Null -- Checks if all fields are provided
+	If @ShareholderEmail Is Null Or @DayOfWeek Is Null Or @StartDate Is Null Or @EndDate Is Null Or @RequestedTime Is Null -- Checks if all fields are provided
 		Raiserror('AddStandingTeeTime - All fields must be provided.', 16, 1)
 	Else
-		If (@StakeholderEmail Not In (Select Email From TeeTimeUser Where RoleID = (Select RoleID From Roles Where RoleName = 'Stakeholder')) ) -- Check if user is a Stakeholder
-			Raiserror('AddStandingTeeTime - User is not a Stakeholder.', 16, 1)
+		If (@ShareholderEmail Not In (Select Email From TeeTimeUser Where RoleID = (Select RoleID From Roles Where RoleName = 'Shareholder')) ) -- Check if user is a Shareholder
+			Raiserror('AddStandingTeeTime - User is not a Shareholder.', 16, 1)
 		Else
 			If @StartDate < Cast(GetDate() As Date) -- Check if StartDate is in the past
 				Raiserror('AddStandingTeeTime - StartDate cannot be in the past.', 16, 1)
@@ -576,8 +576,8 @@ AS
 							Raiserror('AddStandingTeeTime - NumberOfCarts must be at least 1.', 16, 1)
 						Else
 						Begin -- Insert the new Standing Tee Time
-							Insert into StandingTeeTime (StakeholderEmail, DayOfWeek, StartDate, EndDate, RequestedTime, NumberOfCarts)
-							Values (@StakeholderEmail, @DayOfWeek, @StartDate, @EndDate, @RequestedTime, @NumberOfCarts)
+							Insert into StandingTeeTime (ShareholderEmail, DayOfWeek, StartDate, EndDate, RequestedTime, NumberOfCarts)
+							Values (@ShareholderEmail, @DayOfWeek, @StartDate, @EndDate, @RequestedTime, @NumberOfCarts)
 
 							If @@Error = 0
 								Begin
@@ -1304,14 +1304,14 @@ Exec AddUser
 GO
 
 Exec AddUser
-	@Email = 'stakeholder@baist.ca',
-	@Password = 'StakePass123',
-	@FirstName = 'Stake',
+	@Email = 'Shareholder@baist.ca',
+	@Password = 'ShareholderPass123',
+	@FirstName = 'Share',
 	@LastName = 'Holder',
 	@PhoneNumber = '2345678901',
-	@Address = '123 Stakeholder St.',
-	@City = 'StakeholderCity',
-	@Province = 'StakeholderProvince',
+	@Address = '123 Shareholder St.',
+	@City = 'ShareholderCity',
+	@Province = 'ShareholderProvince',
 	@PostalCode = 'B2B2B2',
 	@RoleID = 2
 GO

@@ -7,7 +7,7 @@
 | --- | --- |
 | superuser@baist.ca | SuperPass123 |
 | admin@baist.ca | AdminPass123 |
-| stakeholder@baist.ca | StakePass123 |
+| Shareholder@baist.ca | ShareholderPass123 |
 | gold@baist.ca | GoldPass123 |
 | silver@baist.ca | SilverPass123 |
 | bronze@baist.ca | BronzePass123 |

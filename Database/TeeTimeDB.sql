@@ -150,6 +150,11 @@ GO
 
 If Exists (Select Name From sys.procedures Where Name = 'UpdateUserRole')
 	Drop Procedure UpdateUserRole
+GO
+
+If Exists (Select Name From sys.procedures Where Name = 'AddUser')
+	Drop Procedure AddUser
+GO
 
 -- Create
 Create Table Roles
@@ -284,7 +289,7 @@ values
 GO
 
 -- Stored Procedures
-Create Procedure RegisterUser(
+Create Procedure AddUser(
 	@Email VarChar(100),
 	@Password VarChar(50),
 	@FirstName VarChar(50),
@@ -328,6 +333,47 @@ AS
 								Else
 									Raiserror('RegisterUser - Error inserting user.', 16, 1)
 							End
+
+	Return @TeeTimeReturnCode
+GO
+
+Create Procedure RegisterUser(
+	@Email VarChar(100),
+	@Password VarChar(50),
+	@FirstName VarChar(50),
+	@LastName VarChar(50),
+	@PhoneNumber VarChar(10),
+	@RoleID Int
+)
+AS
+	Declare @TeeTimeReturnCode Int
+	Set @TeeTimeReturnCode = 1 -- Default to failure
+
+	If @Email Is Null Or @Password Is Null Or @FirstName Is Null Or @LastName Is Null Or
+		@PhoneNumber Is Null Or @RoleID Is Null -- Checks if all fields are provided
+		Raiserror('RegisterUser - All fields must be provided.', 16, 1)
+	Else
+		If Exists (Select 1 From TeeTimeUser Where Email = @Email) -- Check for existing email
+			Raiserror('RegisterUser - Email already exists.', 16, 1)
+		Else
+			If Not Exists (Select 1 From Roles Where RoleID = @RoleID) -- Check for valid RoleID
+				Raiserror('RegisterUser - Invalid RoleID.', 16, 1)
+			Else
+				If Len(@PhoneNumber) <> 10 Or @PhoneNumber Not Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' -- Check PhoneNumber format
+					Raiserror('RegisterUser - Invalid PhoneNumber format.', 16, 1)
+				Else
+					If @Email Not Like '%_@__%.__%' -- Check Email format
+						Raiserror('RegisterUser - Invalid Email format.', 16, 1)
+					Else
+						Begin -- Insert the new user
+							Insert into TeeTimeUser (Email, Password, FirstName, LastName, PhoneNumber, RoleID)
+							Values (@Email, @Password, @FirstName, @LastName, @PhoneNumber, @RoleID)
+
+							If @@Error = 0
+								Set @TeeTimeReturnCode = 0 -- Success
+							Else
+								Raiserror('RegisterUser - Error inserting user.', 16, 1)
+						End
 
 	Return @TeeTimeReturnCode
 GO
@@ -1231,7 +1277,7 @@ AS
 GO
 
 -- Insert Data using stored procedures
-Exec RegisterUser
+Exec AddUser
 	@Email = 'superuser@baist.ca',
 	@Password = 'SuperPass123',
 	@FirstName = 'Super',
@@ -1244,7 +1290,7 @@ Exec RegisterUser
 	@RoleID = 1
 GO
 
-Exec RegisterUser
+Exec AddUser
 	@Email = 'admin@baist.ca',
 	@Password = 'AdminPass123',
 	@FirstName = 'Admin',
@@ -1257,7 +1303,7 @@ Exec RegisterUser
 	@RoleID = 1
 GO
 
-Exec RegisterUser
+Exec AddUser
 	@Email = 'stakeholder@baist.ca',
 	@Password = 'StakePass123',
 	@FirstName = 'Stake',
@@ -1270,7 +1316,7 @@ Exec RegisterUser
 	@RoleID = 2
 GO
 
-Exec RegisterUser
+Exec AddUser
 	@Email = 'gold@baist.ca',
 	@Password = 'GoldPass123',
 	@FirstName = 'Gold',
@@ -1283,7 +1329,7 @@ Exec RegisterUser
 	@RoleID = 3
 GO
 
-Exec RegisterUser
+Exec AddUser
 	@Email = 'silver@baist.ca',
 	@Password = 'SilverPass123',
 	@FirstName = 'Silver',
@@ -1296,7 +1342,7 @@ Exec RegisterUser
 	@RoleID = 4
 GO
 
-Exec RegisterUser
+Exec AddUser
 	@Email = 'bronze@baist.ca',
 	@Password = 'BronzePass123',
 	@FirstName = 'Bronze',
@@ -1309,7 +1355,7 @@ Exec RegisterUser
 	@RoleID = 5
 GO
 
-Exec RegisterUser
+Exec AddUser
 	@Email = 'copper@baist.ca',
 	@Password = 'CopperPass123',
 	@FirstName = 'Copper',
@@ -1322,7 +1368,7 @@ Exec RegisterUser
 	@RoleID = 6
 GO
 
-Exec RegisterUser
+Exec AddUser
 	@Email = 'user@baist.ca',
 	@Password = 'UserPass123',
 	@FirstName = 'Regular',

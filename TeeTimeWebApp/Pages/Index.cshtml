@@ -12,10 +12,10 @@
 		<h2>Hello, @User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value!</h2>
 		<table>
 			<tr>
-				<td>
-					<h3>Tee Time</h3>
-					@if (User.IsInRole(role: "Admin") || User.IsInRole(role: "Shareholder") || User.IsInRole(role: "Gold") || User.IsInRole(role: "Silver") || User.IsInRole(role: "Bronze") || User.IsInRole(role: "Copper"))
-					{
+				@if (User.IsInRole(role: "Admin") || User.IsInRole(role: "Shareholder") || User.IsInRole(role: "Gold") || User.IsInRole(role: "Silver") || User.IsInRole(role: "Bronze") || User.IsInRole(role: "Copper"))
+				{
+					<td>
+						<h3>Tee Time</h3>
 						<ul>
 							@if (!User.IsInRole(role: "Copper"))
 							{
@@ -28,8 +28,8 @@
 								<li><a href="/TeeTime/RequestStandingTeeTime">Request Standing TeeTime</a></li>
 							}
 						</ul>
-					}
-				</td>
+					</td>
+				}
 				@if (User.IsInRole(role: "Admin"))
 				{
 					<td>

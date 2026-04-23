@@ -71,29 +71,26 @@ public class ReviewMembershipApplicationModel : PageModel
 				{
 					UpdateStatusCommand.ExecuteNonQuery();
 				}
-			}
 
-			if (newStatus == "Approved")
-			{
-				SqlCommand UpdateUserRoleCommand = new()
+				if (newStatus == "Approved")
 				{
-					Connection = UpdateStatusConnection,
-					CommandType = CommandType.StoredProcedure,
-					CommandText = "UpdateUserRole",
-					Parameters =
+					SqlCommand UpdateUserRoleCommand = new()
 					{
-						new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = MemberEmail },
-						new SqlParameter("@NewRoleID", SqlDbType.Int) { Value = 2 }
-					}
-				};
+						Connection = UpdateStatusConnection,
+						CommandType = CommandType.StoredProcedure,
+						CommandText = "UpdateUserRole",
+						Parameters =
+						{
+							new SqlParameter("@Email", SqlDbType.VarChar, 100) { Value = MemberEmail },
+							new SqlParameter("@NewRoleID", SqlDbType.Int) { Value = 2 }
+						}
+					};
 
-				using (UpdateStatusConnection)
-				{
-					UpdateStatusConnection.Open();
 					using (UpdateUserRoleCommand)
 					{
 						UpdateUserRoleCommand.ExecuteNonQuery();
 					}
+
 				}
 			}
 

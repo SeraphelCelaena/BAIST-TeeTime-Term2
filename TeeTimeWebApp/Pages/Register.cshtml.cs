@@ -109,6 +109,8 @@ public class RegisterModel : PageModel
 					RegisterCommand.ExecuteNonQuery();
 				}
 			}
+
+			ViewData["Success"] = "Registration successful! You can now log in.";
 		}
 		catch (Exception ex)
 		{
